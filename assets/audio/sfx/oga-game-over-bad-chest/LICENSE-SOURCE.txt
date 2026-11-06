@@ -1,0 +1,6 @@
+Asset: Game Over - Bad chest SFX
+Source: https://opengameart.org/content/game-over-bad-chest-sfx
+Author: Felis Chaus
+License: CC0
+Retrieved: 2026-11-05 (mirror in sigco3111 game asset library)
+CC0: public domain dedication - redistribution allowed.
