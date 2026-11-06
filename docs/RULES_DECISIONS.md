@@ -18,3 +18,11 @@
 - **구매**: 구매 카드는 구매자의 버린 더미로. 성장 카드(10종, 세력당 1회)는 `growth`에 두고 덱에 넣지 않으며 수정치를 즉시 적용.
 - **비용 수정치**: `shop.costDelta` 합산, 첫 구매는 `shop.firstPurchaseDiscount` 추가 할인, 최소 비용 1. `shop.extraSlots`는 시장 칸 수 증가.
 - **전략 자산**: 세력마다 2장을 받아 1장 선택. **비밀 목표**: 세력마다 2장.
+
+## 효과 실행기 (M1b)
+- **수정치 키**: `income.<capital|energy|industry|prestige>`, `shop.costDelta/extraSlots/firstPurchaseDiscount/minCost`, `planSlots`, `handSize`, `nextRound.<key>`(다음 라운드로 승계), `influenceLossReduction.all|self`, `negateTargetedEffect`, `ignoreEventEffectInRegion`(+`PerRound`), `domesticCapitalBonus`, `militaryEffectHalfRoundUp`, `treatiesVoid`, `baseDefenseBonus`, `firstDiplomaticInfluenceBonus`, `firstTreatyFree`(조약 비용이 없어 저장만), `revealPlanCard`. 불리언은 1로 저장. 읽기는 `getMod`/`getModifier`(세력 영구 + 세력 라운드 + 게임 + 전역 라운드 합).
+- **저장 위치**: 이벤트와 `.all` 키는 `state.modifiers.round/game`, 카드의 `round`는 `players[f].roundModifiers`, `game`은 `players[f].modifiers`. `clearRoundEffects`가 방어·라운드 수정치·조약·`peeked`를 비우고 `nextRound.*`를 승계.
+- **방어**: 방어 1점이 영향력 −1을 막고 소모된다. 감소 수정치 → 방어 흡수 → 제거 순. `evt-18`의 "방어 없음"은 세력별(그 세력 방어 0).
+- **제거 대상**: `other`는 상대가 둘 이상이면 대상 세력 선택. `leader`·`evt-06`은 최다 동률 전원. `mil-12`의 −1은 대상 세력의 기지가 있을 때.
+- **대기 선택 `state.pending[]`**: `{id, faction(선택자), kind, effect, options, filter, actor, stage, rest, ctx}`. `kind`별 선택값: `region`=지역 id, `faction`=세력 id, `card`=카드 id, `regionPair`=서로 다른 지역 id 2개 배열, `confirm`=true/false(`payOptional`). 선택지가 하나뿐이면 대기 없이 진행. `rest`는 남은 효과 대기열.
+- **이벤트 조건**: 시작 시점 스냅샷으로 세력별 판정, 동률은 모두 해당. `playedCategoryThisRound`·`cardsPlayedThisRoundRank` 이벤트는 해결 단계 뒤에 적용해야 하므로 `isDeferredEvent`로 구분.
