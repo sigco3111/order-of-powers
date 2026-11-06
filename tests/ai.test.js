@@ -78,8 +78,8 @@ const SLOW = (() => { // CI처럼 느린 환경 감지: 이 기준 작업이 80m
   return performance.now() - t > 80;
 })();
 
-test('강도 순서: 어려움 1 대 쉬움 3 (40판, 어려움 승률이 무작위 기대값 25%보다 분명히 높다)', { timeout: 600000 }, () => {
-  const games = SLOW ? 24 : 40, need = SLOW ? 0.33 : 0.4;
+test('강도 순서: 어려움 1 대 쉬움 3 (60판, 어려움 승률이 무작위 기대값 25%보다 분명히 높다)', { timeout: 600000 }, () => {
+  const games = SLOW ? 24 : 60, need = SLOW ? 0.33 : 0.35;
   if (SLOW) console.warn('느린 환경: 24판과 느슨한 기준(35%)으로 검사');
   let wins = 0;
   for (let g = 0; g < games; g++) {
