@@ -104,7 +104,7 @@
     "id": "dom-02",
     "name": "신도시 개발",
     "category": "domestic",
-    "cost": 3,
+    "cost": 2,
     "deck": "market",
     "text": "🏭 +3, 위신 +1",
     "effects": [
@@ -124,7 +124,7 @@
     "id": "dom-03",
     "name": "기술 투자",
     "category": "domestic",
-    "cost": 3,
+    "cost": 2,
     "deck": "market",
     "text": "🏭 +2, 카드 1장 뽑기",
     "effects": [
@@ -385,7 +385,7 @@
     "id": "dip-03",
     "name": "원조 패키지",
     "category": "diplomatic",
-    "cost": 3,
+    "cost": 2,
     "deck": "market",
     "text": "💰 2를 추가로 내면 지역 하나에 영향력 +2",
     "effects": [
@@ -497,7 +497,7 @@
     "id": "dip-09",
     "name": "국제기구 결의",
     "category": "diplomatic",
-    "cost": 5,
+    "cost": 4,
     "deck": "market",
     "text": "지역 하나에서 상대 영향력 −1, 내 영향력 +1",
     "effects": [
@@ -586,7 +586,7 @@
     "id": "dip-14",
     "name": "다자 회의",
     "category": "diplomatic",
-    "cost": 6,
+    "cost": 4,
     "deck": "market",
     "text": "서로 다른 지역 둘에 각각 영향력 +1",
     "effects": [
@@ -756,7 +756,7 @@
     "id": "mil-09",
     "name": "제한 개입",
     "category": "military",
-    "cost": 5,
+    "cost": 4,
     "deck": "market",
     "text": "지역 하나에서 상대 영향력 −2",
     "effects": [
@@ -814,7 +814,7 @@
     "id": "mil-12",
     "name": "전략 폭격기",
     "category": "military",
-    "cost": 6,
+    "cost": 5,
     "deck": "market",
     "text": "지역 하나에서 상대 영향력 −3 (기지가 있는 곳은 −1)",
     "effects": [
@@ -879,7 +879,7 @@
     "id": "fac-atlas-1",
     "name": "해양 동맹",
     "category": "diplomatic",
-    "cost": 3,
+    "cost": 4,
     "deck": "faction",
     "faction": "atlas",
     "text": "지역 하나에 영향력 +1. 이번 라운드 조약을 맺었다면 +1 추가",
@@ -910,7 +910,7 @@
     "id": "fac-atlas-2",
     "name": "국제 금융망",
     "category": "domestic",
-    "cost": 4,
+    "cost": 5,
     "deck": "faction",
     "faction": "atlas",
     "text": "💰 + (이번 라운드 내가 낸 외교 카드 수 × 2)",
@@ -926,7 +926,7 @@
     "id": "fac-redDragon-1",
     "name": "일대 인프라",
     "category": "domestic",
-    "cost": 4,
+    "cost": 3,
     "deck": "faction",
     "faction": "redDragon",
     "text": "🏭 +3, 지역 하나에 영향력 +1",
@@ -964,7 +964,7 @@
     "id": "fac-polarStar-1",
     "name": "에너지 외교",
     "category": "diplomatic",
-    "cost": 3,
+    "cost": 4,
     "deck": "faction",
     "faction": "polarStar",
     "text": "🛢 +2, 지역 하나에 영향력 +1",
@@ -986,7 +986,7 @@
     "id": "fac-polarStar-2",
     "name": "동토 요새",
     "category": "military",
-    "cost": 4,
+    "cost": 6,
     "deck": "faction",
     "faction": "polarStar",
     "text": "기지 1개 설치, 방어 +1",
@@ -1009,13 +1009,19 @@
     "cost": 3,
     "deck": "faction",
     "faction": "emerald",
-    "text": "이번 라운드 모든 영향력 −효과가 1 줄어든다",
+    "text": "이번 라운드 모든 영향력 −효과가 1 줄어든다. 지역 하나에 영향력 +1",
     "effects": [
       {
         "type": "modifier",
         "scope": "round",
         "key": "influenceLossReduction.all",
         "value": 1
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
       }
     ]
   },
@@ -1023,7 +1029,7 @@
     "id": "fac-emerald-2",
     "name": "연합 방어",
     "category": "military",
-    "cost": 3,
+    "cost": 2,
     "deck": "faction",
     "faction": "emerald",
     "text": "조약 세력과 내 방어가 각각 +1",
