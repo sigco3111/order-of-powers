@@ -1,0 +1,55 @@
+/* Order of Powers — 게임 부품: 카드 프레임, 토큰 칩, 자원 행, 모달 시트 */
+
+/* 카드 프레임: 잉크색 바깥 도형 + 종이색 안쪽 도형을 같은 모서리 깎기(clip-path)로 겹쳐 2px 테두리를 만든다.
+   그림자는 blur 0인 drop-shadow 하나(딱딱한 오프셋). 분류색은 --cat 로 지정 (.card--domestic 등) */
+.card { --n: 12px; --cat: var(--ink); width: 100%; max-width: 240px; filter: drop-shadow(4px 4px 0 rgba(27, 34, 48, .28)); }
+.card__frame { padding: 2px; background: var(--ink); }
+.card__frame, .card__in { --k: var(--n); clip-path: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k)); }
+.card__in { --k: calc(var(--n) - 1.17px); display: grid; grid-template-rows: auto 1fr auto; min-height: 280px; background: var(--paper-light); }
+.card__top { display: flex; justify-content: space-between; align-items: center; padding: var(--s2) var(--s3) var(--s2) var(--s4); background: var(--cat); color: #FDFBF4; }
+.card__cost { font: 500 1.25rem/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.card__name { font: 800 1.125rem/1.2 var(--font-display); }
+.card__art { display: grid; place-items: center; margin: var(--s2) var(--s3); border: var(--hair); background: var(--paper-dark); color: var(--cat); }
+.card__art .icon { width: 44px; height: 44px; }
+.card__text { padding: 0 var(--s4) var(--s3); font-size: var(--fs-small); line-height: 1.5; border-top: 1px dotted var(--ink-soft); margin: 0 var(--s3); padding-top: var(--s2); }
+.card--domestic { --cat: var(--c-domestic); } .card--diplomacy { --cat: var(--c-diplomacy); }
+.card--military { --cat: var(--c-military); } .card--economy { --cat: var(--c-economy); }
+.card[aria-pressed="true"] { transform: translate(-2px, -6px); } /* 선택된 카드는 판 위로 살짝 든다 */
+
+/* 토큰 칩: 마분지에서 도려낸 네모 말. 세력색 면 + 안쪽 홈선 + 숫자 */
+.chip {
+  --c: var(--ink); position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none;
+  background: var(--c); color: #FDFBF4; border: 2px solid var(--ink); border-radius: var(--radius);
+  font: 700 1.25rem/1 var(--font-mono); font-variant-numeric: tabular-nums; box-shadow: var(--shadow-sm);
+}
+.chip::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(241, 236, 221, .55); pointer-events: none; }
+.chip--atlas { --c: var(--f-atlas); } .chip--redDragon { --c: var(--f-redDragon); }
+.chip--polarStar { --c: var(--f-polarStar); } .chip--emerald { --c: var(--f-emerald); }
+.chip--brass { --c: var(--brass); color: var(--ink); } .chip--brass::after { border-color: rgba(27, 34, 48, .45); }
+
+/* 자원 행: 아이콘 · 이름 ····· 숫자 (모노, 자리 맞춤) */
+.res-row { display: flex; align-items: center; gap: var(--s2); min-height: 36px; padding: 2px 0; border-bottom: 1px dotted var(--ink-soft); }
+.res-row:last-child { border-bottom: 0; }
+.res-row .icon { width: 20px; height: 20px; color: var(--ink); }
+.res-row__name { font-size: var(--fs-small); font-weight: 500; }
+.res-row__fill { flex: 1; }
+.res-row__val { font: 500 1.125rem/1 var(--font-mono); font-variant-numeric: tabular-nums; min-width: 2.5ch; text-align: right; }
+.res-row__delta { font: 500 var(--fs-small)/1 var(--font-mono); color: var(--ink-soft); min-width: 3.5ch; text-align: right; }
+.res-row__delta[data-sign="-"] { color: var(--stamp); }
+
+/* 모달 시트: 모바일은 아래에서 올라오는 시트, 넓은 화면은 가운데 상자. 배경은 흐림 없이 잉크색 반투명 */
+.sheet-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(27, 34, 48, .55); }
+.sheet { width: 100%; max-height: 88vh; overflow: auto; background: var(--paper); border: var(--line); border-bottom: 0; border-radius: 3px 3px 0 0; box-shadow: 0 -4px 0 rgba(27, 34, 48, .28); animation: sheet-up var(--t-slow) var(--ease) both; }
+.sheet__head { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--paper-dark); border-bottom: var(--line); }
+.sheet__body { padding: var(--s4) var(--s4) var(--s6); }
+@keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (min-width: 900px) {
+  .sheet-backdrop { align-items: center; }
+  .sheet { width: min(560px, 92vw); border-bottom: var(--line); border-radius: 2px; box-shadow: var(--shadow); }
+}
+
+/* 토글: 네모 체크 */
+.check { display: flex; align-items: center; gap: var(--s3); min-height: 48px; cursor: pointer; }
+.check input { appearance: none; width: 24px; height: 24px; margin: 0; flex: none; border: var(--line); border-radius: 2px; background: var(--paper-light); display: grid; place-items: center; }
+.check input:checked { background: var(--ink); }
+.check input:checked::after { content: ""; width: 12px; height: 7px; border: solid var(--paper); border-width: 0 0 3px 3px; transform: translateY(-1px) rotate(-45deg); }
