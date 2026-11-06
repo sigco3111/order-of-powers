@@ -1,0 +1,182 @@
+[
+  {
+    "id": "atlas",
+    "name": "아틀라스 연합",
+    "concept": "해양 동맹과 금융",
+    "strengths": [
+      "외교 카드 효율",
+      "동맹 보너스"
+    ],
+    "startingDeck": [
+      {
+        "cardId": "st-common-1",
+        "count": 3
+      },
+      {
+        "cardId": "st-common-2",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-3",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-4",
+        "count": 3
+      },
+      {
+        "cardId": "st-common-5",
+        "count": 2
+      },
+      {
+        "cardId": "st-atlas-1",
+        "count": 1
+      },
+      {
+        "cardId": "st-atlas-2",
+        "count": 1
+      }
+    ],
+    "uniqueCardIds": [
+      "fac-atlas-1",
+      "fac-atlas-2"
+    ]
+  },
+  {
+    "id": "redDragon",
+    "name": "적룡 공화국",
+    "concept": "제조업과 인프라",
+    "strengths": [
+      "내정 카드 효율",
+      "자원 생산"
+    ],
+    "startingDeck": [
+      {
+        "cardId": "st-common-1",
+        "count": 2
+      },
+      {
+        "cardId": "st-common-2",
+        "count": 3
+      },
+      {
+        "cardId": "st-common-3",
+        "count": 2
+      },
+      {
+        "cardId": "st-common-4",
+        "count": 2
+      },
+      {
+        "cardId": "st-common-5",
+        "count": 1
+      },
+      {
+        "cardId": "st-redDragon-1",
+        "count": 1
+      },
+      {
+        "cardId": "st-redDragon-2",
+        "count": 1
+      }
+    ],
+    "uniqueCardIds": [
+      "fac-redDragon-1",
+      "fac-redDragon-2"
+    ]
+  },
+  {
+    "id": "polarStar",
+    "name": "북극성 연방",
+    "concept": "에너지와 군사",
+    "strengths": [
+      "군사 카드 효율",
+      "기지 건설"
+    ],
+    "startingDeck": [
+      {
+        "cardId": "st-common-1",
+        "count": 2
+      },
+      {
+        "cardId": "st-common-2",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-3",
+        "count": 3
+      },
+      {
+        "cardId": "st-common-4",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-5",
+        "count": 2
+      },
+      {
+        "cardId": "st-polarStar-1",
+        "count": 1
+      },
+      {
+        "cardId": "st-polarStar-2",
+        "count": 1
+      },
+      {
+        "cardId": "st-polarStar-3",
+        "count": 1
+      }
+    ],
+    "uniqueCardIds": [
+      "fac-polarStar-1",
+      "fac-polarStar-2"
+    ]
+  },
+  {
+    "id": "emerald",
+    "name": "에메랄드 연맹",
+    "concept": "규범과 연합",
+    "strengths": [
+      "영향력 방어",
+      "제재와 조약"
+    ],
+    "startingDeck": [
+      {
+        "cardId": "st-common-1",
+        "count": 2
+      },
+      {
+        "cardId": "st-common-2",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-3",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-4",
+        "count": 3
+      },
+      {
+        "cardId": "st-common-5",
+        "count": 2
+      },
+      {
+        "cardId": "st-emerald-1",
+        "count": 1
+      },
+      {
+        "cardId": "st-emerald-2",
+        "count": 1
+      },
+      {
+        "cardId": "st-emerald-3",
+        "count": 1
+      }
+    ],
+    "uniqueCardIds": [
+      "fac-emerald-1",
+      "fac-emerald-2"
+    ]
+  }
+]
