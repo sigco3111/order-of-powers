@@ -1,0 +1,1291 @@
+[
+  {
+    "id": "st-common-1",
+    "name": "예산 편성",
+    "category": "domestic",
+    "cost": 0,
+    "deck": "starter",
+    "text": "💰 +2",
+    "tutorialCount": 2,
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "st-common-2",
+    "name": "산업 가동",
+    "category": "domestic",
+    "cost": 0,
+    "deck": "starter",
+    "text": "🏭 +2",
+    "tutorialCount": 2,
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "st-common-3",
+    "name": "에너지 비축",
+    "category": "domestic",
+    "cost": 0,
+    "deck": "starter",
+    "text": "🛢 +2",
+    "tutorialCount": 2,
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "st-common-4",
+    "name": "외교 서한",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "text": "이미 내 영향력이 있는 지역에 영향력 +1",
+    "tutorialCount": 2,
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "owned"
+      }
+    ]
+  },
+  {
+    "id": "st-common-5",
+    "name": "순찰",
+    "category": "military",
+    "cost": 0,
+    "deck": "starter",
+    "text": "방어 +1",
+    "tutorialCount": 2,
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "dom-01",
+    "name": "증세 개혁",
+    "category": "domestic",
+    "cost": 2,
+    "deck": "market",
+    "text": "💰 +4, 위신 −1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 4
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": -1
+      }
+    ]
+  },
+  {
+    "id": "dom-02",
+    "name": "신도시 개발",
+    "category": "domestic",
+    "cost": 3,
+    "deck": "market",
+    "text": "🏭 +3, 위신 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 3
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dom-03",
+    "name": "기술 투자",
+    "category": "domestic",
+    "cost": 3,
+    "deck": "market",
+    "text": "🏭 +2, 카드 1장 뽑기",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 2
+      },
+      {
+        "type": "draw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dom-04",
+    "name": "전략 비축고",
+    "category": "domestic",
+    "cost": 2,
+    "deck": "market",
+    "text": "🛢 +3",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "dom-05",
+    "name": "항만 확장",
+    "category": "domestic",
+    "cost": 4,
+    "deck": "market",
+    "text": "💰 +2, 🏭 +2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 2
+      },
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "dom-06",
+    "name": "연구 단지",
+    "category": "domestic",
+    "cost": 4,
+    "deck": "market",
+    "text": "카드 2장 뽑기",
+    "effects": [
+      {
+        "type": "draw",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "dom-07",
+    "name": "재정 건전화",
+    "category": "domestic",
+    "cost": 2,
+    "deck": "market",
+    "text": "💰 +3",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "dom-08",
+    "name": "에너지 전환",
+    "category": "domestic",
+    "cost": 5,
+    "deck": "market",
+    "text": "🛢 +4, 위신 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 4
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dom-09",
+    "name": "복지 확대",
+    "category": "domestic",
+    "cost": 3,
+    "deck": "market",
+    "text": "위신 +2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "dom-10",
+    "name": "인프라 협약",
+    "category": "domestic",
+    "cost": 4,
+    "deck": "market",
+    "text": "지역 하나에 영향력 +1, 🏭 +1",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      },
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dom-11",
+    "name": "스마트 공장",
+    "category": "domestic",
+    "cost": 5,
+    "deck": "market",
+    "text": "🏭 +5",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "dom-12",
+    "name": "국부 펀드",
+    "category": "domestic",
+    "cost": 6,
+    "deck": "market",
+    "text": "💰 +6",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "dom-13",
+    "name": "안정화 조치",
+    "category": "domestic",
+    "cost": 2,
+    "deck": "market",
+    "text": "방어 +1, 💰 +1",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      },
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dom-14",
+    "name": "국가 전략",
+    "category": "domestic",
+    "cost": 6,
+    "deck": "market",
+    "text": "카드 3장 뽑기",
+    "effects": [
+      {
+        "type": "draw",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "dom-15",
+    "name": "위기 관리",
+    "category": "domestic",
+    "cost": 3,
+    "deck": "market",
+    "text": "이번 라운드 이벤트 효과를 지역 하나에서 무시",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "ignoreEventEffectInRegion",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "dip-01",
+    "name": "정상 회담",
+    "category": "diplomatic",
+    "cost": 2,
+    "deck": "market",
+    "text": "지역 하나에 영향력 +1, 위신 +1",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dip-02",
+    "name": "무역 협정",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "💰 +2, 지역 하나에 영향력 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 2
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "dip-03",
+    "name": "원조 패키지",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "💰 2를 추가로 내면 지역 하나에 영향력 +2",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "payOptional": {
+            "res": "capital",
+            "amount": 2
+          }
+        },
+        "then": [
+          {
+            "type": "influence",
+            "amount": 2,
+            "target": "regionChoice",
+            "filter": "any"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dip-04",
+    "name": "문화 교류",
+    "category": "diplomatic",
+    "cost": 2,
+    "deck": "market",
+    "text": "위신 +2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "dip-05",
+    "name": "언론 캠페인",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "한 세력의 위신 −1, 내 위신 +1",
+    "effects": [
+      {
+        "type": "drain",
+        "res": "prestige",
+        "amount": 1,
+        "target": "factionChoice"
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dip-06",
+    "name": "조약 체결",
+    "category": "diplomatic",
+    "cost": 4,
+    "deck": "market",
+    "text": "한 세력과 조약을 맺는다 (이번 라운드 같은 지역 주도권 공유)",
+    "effects": [
+      {
+        "type": "treaty",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "dip-07",
+    "name": "비밀 협상",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "한 세력의 손패 1장을 확인하고, 카드 1장 뽑기",
+    "effects": [
+      {
+        "type": "peek",
+        "what": "hand",
+        "amount": 1
+      },
+      {
+        "type": "draw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "dip-08",
+    "name": "경제 제재",
+    "category": "diplomatic",
+    "cost": 4,
+    "deck": "market",
+    "text": "한 세력의 💰 −3",
+    "effects": [
+      {
+        "type": "drain",
+        "res": "capital",
+        "amount": 3,
+        "target": "factionChoice"
+      }
+    ]
+  },
+  {
+    "id": "dip-09",
+    "name": "국제기구 결의",
+    "category": "diplomatic",
+    "cost": 5,
+    "deck": "market",
+    "text": "지역 하나에서 상대 영향력 −1, 내 영향력 +1",
+    "effects": [
+      {
+        "type": "removeInfluence",
+        "amount": 1,
+        "target": "regionChoice",
+        "from": "other"
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "dip-10",
+    "name": "동맹 선언",
+    "category": "diplomatic",
+    "cost": 5,
+    "deck": "market",
+    "text": "조약 세력과 각자 위신 +2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 2
+      },
+      {
+        "type": "custom",
+        "id": "dip-10",
+        "note": "조약 세력의 위신 +2"
+      }
+    ]
+  },
+  {
+    "id": "dip-11",
+    "name": "특사 파견",
+    "category": "diplomatic",
+    "cost": 2,
+    "deck": "market",
+    "text": "지역 하나에 영향력 +1",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "dip-12",
+    "name": "여론전",
+    "category": "diplomatic",
+    "cost": 4,
+    "deck": "market",
+    "text": "위신 +3",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "dip-13",
+    "name": "중재",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "지역 하나에서 영향력이 가장 큰 세력의 영향력 −1",
+    "effects": [
+      {
+        "type": "removeInfluence",
+        "amount": 1,
+        "target": "regionChoice",
+        "from": "leader"
+      }
+    ]
+  },
+  {
+    "id": "dip-14",
+    "name": "다자 회의",
+    "category": "diplomatic",
+    "cost": 6,
+    "deck": "market",
+    "text": "서로 다른 지역 둘에 각각 영향력 +1",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "dip-14",
+        "note": "서로 다른 지역 둘에 각각 영향력 +1"
+      }
+    ]
+  },
+  {
+    "id": "dip-15",
+    "name": "외교 위기",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "market",
+    "text": "한 세력은 다음 라운드 계획 카드 1장을 공개한 채로 낸다",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "dip-15",
+        "note": "한 세력은 다음 라운드 계획 카드 1장을 공개한 채로 낸다"
+      }
+    ]
+  },
+  {
+    "id": "mil-01",
+    "name": "기지 건설",
+    "category": "military",
+    "cost": 4,
+    "deck": "market",
+    "text": "지역 하나에 기지 설치 (영향력 +1, 방어 +1)",
+    "effects": [
+      {
+        "type": "base",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "mil-02",
+    "name": "합동 훈련",
+    "category": "military",
+    "cost": 2,
+    "deck": "market",
+    "text": "위신 +1, 방어 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      },
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "mil-03",
+    "name": "해군 순찰",
+    "category": "military",
+    "cost": 3,
+    "deck": "market",
+    "text": "지역 하나에 영향력 +1, 그 지역 방어 +1",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      },
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "mil-04",
+    "name": "억지력 과시",
+    "category": "military",
+    "cost": 3,
+    "deck": "market",
+    "text": "위신 +2, 💰 −1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 2
+      },
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": -1
+      }
+    ]
+  },
+  {
+    "id": "mil-05",
+    "name": "증원 파견",
+    "category": "military",
+    "cost": 3,
+    "deck": "market",
+    "text": "내 영향력이 있는 지역에 영향력 +2",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 2,
+        "target": "regionChoice",
+        "filter": "owned"
+      }
+    ]
+  },
+  {
+    "id": "mil-06",
+    "name": "국경 요새화",
+    "category": "military",
+    "cost": 4,
+    "deck": "market",
+    "text": "지역 하나 방어 +2",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 2,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "mil-07",
+    "name": "정찰 위성",
+    "category": "military",
+    "cost": 3,
+    "deck": "market",
+    "text": "이벤트 덱 맨 위 1장을 미리 확인, 카드 1장 뽑기",
+    "effects": [
+      {
+        "type": "peek",
+        "what": "eventDeck",
+        "amount": 1
+      },
+      {
+        "type": "draw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "mil-08",
+    "name": "사이버 작전",
+    "category": "military",
+    "cost": 4,
+    "deck": "market",
+    "text": "한 세력이 손패 1장을 버린다",
+    "effects": [
+      {
+        "type": "discard",
+        "amount": 1,
+        "who": "target"
+      }
+    ]
+  },
+  {
+    "id": "mil-09",
+    "name": "제한 개입",
+    "category": "military",
+    "cost": 5,
+    "deck": "market",
+    "text": "지역 하나에서 상대 영향력 −2",
+    "effects": [
+      {
+        "type": "removeInfluence",
+        "amount": 2,
+        "target": "regionChoice",
+        "from": "other"
+      }
+    ]
+  },
+  {
+    "id": "mil-10",
+    "name": "기동 타격",
+    "category": "military",
+    "cost": 4,
+    "deck": "market",
+    "text": "지역 하나에서 상대 영향력 −1, 내 영향력 +1",
+    "effects": [
+      {
+        "type": "removeInfluence",
+        "amount": 1,
+        "target": "regionChoice",
+        "from": "other"
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "mil-11",
+    "name": "군수 동원",
+    "category": "military",
+    "cost": 3,
+    "deck": "market",
+    "text": "🏭 +2, 방어 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 2
+      },
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "mil-12",
+    "name": "전략 폭격기",
+    "category": "military",
+    "cost": 6,
+    "deck": "market",
+    "text": "지역 하나에서 상대 영향력 −3 (기지가 있는 곳은 −1)",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "mil-12",
+        "note": "지역 하나에서 상대 영향력 −3 (기지가 있는 곳은 −1)"
+      }
+    ]
+  },
+  {
+    "id": "mil-13",
+    "name": "방공망",
+    "category": "military",
+    "cost": 4,
+    "deck": "market",
+    "text": "내가 영향력을 둔 모든 지역에 방어 +1",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "allOwned"
+      }
+    ]
+  },
+  {
+    "id": "mil-14",
+    "name": "특수 작전",
+    "category": "military",
+    "cost": 5,
+    "deck": "market",
+    "text": "상대 기지 1개 파괴",
+    "effects": [
+      {
+        "type": "destroyBase",
+        "target": "factionChoice"
+      }
+    ]
+  },
+  {
+    "id": "mil-15",
+    "name": "총동원령",
+    "category": "military",
+    "cost": 7,
+    "deck": "market",
+    "text": "지역 하나에 영향력 +3, 위신 −2",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 3,
+        "target": "regionChoice",
+        "filter": "any"
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": -2
+      }
+    ]
+  },
+  {
+    "id": "fac-atlas-1",
+    "name": "해양 동맹",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "faction",
+    "faction": "atlas",
+    "text": "지역 하나에 영향력 +1. 이번 라운드 조약을 맺었다면 +1 추가",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      },
+      {
+        "type": "conditional",
+        "if": {
+          "treatyMadeThisRound": true
+        },
+        "then": [
+          {
+            "type": "influence",
+            "amount": 1,
+            "target": "regionChoice",
+            "filter": "any"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fac-atlas-2",
+    "name": "국제 금융망",
+    "category": "domestic",
+    "cost": 4,
+    "deck": "faction",
+    "faction": "atlas",
+    "text": "💰 + (이번 라운드 내가 낸 외교 카드 수 × 2)",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "fac-atlas-2",
+        "note": "💰 + (이번 라운드 내가 낸 외교 카드 수 × 2)"
+      }
+    ]
+  },
+  {
+    "id": "fac-redDragon-1",
+    "name": "일대 인프라",
+    "category": "domestic",
+    "cost": 4,
+    "deck": "faction",
+    "faction": "redDragon",
+    "text": "🏭 +3, 지역 하나에 영향력 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 3
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "fac-redDragon-2",
+    "name": "세계 공장",
+    "category": "domestic",
+    "cost": 5,
+    "deck": "faction",
+    "faction": "redDragon",
+    "text": "🏭 + (내가 영향력을 둔 지역 수)",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "fac-redDragon-2",
+        "note": "🏭 + (내가 영향력을 둔 지역 수)"
+      }
+    ]
+  },
+  {
+    "id": "fac-polarStar-1",
+    "name": "에너지 외교",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "faction",
+    "faction": "polarStar",
+    "text": "🛢 +2, 지역 하나에 영향력 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 2
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "fac-polarStar-2",
+    "name": "동토 요새",
+    "category": "military",
+    "cost": 4,
+    "deck": "faction",
+    "faction": "polarStar",
+    "text": "기지 1개 설치, 방어 +1",
+    "effects": [
+      {
+        "type": "base",
+        "amount": 1
+      },
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "fac-emerald-1",
+    "name": "공동 규범",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "faction",
+    "faction": "emerald",
+    "text": "이번 라운드 모든 영향력 −효과가 1 줄어든다",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "influenceLossReduction.all",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "fac-emerald-2",
+    "name": "연합 방어",
+    "category": "military",
+    "cost": 3,
+    "deck": "faction",
+    "faction": "emerald",
+    "text": "조약 세력과 내 방어가 각각 +1",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "allOwned"
+      },
+      {
+        "type": "custom",
+        "id": "fac-emerald-2",
+        "note": "조약 세력의 방어 +1"
+      }
+    ]
+  },
+  {
+    "id": "neu-01",
+    "name": "비상 대책",
+    "category": "domestic",
+    "cost": 2,
+    "deck": "neutral",
+    "text": "손패 1장을 버리고 카드 2장 뽑기",
+    "effects": [
+      {
+        "type": "discard",
+        "amount": 1,
+        "who": "self"
+      },
+      {
+        "type": "draw",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "neu-02",
+    "name": "정보전",
+    "category": "diplomatic",
+    "cost": 3,
+    "deck": "neutral",
+    "text": "한 세력의 손패 2장을 확인하고, 그중 1장을 버리게 한다",
+    "effects": [
+      {
+        "type": "peek",
+        "what": "hand",
+        "amount": 2
+      },
+      {
+        "type": "discard",
+        "amount": 1,
+        "who": "target"
+      }
+    ]
+  },
+  {
+    "id": "st-atlas-1",
+    "name": "금융 지원",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "atlas",
+    "text": "💰 +1, 이미 내 영향력이 있는 지역에 영향력 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 1
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "owned"
+      }
+    ]
+  },
+  {
+    "id": "st-atlas-2",
+    "name": "동맹 협의",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "atlas",
+    "text": "위신 +1, 이번 라운드 처음 맺는 조약은 비용 없이 체결",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      },
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "firstTreatyFree",
+        "value": true
+      }
+    ]
+  },
+  {
+    "id": "st-redDragon-1",
+    "name": "공단 확장",
+    "category": "domestic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "redDragon",
+    "text": "🏭 +3, 위신 −1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 3
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": -1
+      }
+    ]
+  },
+  {
+    "id": "st-redDragon-2",
+    "name": "수출 촉진",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "redDragon",
+    "text": "💰 +2, 이미 내 영향력이 있는 지역에 영향력 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 2
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "owned"
+      }
+    ]
+  },
+  {
+    "id": "st-polarStar-1",
+    "name": "징집령",
+    "category": "military",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "polarStar",
+    "text": "방어 +1, 이미 내 영향력이 있는 지역에 영향력 +1",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      },
+      {
+        "type": "influence",
+        "amount": 1,
+        "target": "regionChoice",
+        "filter": "owned"
+      }
+    ]
+  },
+  {
+    "id": "st-polarStar-2",
+    "name": "에너지 수출",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "polarStar",
+    "text": "🛢 +2, 💰 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 2
+      },
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "st-polarStar-3",
+    "name": "동계 훈련",
+    "category": "military",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "polarStar",
+    "text": "위신 +1, 방어 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      },
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "region"
+      }
+    ]
+  },
+  {
+    "id": "st-emerald-1",
+    "name": "공동 성명",
+    "category": "diplomatic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "emerald",
+    "text": "위신 +1, 이번 라운드 내가 받는 영향력 −효과가 1 줄어든다",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      },
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "influenceLossReduction.self",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "st-emerald-2",
+    "name": "규범 위원회",
+    "category": "domestic",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "emerald",
+    "text": "카드 1장 뽑기, 위신 +1",
+    "effects": [
+      {
+        "type": "draw",
+        "amount": 1
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "st-emerald-3",
+    "name": "연합 순찰",
+    "category": "military",
+    "cost": 0,
+    "deck": "starter",
+    "faction": "emerald",
+    "text": "방어 +2",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 2,
+        "scope": "region"
+      }
+    ]
+  }
+]
