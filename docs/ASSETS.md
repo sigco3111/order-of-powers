@@ -2,7 +2,7 @@
 
 모든 에셋은 저작자(sigco3111)가 보유한 CC0 에셋 저장소([game-asset-catalog](https://github.com/sigco3111/game-asset-catalog) → `assets-ui-icons`, `assets-2d-pixel`, `assets-audio`)에서 가져왔습니다. 각 팩 폴더에 원본 라이선스 파일을 그대로 두었습니다. CC0이므로 표기 의무는 없지만, Kenney 팩은 가능하면 "Kenney (kenney.nl)" 표기를 권장합니다.
 
-합계: 17개 팩, 파일 554개 (라이선스 파일 제외), 약 5.3 MB.
+합계: 17개 팩, 파일 554개 (라이선스 파일 제외), 약 5.3 MB. 그 밖에 직접 생성한 지도 1개(world-regions.svg)가 있습니다.
 
 ## 수집한 에셋 팩
 
@@ -25,6 +25,7 @@
 | Game Over - Bad chest SFX | Felis Chaus (OpenGameArt) | CC0 | [assets-audio v6.23](https://github.com/sigco3111/assets-audio/releases/tag/v6.23) · game-over-bad-chest-sfx.zip | `assets/audio/sfx/oga-game-over-bad-chest/` — WAV를 OGG(libvorbis q4)로 변환, 1개 + 라이선스 파일(LICENSE-SOURCE.txt) | 89 KB | 패배/실패 효과 |
 | Meadow Thoughts | mishonis (OpenGameArt) | CC0 | [assets-audio v6.14](https://github.com/sigco3111/assets-audio/releases/tag/v6.14) · meadow-thoughts.zip | `assets/audio/music/oga-meadow-thoughts/` — OGG 약 2분 30초 (원본 그대로), 1개 + 라이선스 파일(LICENSE-SOURCE.txt) | 2.3 MB | 잔잔한 배경음 (메뉴/초반) |
 | Contemplation | Pro Sensory (OpenGameArt) | CC0 | [assets-audio v6.23](https://github.com/sigco3111/assets-audio/releases/tag/v6.23) · contemplation-0.zip | `assets/audio/music/oga-contemplation/` — MP3를 OGG(libvorbis q3)로 변환, 약 2분, 1개 + 라이선스 파일(LICENSE-SOURCE.txt) | 1.0 MB | 잔잔한 배경음 (게임판) |
+| 세계 지역 지도 (world-regions.svg) | sigco3111 (Natural Earth 데이터 가공) | Natural Earth 퍼블릭 도메인 / world-atlas ISC | [Natural Earth](https://www.naturalearthdata.com/) · npm `world-atlas` 2.x `countries-50m.json` → `tools/build-map.js` | `assets/map/world-regions.svg` — 실제 세계 지도 기반 8개 지역(국경·이름 없음), 라벨·마커 포함 (이전 추상 초안 `regions.svg`는 참고용으로 유지) | 82 KB | 게임판 지도, 영향력 토큰 위치(마커) |
 
 ### 가공 내역
 - 파일명은 소문자·스네이크 케이스로 정리했습니다(Kenney UI Pack, Board Game Icons 등). 내용은 원본 그대로입니다.
@@ -34,7 +35,7 @@
 - 배경음은 직접 들어보지 않고 곡명·태그(calm/ambient 계열)로 골랐습니다. 적용 전에 청취 확인이 필요합니다.
 
 ## 필요하지만 아직 없는 에셋
-- 세계 지도 8개 지역 SVG (코드로 그린 단순화된 형태, 실제 국경선 미사용)
+- ~~세계 지도 8개 지역 SVG~~ → 완료: `assets/map/world-regions.svg` (Natural Earth 기반, [지도 미리보기](https://sigco3111.github.io/order-of-powers/map/))
 - 세력 문장 4종 (아틀라스 연합, 적룡 공화국, 북극성 연방, 에메랄드 연맹) — 색 + 문양으로 구분
 - 카드 일러스트 (아이콘 조합으로 직접 제작)
 - 긴장감 있는 분위기의 배경음 (후반 라운드/정산용)
