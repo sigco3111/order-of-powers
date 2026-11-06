@@ -4,7 +4,7 @@
 
 **네 강대국, 8라운드(6·8·10 선택), 하나의 새로운 세계 질서.**
 
-![status](https://img.shields.io/badge/status-M1d%20완료:%20AI와%20시뮬레이터-green)
+![status](https://img.shields.io/badge/status-M1e--1:%20데이터%20밸런스%201차-green)
 ![license of assets](https://img.shields.io/badge/assets-CC0-blue)
 
 </div>
@@ -12,7 +12,7 @@
 ## 소개
 Order of Powers는 가상의 네 강대국 중 하나를 골라 8라운드(6·8·10 선택) 동안 내정·외교·군사 카드를 모으고, 세계 8개 지역의 영향력을 겨루는 **웹 전략 보드게임**입니다. 덱 빌딩과 지역 장악을 한 판 15~40분 (라운드 수 6·8·10 선택, 기본 8라운드 약 28분)에 즐기도록 설계하고 있으며, 모바일 세로 화면에서도 할 수 있는 카드 중심 UI를 목표로 합니다.
 
-현재 상태: **M1d 완료: AI와 시뮬레이터** (RNG·상태 생성·점수·시장·효과 실행·단계 리듀서·`legalActions`·`autoPlay`·`src/ai/ai.js`(쉬움/보통/어려움)·`node tools/simulate.js`, `node --test`). 기획서와 CC0 에셋, 규칙 결정은 [docs/RULES_DECISIONS.md](docs/RULES_DECISIONS.md).
+현재 상태: **M1e-1: 데이터 밸런스 1차** (결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md)). M1d까지 구현: RNG·상태 생성·점수·시장·효과 실행·단계 리듀서·`legalActions`·`autoPlay`·`src/ai/ai.js`(쉬움/보통/어려움)·`node tools/simulate.js`, `node --test`. 기획서와 CC0 에셋, 규칙 결정은 [docs/RULES_DECISIONS.md](docs/RULES_DECISIONS.md).
 
 - 📄 [게임 기획서 (docs/GAME_DESIGN.md)](docs/GAME_DESIGN.md)
 - 🃏 카드 초안: [docs/CARDS.md](docs/CARDS.md)
