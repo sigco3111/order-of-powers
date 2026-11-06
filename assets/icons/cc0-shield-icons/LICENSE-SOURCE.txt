@@ -1,0 +1,6 @@
+Asset: CC0 Shield Icons
+Source: https://opengameart.org/content/cc0-shield-icons
+Author: Commander
+License: CC0
+Retrieved: 2026-11-05 (mirror in sigco3111 game asset library)
+CC0: public domain dedication - redistribution allowed.
