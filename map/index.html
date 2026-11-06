@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order of Powers — 지도 미리보기</title>
+<meta name="theme-color" content="#0b1a33">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#070f20; --panel:#10213f; --panel2:#162b52; --line:#27406e; --text:#e8eef7; --muted:#9fb1cc; --accent:#ffd36b; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:'Noto Sans KR', system-ui, sans-serif; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:0 14px; }
+  header { padding-top:16px; }
+  h1 { font-size:1.2rem; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:.85rem; margin:0 0 12px; }
+  .toolbar { display:flex; align-items:center; gap:10px; margin:0 0 10px; flex-wrap:wrap; }
+  .switch { display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:7px 14px 7px 10px; font:inherit; font-size:.85rem; color:var(--text); cursor:pointer; }
+  .switch .knob { width:34px; height:18px; border-radius:999px; background:#34476b; position:relative; transition:background .15s; }
+  .switch .knob::after { content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; }
+  .switch[aria-pressed="true"] .knob { background:#3da386; }
+  .switch[aria-pressed="true"] .knob::after { transform:translateX(16px); }
+  .hint { color:var(--muted); font-size:.78rem; }
+  /* 지도: 좁은 화면에서는 가로 스크롤/확대로 글자 크기를 확보 */
+  .map-wrap { background:#0b1a33; border:1px solid var(--line); border-radius:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .map-wrap svg { display:block; width:100%; min-width:640px; height:auto; touch-action:manipulation; }
+  .map-wrap path.region { cursor:pointer; transition:opacity .15s, filter .15s; }
+  .map-wrap .marker, .map-wrap .label { cursor:pointer; }
+  .map-wrap.has-sel path.region:not(.sel) { opacity:.42; }
+  .map-wrap.has-sel .label:not(.sel) { opacity:.6; }
+  .map-wrap path.region.sel { stroke:var(--accent); stroke-width:2.2; filter:brightness(1.12) drop-shadow(0 0 5px rgba(255,211,107,.55)); }
+  .map-wrap .marker.sel { stroke:var(--accent); stroke-width:2.4; }
+  .map-wrap path.region:hover { filter:brightness(1.12); }
+  .loading, .err { padding:40px 16px; text-align:center; color:var(--muted); }
+  .err { color:#ff9a8a; }
+  .card { margin:12px 0; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .card h2 { margin:0 0 8px; font-size:1.05rem; display:flex; align-items:center; gap:8px; }
+  .swatch { display:inline-block; width:14px; height:14px; border-radius:4px; border:1px solid rgba(255,255,255,.5); flex:none; }
+  .empty { color:var(--muted); font-size:.9rem; }
+  dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:.92rem; }
+  dt { color:var(--muted); }
+  dd { margin:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font:inherit; font-size:.82rem; color:var(--text); background:var(--panel2); border:1px solid var(--line); border-radius:999px; padding:3px 10px; cursor:pointer; }
+  .chip:hover, .chip:focus-visible { border-color:var(--accent); outline:none; }
+  .slots { display:inline-flex; gap:4px; vertical-align:middle; margin-left:8px; }
+  .slots i { width:10px; height:10px; border-radius:50%; border:1.5px solid var(--muted); display:inline-block; }
+  .legend { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:8px; }
+  .legend button { width:100%; display:flex; align-items:center; gap:10px; text-align:left; font:inherit; font-size:.9rem; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 12px; cursor:pointer; min-height:44px; }
+  .legend button:hover, .legend button:focus-visible { border-color:var(--accent); outline:none; }
+  .legend button[aria-pressed="true"] { border-color:var(--accent); background:var(--panel2); }
+  .legend .meta { margin-left:auto; color:var(--muted); font-size:.78rem; white-space:nowrap; }
+  .faction-key { display:none; gap:12px; flex-wrap:wrap; font-size:.8rem; color:var(--muted); margin:0 0 10px; }
+  .faction-key.on { display:flex; }
+  .faction-key span { display:inline-flex; align-items:center; gap:5px; }
+  .faction-key i { width:12px; height:12px; border-radius:50%; display:inline-block; border:1.5px solid #0b1a33; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+  h3 { font-size:.95rem; margin:18px 0 8px; color:var(--muted); font-weight:500; }
+  footer { padding:18px 14px 28px; color:var(--muted); font-size:.78rem; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Order of Powers — 지도 미리보기</h1>
+  <p class="sub">지역을 탭하면 정보가 아래에 표시됩니다. 좁은 화면에서는 지도를 좌우로 밀어 볼 수 있어요.</p>
+  <div class="toolbar">
+    <button class="switch" id="tokenToggle" type="button" aria-pressed="false"><span class="knob"></span><span>영향력 토큰 미리보기</span></button>
+  </div>
+  <div class="faction-key" id="factionKey">
+    <span><i style="background:#2f7de1"></i>아틀라스 연합</span>
+    <span><i style="background:#e0443e"></i>적룡 공화국</span>
+    <span><i style="background:#eef6ff"></i>북극성 연방</span>
+    <span><i style="background:#2fb36a"></i>에메랄드 연맹</span>
+  </div>
+</header>
+<main>
+  <div class="map-wrap" id="mapWrap"><div class="loading" id="loading">지도를 불러오는 중…</div></div>
+
+  <section class="card" id="info" aria-live="polite">
+    <div class="empty">지도에서 지역을 선택해 보세요.</div>
+  </section>
+
+  <h3>지역 목록</h3>
+  <ul class="legend" id="legend"></ul>
+</main>
+<footer>원작 보드게임과 무관한 독자 제작 지도 · 지도 데이터: Natural Earth (퍼블릭 도메인)</footer>
+
+<script>
+(function () {
+  'use strict';
+  var RES = { capital: '💰 자본', energy: '🛢 에너지', industry: '🏭 산업' };
+  var FACTIONS = [
+    { id: 'atlas', color: '#2f7de1' }, { id: 'redDragon', color: '#e0443e' },
+    { id: 'polarStar', color: '#eef6ff' }, { id: 'emerald', color: '#2fb36a' }
+  ];
+  // 미리보기용 예시 배치 (지역별로 세력 토큰 몇 개씩)
+  var SAMPLE = {
+    northAmerica: ['atlas', 'atlas', 'polarStar'],
+    southAmerica: ['emerald', 'atlas'],
+    europe: ['atlas', 'polarStar', 'polarStar', 'emerald'],
+    russiaCentralAsia: ['polarStar', 'redDragon', 'polarStar'],
+    middleEastNorthAfrica: ['redDragon', 'atlas', 'emerald', 'polarStar', 'atlas'],
+    subSaharanAfrica: ['emerald', 'redDragon', 'emerald'],
+    eastAsia: ['redDragon', 'redDragon', 'atlas'],
+    southAsiaOceania: ['emerald', 'redDragon', 'atlas', 'emerald']
+  };
+  var colorOf = {}; FACTIONS.forEach(function (f) { colorOf[f.id] = f.color; });
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  var wrap = document.getElementById('mapWrap');
+  var info = document.getElementById('info');
+  var legend = document.getElementById('legend');
+  var toggle = document.getElementById('tokenToggle');
+  var key = document.getElementById('factionKey');
+  var regions = [], byId = {}, svg = null, selected = null, regionColor = {};
+
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function showError(msg) {
+    wrap.innerHTML = '';
+    wrap.appendChild(el('div', { 'class': 'err' }, msg));
+  }
+
+  function select(id) {
+    selected = id;
+    wrap.classList.toggle('has-sel', !!id);
+    if (svg) {
+      svg.querySelectorAll('.region, .label, .marker').forEach(function (n) {
+        var rid = n.getAttribute('data-region') || n.id;
+        n.classList.toggle('sel', rid === id);
+      });
+      var p = svg.getElementById(id);
+      if (p && p.parentNode) p.parentNode.appendChild(p); // 선택한 지역의 테두리가 위에 오도록
+    }
+    legend.querySelectorAll('button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-region') === id));
+    });
+    renderInfo(id);
+  }
+
+  function renderInfo(id) {
+    info.innerHTML = '';
+    var r = byId[id];
+    if (!r) { info.appendChild(el('div', { 'class': 'empty' }, '지도에서 지역을 선택해 보세요.')); return; }
+    var h = el('h2');
+    var sw = el('span', { 'class': 'swatch' }); sw.style.background = regionColor[id] || '#888';
+    h.appendChild(sw); h.appendChild(document.createTextNode(r.name));
+    info.appendChild(h);
+    var dl = el('dl');
+    function row(label, node) { dl.appendChild(el('dt', null, label)); var dd = el('dd'); dd.appendChild(node); dl.appendChild(dd); }
+    row('점수 가치', document.createTextNode(r.scoreValue + '점'));
+    var slots = el('span'); slots.appendChild(document.createTextNode(r.influenceSlots + '칸'));
+    var dots = el('span', { 'class': 'slots', 'aria-hidden': 'true' });
+    for (var i = 0; i < r.influenceSlots; i++) dots.appendChild(el('i'));
+    slots.appendChild(dots);
+    row('영향력 칸', slots);
+    var res = r.produces && r.produces.resource;
+    row('생산 자원', document.createTextNode(res ? (RES[res] || res) : '없음'));
+    var chips = el('div', { 'class': 'chips' });
+    (r.neighbors || []).forEach(function (nid) {
+      var n = byId[nid];
+      var b = el('button', { type: 'button', 'class': 'chip' }, n ? n.name : nid);
+      b.addEventListener('click', function () { select(nid); });
+      chips.appendChild(b);
+    });
+    row('인접 지역', chips);
+    info.appendChild(dl);
+  }
+
+  function buildLegend() {
+    legend.innerHTML = '';
+    regions.forEach(function (r) {
+      var li = el('li');
+      var b = el('button', { type: 'button', 'data-region': r.id, 'aria-pressed': 'false' });
+      var sw = el('span', { 'class': 'swatch' }); sw.style.background = regionColor[r.id] || '#888';
+      b.appendChild(sw);
+      b.appendChild(el('span', null, r.name));
+      b.appendChild(el('span', { 'class': 'meta' }, '점수 ' + r.scoreValue));
+      b.addEventListener('click', function () { select(selected === r.id ? null : r.id); });
+      li.appendChild(b); legend.appendChild(li);
+    });
+  }
+
+  function drawTokens() {
+    var old = svg.getElementById('tokens'); if (old) old.remove();
+    if (toggle.getAttribute('aria-pressed') !== 'true') return;
+    var g = document.createElementNS(SVGNS, 'g'); g.setAttribute('id', 'tokens'); g.setAttribute('pointer-events', 'none');
+    regions.forEach(function (r) {
+      var m = svg.querySelector('.marker[data-region="' + r.id + '"]'); if (!m) return;
+      var cx = +m.getAttribute('cx'), cy = +m.getAttribute('cy');
+      var list = SAMPLE[r.id] || [];
+      var step = 12.5, x0 = cx - ((list.length - 1) * step) / 2;
+      list.forEach(function (f, i) {
+        var c = document.createElementNS(SVGNS, 'circle');
+        c.setAttribute('cx', x0 + i * step); c.setAttribute('cy', cy + 15); c.setAttribute('r', 5.6);
+        c.setAttribute('fill', colorOf[f]); c.setAttribute('stroke', '#0b1a33'); c.setAttribute('stroke-width', 1.6);
+        g.appendChild(c);
+      });
+    });
+    svg.appendChild(g);
+  }
+
+  toggle.addEventListener('click', function () {
+    var on = toggle.getAttribute('aria-pressed') !== 'true';
+    toggle.setAttribute('aria-pressed', String(on));
+    key.classList.toggle('on', on);
+    if (svg) drawTokens();
+  });
+
+  function bindMap() {
+    svg = wrap.querySelector('svg');
+    svg.querySelectorAll('.region').forEach(function (p) { regionColor[p.id] = p.getAttribute('fill'); });
+    svg.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('.region, .marker, .label') : null;
+      if (!t) { select(null); return; }
+      var id = t.getAttribute('data-region') || t.id;
+      select(selected === id ? null : id);
+    });
+    // pointer-events 가 꺼진 라벨도 선택 가능하게 (라벨 위 탭 → 아래 지역)
+    svg.querySelectorAll('#labels, .label').forEach(function (n) { n.removeAttribute('pointer-events'); n.style.pointerEvents = 'auto'; });
+  }
+
+  // 상대 경로: GitHub Pages(https://<user>.github.io/order-of-powers/map/)에서도 동작
+  var svgReq = fetch('../assets/map/world-regions.svg').then(function (r) { if (!r.ok) throw new Error('world-regions.svg ' + r.status); return r.text(); });
+  var jsonReq = fetch('../src/data/regions.json').then(function (r) { if (!r.ok) throw new Error('regions.json ' + r.status); return r.json(); });
+  Promise.all([svgReq, jsonReq]).then(function (res) {
+    regions = res[1]; regions.forEach(function (r) { byId[r.id] = r; });
+    wrap.innerHTML = res[0];
+    bindMap(); buildLegend(); renderInfo(null);
+    var hash = location.hash.replace('#', ''); if (byId[hash]) select(hash);
+  }).catch(function (e) { showError('불러오지 못했어요: ' + e.message); });
+})();
+</script>
+</body>
+</html>
