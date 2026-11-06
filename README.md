@@ -17,6 +17,9 @@ Order of Powers는 가상의 네 강대국 중 하나를 골라 8라운드(6·8�
 - 📄 [게임 기획서 (docs/GAME_DESIGN.md)](docs/GAME_DESIGN.md)
 - 🃏 카드 초안: [docs/CARDS.md](docs/CARDS.md)
 - 🃏 카드 확장(세력 시작 덱·전략 자산·비밀 목표·성장): [docs/CARDS_EXPANSION.md](docs/CARDS_EXPANSION.md)
+- ⚙️ [규칙 엔진 설계 (docs/ENGINE_DESIGN.md)](docs/ENGINE_DESIGN.md)
+- 🗂 [게임 데이터 JSON (src/data)](src/data) — 카드·이벤트·세력·지역 등 (검증: `node tools/validate-data.js`)
+- 🗺 [지도 초안 미리보기 (docs/map-preview.md)](docs/map-preview.md)
 - 🎨 [에셋 목록과 라이선스 (docs/ASSETS.md)](docs/ASSETS.md)
 
 ## 폴더 구조
@@ -33,7 +36,7 @@ order-of-powers/
       ├─ sfx/             # 카드, 칩, 버튼, 성공/실패 효과음
       └─ music/           # 잔잔한 배경음악
 ```
-앞으로 `src/engine`(규칙), `src/ai`, `src/ui`, `src/data`(카드·지역 JSON)가 추가될 예정입니다.
+`src/data`(카드·이벤트·세력·지역 JSON)와 `tools/validate-data.js`(데이터 검증)는 추가되었고, 앞으로 `src/engine`(규칙), `src/ai`, `src/ui`가 추가될 예정입니다. 자세한 구조는 [docs/ENGINE_DESIGN.md](docs/ENGINE_DESIGN.md)를 참고하세요.
 
 ## 크레딧과 라이선스
 `assets/`의 이미지와 소리는 모두 CC0(퍼블릭 도메인) 에셋입니다. 대부분 [Kenney](https://kenney.nl)의 팩이고, 일부는 OpenGameArt 작가들의 CC0 작품입니다. 각 팩 폴더에 원본 라이선스 파일을 그대로 두었습니다. 팩별 제작자·출처·용도는 [docs/ASSETS.md](docs/ASSETS.md)에 정리했습니다.
