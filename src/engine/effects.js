@@ -82,6 +82,8 @@ export const isDeferredEvent = (ev) => ev.effects.some((e) => e.type === 'condit
 // X = { s, q(대기열), ctx, data, req }, item = { f, e, choice, stage }
 function region(X, it, options) {
   if (X.ctx.region) return X.ctx.region;
+  // 같은 카드에 owned 필터 효과가 있으면 (예: 징집령) 첫 선택부터 내 영향력이 있는 지역으로 좁힌다
+  if (X.ctx.ownedFirst) { const mine = options.filter((r) => X.s.regions[r].influence[it.f] > 0); if (mine.length) options = mine; }
   if (it.stage === 'region') return (X.ctx.region = it.choice);
   if (!options.length) log(X.s, it.f, '대상 지역 없음');
   else X.ask(it, 'region', options, 'region');
@@ -110,6 +112,7 @@ const H = {
     const { f, e } = it, s = X.s;
     const rid = region(X, it, allRegions(s).filter((r) => e.filter !== 'owned' || s.regions[r].influence[f] > 0));
     if (!rid) return;
+    if (e.filter === 'owned' && s.regions[rid].influence[f] === 0) return log(s, f, `${rid}에 내 영향력이 없어 영향력 효과 생략`);
     const n = e.amount + (X.ctx.influenceBonus || 0);
     delete X.ctx.influenceBonus;
     const got = addInfluence(s, f, rid, n);
@@ -389,6 +392,7 @@ export function playCard(state, faction, cardId, ctx = {}) {
   const rp = (p.roundPlays ||= {});
   const c = { ...strip(ctx), source: 'card', cardId, category: cat };
   if (cat === 'military' && getMod(s, null, 'militaryEffectHalfRoundUp')) c.half = true;
+  if (card.effects.some((e) => e.filter === 'owned')) c.ownedFirst = true;
   if (cat === 'domestic') c.capBonus = getMod(s, null, 'domesticCapitalBonus');
   if (cat === 'diplomatic' && !rp.diplomatic) c.influenceBonus = getMod(s, faction, 'firstDiplomaticInfluenceBonus');
   p.stats.cardsPlayed[cat] += 1;
