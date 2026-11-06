@@ -67,7 +67,7 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
   return {
     version: 1, seed, rng,
     config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction },
-    round: 1, phase: 'event', turnOrder: ids.slice(),
+    round: 1, phase: 'setup', turnOrder: ids.slice(),
     eventDeck, eventDiscard: [], currentEvent: null,
     modifiers: { round: {}, game: {} },
     market: { slots, deck: marketAll, growth: data.growth.map((g) => g.id) },
