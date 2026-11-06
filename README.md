@@ -16,6 +16,7 @@ Order of Powers는 가상의 네 강대국 중 하나를 골라 8라운드(6·8�
 
 - 📄 [게임 기획서 (docs/GAME_DESIGN.md)](docs/GAME_DESIGN.md)
 - 🃏 카드 초안: [docs/CARDS.md](docs/CARDS.md)
+- 🃏 카드 확장(세력 시작 덱·전략 자산·비밀 목표·성장): [docs/CARDS_EXPANSION.md](docs/CARDS_EXPANSION.md)
 - 🎨 [에셋 목록과 라이선스 (docs/ASSETS.md)](docs/ASSETS.md)
 
 ## 폴더 구조
