@@ -11,7 +11,11 @@
       "southAmerica",
       "europe",
       "eastAsia"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 249.4,
+      "y": 157.8
+    }
   },
   {
     "id": "southAmerica",
@@ -24,7 +28,11 @@
     "neighbors": [
       "northAmerica",
       "subSaharanAfrica"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 346.3,
+      "y": 351.3
+    }
   },
   {
     "id": "europe",
@@ -38,7 +46,11 @@
       "northAmerica",
       "russiaCentralAsia",
       "middleEastNorthAfrica"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 556.6,
+      "y": 148.9
+    }
   },
   {
     "id": "russiaCentralAsia",
@@ -52,7 +64,11 @@
       "europe",
       "middleEastNorthAfrica",
       "eastAsia"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 668.4,
+      "y": 130.2
+    }
   },
   {
     "id": "middleEastNorthAfrica",
@@ -67,7 +83,11 @@
       "russiaCentralAsia",
       "subSaharanAfrica",
       "southAsiaOceania"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 523.1,
+      "y": 212.6
+    }
   },
   {
     "id": "subSaharanAfrica",
@@ -81,7 +101,11 @@
       "southAmerica",
       "middleEastNorthAfrica",
       "southAsiaOceania"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 563.8,
+      "y": 323.3
+    }
   },
   {
     "id": "eastAsia",
@@ -95,7 +119,11 @@
       "northAmerica",
       "russiaCentralAsia",
       "southAsiaOceania"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 741.7,
+      "y": 177.6
+    }
   },
   {
     "id": "southAsiaOceania",
@@ -109,6 +137,10 @@
       "eastAsia",
       "middleEastNorthAfrica",
       "subSaharanAfrica"
-    ]
+    ],
+    "mapAnchor": {
+      "x": 861.6,
+      "y": 399.7
+    }
   }
 ]
