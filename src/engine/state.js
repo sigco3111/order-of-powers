@@ -81,9 +81,10 @@ export function resolveOrder(state) {
   return o.slice(s).concat(o.slice(0, s));
 }
 
-/** 수정치 합 (세력 성장 + 게임 + 라운드). faction이 null이면 전역만 */
+/** 수정치 합 (세력 성장 + 세력 라운드 + 게임 + 라운드). faction이 null이면 전역만 */
 export function getMod(state, faction, key) {
-  return (state.players[faction]?.modifiers[key] || 0) + (state.modifiers.game[key] || 0) + (state.modifiers.round[key] || 0);
+  const p = state.players[faction];
+  return (p?.modifiers[key] || 0) + (p?.roundModifiers?.[key] || 0) + (state.modifiers.game[key] || 0) + (state.modifiers.round[key] || 0);
 }
 export const handSizeOf = (s, f) => RULES.handSize + getMod(s, f, 'handSize');
 export const planSlotsOf = (s, f) => RULES.planSlots + getMod(s, f, 'planSlots');
