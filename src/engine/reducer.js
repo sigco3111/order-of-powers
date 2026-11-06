@@ -99,11 +99,11 @@ export function advance(state, data = getData()) {
       }
       for (const x of s.turnOrder) { const p = s.players[x]; p.discard.push(...p.played); p.played = []; p.plan = []; }
       s = refill(s);
+      if (s.round >= s.config.rounds) { finish(s, data, ev); break; } // 마지막 라운드는 상점 없이 바로 최종 점수
       enter(s, 'shop', ev);
       s.flow.done = {};
     } else if (s.phase === 'shop') {
       if (waitingFor(s).length) break;
-      if (s.round >= s.config.rounds) { finish(s, data, ev); break; }
       s = clearRoundEffects(s);
       s.eventDiscard.push(s.currentEvent); s.currentEvent = null; s.deferredEvent = null;
       s.round += 1;
