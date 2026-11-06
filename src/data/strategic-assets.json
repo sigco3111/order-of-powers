@@ -1,0 +1,212 @@
+[
+  {
+    "id": "sa-01",
+    "name": "항공모함 전단",
+    "category": "military",
+    "oncePerGame": true,
+    "text": "지역 하나에 기지 설치, 영향력 +2",
+    "effects": [
+      {
+        "type": "base",
+        "amount": 1
+      },
+      {
+        "type": "influence",
+        "amount": 2,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "sa-02",
+    "name": "글로벌 결제망",
+    "category": "domestic",
+    "oncePerGame": true,
+    "text": "💰 +8",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "capital",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "sa-03",
+    "name": "에너지 파이프라인",
+    "category": "domestic",
+    "oncePerGame": true,
+    "text": "🛢 +6, 🏭 +2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "energy",
+        "amount": 6
+      },
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "sa-04",
+    "name": "위성 항법망",
+    "category": "military",
+    "oncePerGame": true,
+    "text": "이번 라운드 내 모든 지역 방어 +1, 카드 2장 뽑기",
+    "effects": [
+      {
+        "type": "defense",
+        "amount": 1,
+        "scope": "allOwned"
+      },
+      {
+        "type": "draw",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "sa-05",
+    "name": "우주 거점",
+    "category": "military",
+    "oncePerGame": true,
+    "text": "서로 다른 지역 둘에 영향력 +1씩, 위신 +2",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "sa-05",
+        "note": "서로 다른 지역 둘에 영향력 +1씩"
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "sa-06",
+    "name": "국제 개발은행",
+    "category": "diplomatic",
+    "oncePerGame": true,
+    "text": "지역 하나에 영향력 +3",
+    "effects": [
+      {
+        "type": "influence",
+        "amount": 3,
+        "target": "regionChoice",
+        "filter": "any"
+      }
+    ]
+  },
+  {
+    "id": "sa-07",
+    "name": "사이버 방벽",
+    "category": "military",
+    "oncePerGame": true,
+    "text": "이번 라운드 나를 대상으로 하는 카드 효과 1개를 무효로 한다",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "negateTargetedEffect",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "sa-08",
+    "name": "문화 콘텐츠 제국",
+    "category": "diplomatic",
+    "oncePerGame": true,
+    "text": "위신 +5",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "sa-09",
+    "name": "희토류 독점",
+    "category": "domestic",
+    "oncePerGame": true,
+    "text": "🏭 +6, 한 세력의 🏭 −2",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "industry",
+        "amount": 6
+      },
+      {
+        "type": "drain",
+        "res": "industry",
+        "amount": 2,
+        "target": "factionChoice"
+      }
+    ]
+  },
+  {
+    "id": "sa-10",
+    "name": "위기 대응 연합",
+    "category": "diplomatic",
+    "oncePerGame": true,
+    "text": "두 세력과 동시에 조약을 맺고, 각자 위신 +1",
+    "effects": [
+      {
+        "type": "treaty",
+        "count": 2
+      },
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": 1
+      },
+      {
+        "type": "custom",
+        "id": "sa-10",
+        "note": "조약을 맺은 두 세력의 위신 +1"
+      }
+    ]
+  },
+  {
+    "id": "sa-11",
+    "name": "비상 동원령",
+    "category": "domestic",
+    "oncePerGame": true,
+    "text": "이번 라운드 계획 슬롯 +1",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "planSlots",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "sa-12",
+    "name": "정보 우위",
+    "category": "diplomatic",
+    "oncePerGame": true,
+    "text": "모든 세력의 손패 1장씩 확인, 이벤트 덱 맨 위 2장 확인",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "sa-12",
+        "note": "모든 세력의 손패 1장씩 확인"
+      },
+      {
+        "type": "peek",
+        "what": "eventDeck",
+        "amount": 2
+      }
+    ]
+  }
+]

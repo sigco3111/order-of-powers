@@ -1,0 +1,168 @@
+[
+  {
+    "id": "gr-01",
+    "name": "교육 개혁",
+    "category": "domestic",
+    "cost": 4,
+    "text": "매 라운드 시작 손패 +1장",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "handSize",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-02",
+    "name": "산업 단지",
+    "category": "domestic",
+    "cost": 5,
+    "text": "매 라운드 🏭 +2",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "income.industry",
+        "value": 2
+      }
+    ]
+  },
+  {
+    "id": "gr-03",
+    "name": "금융 허브",
+    "category": "domestic",
+    "cost": 5,
+    "text": "매 라운드 💰 +2",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "income.capital",
+        "value": 2
+      }
+    ]
+  },
+  {
+    "id": "gr-04",
+    "name": "에너지 자립",
+    "category": "domestic",
+    "cost": 5,
+    "text": "매 라운드 🛢 +2",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "income.energy",
+        "value": 2
+      }
+    ]
+  },
+  {
+    "id": "gr-05",
+    "name": "정예 병력",
+    "category": "domestic",
+    "cost": 6,
+    "text": "내 기지의 방어가 +1 더 올라간다",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "baseDefenseBonus",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-06",
+    "name": "외교 네트워크",
+    "category": "domestic",
+    "cost": 5,
+    "text": "라운드마다 처음 쓰는 외교 카드의 영향력 +1",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "firstDiplomaticInfluenceBonus",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-07",
+    "name": "문화 영향력",
+    "category": "domestic",
+    "cost": 4,
+    "text": "매 라운드 위신 +1",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "income.prestige",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-08",
+    "name": "효율적 행정",
+    "category": "domestic",
+    "cost": 6,
+    "text": "상점 카드 구매 비용 −1 (최소 1)",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "shop.costDelta",
+        "value": -1
+      },
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "shop.minCost",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-09",
+    "name": "위기 관리 체계",
+    "category": "domestic",
+    "cost": 4,
+    "text": "라운드마다 이벤트의 불리한 효과 1개를 한 지역에서 무시",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "ignoreEventEffectInRegionPerRound",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "gr-10",
+    "name": "계획 경제",
+    "category": "domestic",
+    "cost": 7,
+    "text": "계획 슬롯 +1 (3장 → 4장)",
+    "permanent": true,
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "game",
+        "key": "planSlots",
+        "value": 1
+      }
+    ]
+  }
+]

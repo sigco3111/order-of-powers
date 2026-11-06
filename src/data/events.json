@@ -1,0 +1,335 @@
+[
+  {
+    "id": "evt-01",
+    "name": "에너지 위기",
+    "text": "모든 세력의 🛢 수입 −2",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "income.energy",
+        "value": -2
+      }
+    ]
+  },
+  {
+    "id": "evt-02",
+    "name": "글로벌 호황",
+    "text": "모든 세력의 💰 수입 +2",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "income.capital",
+        "value": 2
+      }
+    ]
+  },
+  {
+    "id": "evt-03",
+    "name": "공급망 붕괴",
+    "text": "모든 세력의 🏭 수입 −2, 상점 카드 비용 +1",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "income.industry",
+        "value": -2
+      },
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "shop.costDelta",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "evt-04",
+    "name": "기술 혁신",
+    "text": "상점에 카드 1장 추가 공개, 첫 구매 비용 −1",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "shop.extraSlots",
+        "value": 1
+      },
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "shop.firstPurchaseDiscount",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "evt-05",
+    "name": "팬데믹 경보",
+    "text": "모든 세력 위신 −1, 내정 카드의 💰 효과 +1",
+    "effects": [
+      {
+        "type": "gain",
+        "res": "prestige",
+        "amount": -1
+      },
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "domesticCapitalBonus",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "evt-06",
+    "name": "대규모 시위",
+    "text": "각 지역에서 가장 영향력이 큰 세력의 영향력 −1",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "evt-06",
+        "note": "각 지역에서 가장 영향력이 큰 세력의 영향력 −1"
+      }
+    ]
+  },
+  {
+    "id": "evt-07",
+    "name": "국제 정상회의",
+    "text": "외교 카드를 낸 세력은 위신 +1",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "playedCategoryThisRound": "diplomatic"
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "prestige",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-08",
+    "name": "군비 경쟁",
+    "text": "군사 카드를 낸 세력은 위신 +1, 💰 −1",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "playedCategoryThisRound": "military"
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "prestige",
+            "amount": 1
+          },
+          {
+            "type": "gain",
+            "res": "capital",
+            "amount": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-09",
+    "name": "해킹 사건",
+    "text": "카드를 가장 많이 낸 세력이 손패 1장을 버린다",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "cardsPlayedThisRoundRank": "highest"
+        },
+        "then": [
+          {
+            "type": "discard",
+            "amount": 1,
+            "who": "self"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-10",
+    "name": "기후 재난",
+    "text": "무작위 지역 하나에서 모든 세력의 영향력 −1",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "evt-10",
+        "note": "무작위 지역 하나에서 모든 세력의 영향력 −1"
+      }
+    ]
+  },
+  {
+    "id": "evt-11",
+    "name": "자원 발견",
+    "text": "무작위 지역의 점수 가치 +1 (게임 끝까지)",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "evt-11",
+        "note": "무작위 지역의 점수 가치 +1 (게임 끝까지)"
+      }
+    ]
+  },
+  {
+    "id": "evt-12",
+    "name": "정권 교체",
+    "text": "무작위 지역에서 주도 세력의 영향력 −2",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "evt-12",
+        "note": "무작위 지역에서 주도 세력의 영향력 −2"
+      }
+    ]
+  },
+  {
+    "id": "evt-13",
+    "name": "난민 위기",
+    "text": "위신이 가장 높은 세력의 위신 −1",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "prestigeRank": "highest"
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "prestige",
+            "amount": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-14",
+    "name": "무역 분쟁",
+    "text": "이번 라운드 조약 효과 무효",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "treatiesVoid",
+        "value": true
+      }
+    ]
+  },
+  {
+    "id": "evt-15",
+    "name": "평화 협상",
+    "text": "이번 라운드 군사 카드 효과가 절반 (올림)",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "militaryEffectHalfRoundUp",
+        "value": true
+      }
+    ]
+  },
+  {
+    "id": "evt-16",
+    "name": "투자 붐",
+    "text": "💰이 가장 적은 세력은 💰 +3",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "resourceRank": {
+            "res": "capital",
+            "rank": "lowest"
+          }
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "capital",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-17",
+    "name": "대체 에너지",
+    "text": "🛢이 가장 적은 세력은 🛢 +3",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "resourceRank": {
+            "res": "energy",
+            "rank": "lowest"
+          }
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "energy",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-18",
+    "name": "국경 긴장",
+    "text": "방어가 없는 모든 지역에서 영향력 −1",
+    "effects": [
+      {
+        "type": "custom",
+        "id": "evt-18",
+        "note": "방어가 없는 모든 지역에서 영향력 −1"
+      }
+    ]
+  },
+  {
+    "id": "evt-19",
+    "name": "여론 전환",
+    "text": "위신이 가장 낮은 세력은 위신 +2",
+    "effects": [
+      {
+        "type": "conditional",
+        "if": {
+          "prestigeRank": "lowest"
+        },
+        "then": [
+          {
+            "type": "gain",
+            "res": "prestige",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-20",
+    "name": "대전환 임박",
+    "text": "마지막 라운드 바로 전에만 등장. 다음 라운드 모든 세력의 계획 슬롯 +1",
+    "effects": [
+      {
+        "type": "modifier",
+        "scope": "round",
+        "key": "nextRound.planSlots",
+        "value": 1
+      }
+    ],
+    "onlyBeforeFinalRound": true
+  }
+]
