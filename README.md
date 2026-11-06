@@ -19,7 +19,8 @@ Order of Powers는 가상의 네 강대국 중 하나를 골라 8라운드(6·8�
 - 🃏 카드 확장(세력 시작 덱·전략 자산·비밀 목표·성장): [docs/CARDS_EXPANSION.md](docs/CARDS_EXPANSION.md)
 - ⚙️ [규칙 엔진 설계 (docs/ENGINE_DESIGN.md)](docs/ENGINE_DESIGN.md)
 - 🗂 [게임 데이터 JSON (src/data)](src/data) — 카드·이벤트·세력·지역 등 (검증: `node tools/validate-data.js`)
-- 🗺 [지도 초안 미리보기 (docs/map-preview.md)](docs/map-preview.md)
+- 🗺 지도 미리보기: https://sigco3111.github.io/order-of-powers/map/
+- 🗺 [지도 문서 (docs/map-preview.md)](docs/map-preview.md) · 이전 추상 초안은 assets/map/regions.svg
 - 🎨 [에셋 목록과 라이선스 (docs/ASSETS.md)](docs/ASSETS.md)
 
 ## 폴더 구조
