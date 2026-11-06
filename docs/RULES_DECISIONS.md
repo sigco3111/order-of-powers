@@ -26,3 +26,15 @@
 - **제거 대상**: `other`는 상대가 둘 이상이면 대상 세력 선택. `leader`·`evt-06`은 최다 동률 전원. `mil-12`의 −1은 대상 세력의 기지가 있을 때.
 - **대기 선택 `state.pending[]`**: `{id, faction(선택자), kind, effect, options, filter, actor, stage, rest, ctx}`. `kind`별 선택값: `region`=지역 id, `faction`=세력 id, `card`=카드 id, `regionPair`=서로 다른 지역 id 2개 배열, `confirm`=true/false(`payOptional`). 선택지가 하나뿐이면 대기 없이 진행. `rest`는 남은 효과 대기열.
 - **이벤트 조건**: 시작 시점 스냅샷으로 세력별 판정, 동률은 모두 해당. `playedCategoryThisRound`·`cardsPlayedThisRoundRank` 이벤트는 해결 단계 뒤에 적용해야 하므로 `isDeferredEvent`로 구분.
+
+## 라운드 리듀서 (M1c)
+- **API**: `reduce(state, action, data?)` → `{ok, state, events, reason?}` (순수, 실패 시 원본 상태 그대로 + 한국어 `reason`). `data`를 생략하면 `createGame`/`setData`로 등록한 것을 쓴다. `config.debug`이면 성공할 때마다 `validateInvariants`를 실행한다 (실패 시 throw).
+- **단계**: `setup`(전략 자산 선택) → 라운드마다 `event → plan → reveal → resolve → upkeep → shop` → `end`. 입력이 필요한 곳(계획·선택 대기·상점)까지 `advance`가 자동 진행한다. 선택 대기(`state.pending`)가 있으면 `CHOOSE`만 받는다. 선택자는 `pending[0].faction`.
+- **계획**: `PLAN {cards}`는 손패에서 슬롯 수 이하(순서가 해결 순서). 빈 계획과 `SKIP_PLAN`은 같다. 제출 뒤 수정 불가. `USE_ASSET`은 계획 단계에서 제출 전에만(1회), `PLAN.assetUse`는 제출 직후 사용 (슬롯 +1 자산은 `USE_ASSET`을 먼저). `USE_ASSET.target`은 첫 선택 대기에 미리 답한다.
+- **해결**: 세력 순서대로 계획 카드를 앞에서부터 한 장씩. 해결 중 손패 버림 등으로 사라진 계획 카드는 건너뛴다. 지연 이벤트(`isDeferredEvent`)는 이벤트 단계에서 공개만 하고 해결 단계 뒤 적용.
+- **정비**: 지역 정산 → 수입(💰 +2, 주도 지역 산출 +1, `income.*` 수정치 합; 자원 수입은 0 미만이 되지 않음, 위신 수입은 수정치 그대로) → 사용 더미를 버린 더미로 → 시장 보충. 안 낸 손패는 유지된다.
+- **라운드 정리 시점**: 이벤트의 `shop.*` 수정치가 같은 라운드 상점에 적용되도록 `clearRoundEffects`는 **상점이 끝난 뒤** (다음 라운드로 넘어갈 때) 실행한다. 마지막 라운드는 상점까지 진행한 뒤 최종 점수 (조약·방어는 정리 전 상태로 계산).
+- **상점**: 세력마다 `BUY`를 여러 번, `END_SHOP`으로 종료. 세력 간 순서 없음. 구매 시 시장 즉시 보충.
+- **종료**: `state.result = {winner, winners, tie, ranking, scores}`. 순위는 총점 → 위신 → 자본, 그래도 같으면 공동 승리(`tie: true`, `winner`는 순위 첫 세력).
+- **합법 수**: PLAN은 순서가 있는 카드열을 모두 열거하고 200개를 넘으면 시드 RNG(`state.rng`+세력+라운드)로 표본 추출 (빈 계획 항상 포함). 같은 상태면 같은 표본.
+- **owned 필터 수정 (퍼즈에서 발견)**: 한 카드에 지역 효과가 둘 이상이고 그중 `filter: owned`가 있으면(징집령) 첫 지역 선택부터 내 영향력이 있는 지역으로 좁힌다. 내 영향력이 있는 지역이 없으면 방어 등은 아무 지역에나 두되 `owned` 영향력은 생략한다. (수정 전에는 징집령이 빈 지역에 영향력을 만들어 `polarStar`가 무작위 플레이의 80% 이상을 이겼다.)
