@@ -15,6 +15,7 @@ Order of Powers는 가상의 네 강대국 중 하나를 골라 8라운드(6·8�
 현재는 **기획 단계**입니다. 코드는 아직 없고, 기획서와 수집한 CC0 에셋이 들어 있습니다.
 
 - 📄 [게임 기획서 (docs/GAME_DESIGN.md)](docs/GAME_DESIGN.md)
+- 🃏 카드 초안: [docs/CARDS.md](docs/CARDS.md)
 - 🎨 [에셋 목록과 라이선스 (docs/ASSETS.md)](docs/ASSETS.md)
 
 ## 폴더 구조
