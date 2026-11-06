@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-labelledby="t d">
+  <title id="t">Order of Powers - 8개 지역 지도 초안</title>
+  <desc id="d">실제 국경이 아닌 추상적인 8개 지역 도형. 각 지역의 영향력 토큰 위치를 원형 마커로 표시한다.</desc>
+  <rect id="background" width="1000" height="560" fill="#eef1f4"/>
+  <g id="northAmerica-group">
+    <polygon id="northAmerica" points="30,50 270,35 295,120 255,215 195,265 120,225 60,150" fill="#8fa9c4" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="165" y="118" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">북아메리카</text>
+    <circle id="northAmerica-marker" cx="165" cy="152" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="southAmerica-group">
+    <polygon id="southAmerica" points="130,290 262,285 290,375 250,475 190,530 140,430" fill="#9bb89a" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="205" y="358" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">남아메리카</text>
+    <circle id="southAmerica-marker" cx="205" cy="392" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="europe-group">
+    <polygon id="europe" points="308,45 460,40 485,125 450,215 345,235 310,150" fill="#c4a98f" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="395" y="113" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">유럽</text>
+    <circle id="europe-marker" cx="395" cy="147" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="russiaCentralAsia-group">
+    <polygon id="russiaCentralAsia" points="498,40 760,35 800,100 770,185 600,205 492,130" fill="#a79bc0" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="640" y="83" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">러시아·중앙아시아</text>
+    <circle id="russiaCentralAsia-marker" cx="640" cy="117" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="middleEastNorthAfrica-group">
+    <polygon id="middleEastNorthAfrica" points="360,250 560,225 640,250 650,330 580,375 430,365 350,320" fill="#cfbf86" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="500" y="283" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">중동·북아프리카</text>
+    <circle id="middleEastNorthAfrica-marker" cx="500" cy="317" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="subSaharanAfrica-group">
+    <polygon id="subSaharanAfrica" points="395,392 615,392 655,465 605,545 465,545 415,465" fill="#b98f8f" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="520" y="437" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="17" font-weight="700" fill="#1f2933">사하라 이남 아프리카</text>
+    <circle id="subSaharanAfrica-marker" cx="520" cy="467" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="eastAsia-group">
+    <polygon id="eastAsia" points="815,60 960,90 975,230 930,330 840,310 790,200" fill="#86b5b0" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="880" y="173" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="20" font-weight="700" fill="#1f2933">동아시아</text>
+    <circle id="eastAsia-marker" cx="880" cy="207" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+  <g id="southAsiaOceania-group">
+    <polygon id="southAsiaOceania" points="690,385 850,340 950,380 970,480 900,535 760,520 690,450" fill="#c59ab4" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="825" y="428" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-size="16" font-weight="700" fill="#1f2933">남아시아·동남아·오세아니아</text>
+    <circle id="southAsiaOceania-marker" cx="825" cy="462" r="12" fill="#ffffff" fill-opacity="0.85" stroke="#1f2933" stroke-width="2"/>
+  </g>
+</svg>
