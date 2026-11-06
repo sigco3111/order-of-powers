@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const require = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 // 실제 세계 지도 기반 8개 지역 SVG 생성 스크립트.
 // 준비:  npm install --no-save world-atlas@2 topojson-client@3 topojson-simplify@3 d3-geo@3
 // 실행:  node tools/build-map.js
