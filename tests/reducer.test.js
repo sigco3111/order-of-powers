@@ -239,7 +239,7 @@ test('게임 종료: 최종 점수·비밀 목표·동점 처리 (점수 → 위
     s.round = 6; s.modifiers = { round: {}, game: {} };
     for (const f of F) { s.players[f].secretGoals = []; s.players[f].resources.capital = 4; }
     setup(s);
-    return endShop(skipAll(s));
+    return skipAll(s); // 마지막 라운드는 상점 없이 바로 종료
   };
   const prestigeWin = finalRound((s) => { s.players[A].regionScore = 5; s.players[B].regionScore = 3; s.players[B].prestige = 2; s.players[C].regionScore = 0; });
   assert.equal(prestigeWin.phase, 'end');
@@ -350,4 +350,15 @@ test('회귀: 징집령(방어 + owned 영향력)은 영향력 없는 지역에 
   assert.deepEqual(some.pending[0].options, [R[2], R[5]], '내 영향력이 있는 지역만 선택지');
   const d2 = act(some, { type: 'CHOOSE', faction: C, choice: R[5] }).state;
   assert.equal(d2.regions[R[5]].influence[C], 3);
+});
+
+test('마지막 라운드는 상점 단계 없이 정비 뒤 바로 최종 점수', () => {
+  const s = ready({ rounds: 6 });
+  s.round = 6;
+  const out = skipAll(s);
+  assert.equal(out.phase, 'end');
+  assert.ok(out.result && out.log.every((l) => l.round !== 6 || l.phase !== 'shop'));
+  assert.ok(!out.log.some((l) => l.text === '[6라운드] 상점 단계'));
+  const mid = skipAll(ready({ rounds: 6 }));
+  assert.equal(mid.phase, 'shop', '마지막이 아닌 라운드에는 상점이 있다');
 });
