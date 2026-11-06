@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const require = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 // 데이터 검증 스크립트 (의존성 없음). 사용법: node tools/validate-data.js
 const fs = require('fs');
 const path = require('path');
