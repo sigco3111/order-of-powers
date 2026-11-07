@@ -25,7 +25,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   /** 손패가 바뀌면(새 라운드·다른 저장) 임시 계획을 비운다 */
   function sync(s) {
     const key = `${s.round}|${s.players[me()].hand.join(',')}`;
-    if (view.planKey !== key) { view.planKey = key; view.plan = []; view.focus = null; }
+    if (view.planKey !== key) { view.planKey = key; view.plan = []; view.focus = null; view.dock = undefined; }
   }
 
   // ── 계획 칸 ──
@@ -100,14 +100,23 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
       return h('button', { class: 'hand__c', type: 'button', role: 'listitem', 'aria-label': `${card.name}${at >= 0 ? `, ${at + 1}번 칸에 넣음` : ''}. 눌러서 자세히 보기`, 'aria-haspopup': 'dialog', onclick: () => detail(i) },
         renderCard(card, { size: 'hand', iso: p.iso, state: at >= 0 ? 'disabled' : view.focus === i ? 'selected' : 'normal', mark: at >= 0 ? `계획 ${NUM[at]}` : null }));
     });
-    return [
+    // 모바일 독: 접힌 상태는 64px 띠(계획 칸 3개 + 확정 + 손패 손잡이), 펼치면 지도 위로 시트가 올라온다. 데스크톱은 늘 펼친 트레이.
+    const open = view.dock ?? hi != null, setDock = (v) => () => { view.dock = v; repaint(); };
+    const strip = h('div', { class: 'dock__strip' },
+      h('ol', { class: 'dock__slots', 'aria-label': '계획 칸' }, Array.from({ length: slots }, (_, i) => { const at = placed[i];
+        return h('li', {}, h('button', { class: `dockslot${at != null ? ' is-full' : ''}`, type: 'button', 'aria-label': at != null ? `${i + 1}번 칸 ${C[hand[at]].name}. 손패 열기` : `${i + 1}번 칸 비어 있음. 손패 열기`, onclick: setDock(true) },
+          h('span', { class: 'num' }, NUM[i]), at != null ? h('span', { class: 'dockslot__n' }, C[hand[at]].name) : null)); })),
+      btn(placed.length ? `계획 확정 ${placed.length}` : '계획 확정', () => confirmPlan(hand), 'btn--primary dock__go', { disabled: !placed.length, 'aria-label': placed.length ? `계획 확정 (${placed.length}장)` : '카드를 넣은 뒤 계획 확정' }),
+      h('button', { class: 'dock__handle', type: 'button', 'aria-expanded': 'false', 'aria-label': `손패 ${hand.length}장 펼치기`, onclick: setDock(true) }, h('span', { class: 'dock__car', 'aria-hidden': 'true' }), h('span', { class: 'num' }, `손패 ${hand.length}`)));
+    const sheet = h('div', { class: 'dock__sheet' },
+      h('button', { class: 'dock__handle dock__handle--close', type: 'button', 'aria-expanded': 'true', onclick: setDock(false) }, h('span', { class: 'dock__car dock__car--dn', 'aria-hidden': 'true' }), '손패 접기'),
       note(),
       h('div', { class: 'tray__head' }, h('p', { class: 'tray__t' }, h('strong', {}, '계획 단계'), ' ', h('span', { class: 'num' }, `손패 ${hand.length} · 칸 ${slots}`)),
         a ? btn(p.usedAsset ? `자산 사용함` : `자산 ${a.name}`, useAsset, 'btn--sm tray__asset', { disabled: p.usedAsset, 'aria-label': p.usedAsset ? `전략 자산 ${a.name} 사용함` : `전략 자산 ${a.name} 사용하기` }) : null),
       h('ol', { class: `slots${hi === 1 ? ' hint-target' : ''}`, 'aria-label': '계획 칸. 위에서부터 해결 순서', style: `--slots:${slots}` }, Array.from({ length: slots }, (_, i) => slot(s, i, hand))),
       h('div', { class: `hand${hi === 0 ? ' hint-target' : ''}`, role: 'list', 'aria-label': '손패' }, cardEls),
-      h('div', { class: `tray__bar${hi === 2 ? ' hint-target' : ''}` }, btn('건너뛰기', skip), btn(placed.length ? `계획 확정 (${placed.length}장)` : '카드를 넣으십시오', () => confirmPlan(hand), 'btn--primary', { disabled: !placed.length })),
-    ];
+      h('div', { class: `tray__bar${hi === 2 ? ' hint-target' : ''}` }, btn('건너뛰기', skip), btn(placed.length ? `계획 확정 (${placed.length}장)` : '카드를 넣으십시오', () => confirmPlan(hand), 'btn--primary', { disabled: !placed.length })));
+    return [h('div', { class: `dock${open ? ' is-open' : ''}` }, strip, sheet)];
   }
 
   // ── 대기 선택 ──
