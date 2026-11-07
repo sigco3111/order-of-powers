@@ -45,6 +45,8 @@
 .cq { font-size: var(--fs-small); font-weight: 700; }
 .copts { display: grid; gap: var(--s2); margin-top: var(--s2); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .copts--row { display: flex; overflow-x: auto; padding: 4px 4px 8px 0; scroll-snap-type: x proximity; }
+.copts--grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: var(--s2); overflow: visible; padding: 4px 0 var(--s1); }
+.copts--grid .opt { min-width: 0; padding: 0 var(--s2); line-height: 1.25; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; text-align: center; }
 .opt { flex: none; min-height: 44px; padding: 0 var(--s3); border: var(--line); border-radius: 2px; background: var(--paper-light); font: 700 var(--fs-small)/1.2 var(--font-body); cursor: pointer; scroll-snap-align: start; }
 .opt:hover { background: var(--paper-dark); }
 .opt[aria-pressed="true"] { background: var(--ink); color: var(--paper-light); box-shadow: var(--shadow-sm); }
