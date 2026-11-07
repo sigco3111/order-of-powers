@@ -30,7 +30,7 @@
 .tok--lead::after { content: ""; position: absolute; left: -5px; top: -5px; width: 8px; height: 8px; background: var(--brass); border: 1.5px solid var(--ink); }
 .tok__base { position: absolute; left: 50%; bottom: -7px; width: 12px; height: 6px; margin-left: -6px; background: var(--ink); clip-path: polygon(0 0, 100% 0, 100% 100%, 65% 100%, 50% 45%, 35% 100%, 0 100%); }
 .map__ctl { position: absolute; right: 8px; top: 8px; display: grid; gap: 6px; }
-.map__stage[data-compact="1"] .map__ctl { grid-auto-flow: column; }
+.map[data-compact="1"] .map__ctl { grid-auto-flow: column; }
 .map__btn { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: var(--line); border-radius: 2px; background: var(--paper-light); box-shadow: var(--shadow-sm); font: 700 .8125rem/1 var(--font-body); cursor: pointer; }
 .map__btn:active { transform: translate(2px, 2px); box-shadow: none; }
 .map__btn .icon { width: 20px; height: 20px; }
