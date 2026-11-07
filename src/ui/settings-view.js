@@ -1,7 +1,7 @@
 // 설정 시트: 소리 · 화면 · 진행 · 데이터 관리 · 정보(크레딧). 제목 화면과 보드 머리띠에서 연다.
 import { h, openSheet } from './dom.js';
 import { current, update, exportData, importData, clearSave, clearRecords, VERSION, REPO } from './settings.js';
-import { sfx } from './audio.js';
+import { sfx, canPlayAudio } from './audio.js';
 
 const CREDITS = [
   ['Kenney (kenney.nl) · CC0', 'UI Pack, UI Pack Adventure, Board Game Pack, Board Game Icons, Game Icons, Ranks Pack, Cartography Pack'],
@@ -53,7 +53,8 @@ export function openSettings({ show, store } = {}) {
       check('muteAll', '전체 음소거'),
       check('sfxOn', '효과음'), slider('sfxVol', '효과음 크기'),
       check('musicOn', '음악'), slider('musicVol', '음악 크기'),
-      h('p', { class: 'set__note' }, '음악은 켠 뒤에야 불러옵니다. 탭이 가려지면 소리가 멈춥니다.')),
+      h('p', { class: 'set__note' }, '음악은 켠 뒤에야 불러옵니다. 탭이 가려지면 소리가 멈춥니다.'),
+      canPlayAudio() ? null : h('p', { class: 'set__note', role: 'status' }, '이 기기에서는 소리를 낼 수 없어요')),
     sec('화면',
       check('reduceMotion', '움직임 줄이기'),
       h('p', { class: 'set__note' }, '기기의 "동작 줄이기" 설정과 별개로 켤 수 있습니다. 연출이 빨라지고 도장 확대가 없어집니다.'),

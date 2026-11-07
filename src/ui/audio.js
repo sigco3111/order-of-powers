@@ -3,13 +3,20 @@
 import { current } from './settings.js';
 
 export const FADE_MS = 1200;
+let A_support = () => true;
+/** 이 기기에서 소리 파일(ogg 또는 mp3)을 읽을 수 있는가 (설정 화면 안내용) */
+export const canPlayAudio = () => { try { return A_support(); } catch { return true; } };
 const safe = (fn) => { try { return fn(); } catch { return undefined; } };
 
 export function createAudio({ settings = () => current, map = null, base = '', fetchFn = globalThis.fetch?.bind(globalThis), AudioCtx = globalThis.AudioContext || globalThis.webkitAudioContext, AudioEl = globalThis.Audio, doc = globalThis.document, tick = 50 } = {}) {
   let ctx = null, master = null, unlocked = false, wanted = null, cur = null, clickTimer = 0;
   const bufs = new Map(), music = new Map(), fading = new Set();
   const A = { get unlocked() { return unlocked; }, get state() { return ctx?.state ?? 'none'; }, get track() { return cur?.name ?? null; }, bufs, setMap(m) { map = m; } };
-  const url = (f) => base + (map?.base ?? '') + f;
+  // 일부 iPhone은 ogg(vorbis)를 못 읽는다: canPlayType이 ''이면 mp3 파일로 대체한다 (한 번만 확인)
+  let mp3 = null;
+  const needMp3 = () => (mp3 ??= safe(() => { const a = doc?.createElement?.('audio'); return typeof a?.canPlayType === 'function' && a.canPlayType('audio/ogg; codecs=vorbis') === ''; }) ?? false);
+  const url = (f, d) => base + (map?.base ?? '') + (d && needMp3() && d.mp3 ? d.mp3 : f);
+  A_support = () => safe(() => { const a = doc?.createElement?.('audio'); if (typeof a?.canPlayType !== 'function') return true; return a.canPlayType('audio/ogg; codecs=vorbis') !== '' || a.canPlayType('audio/mpeg') !== ''; }) ?? true;
   const sfxOn = () => { const s = settings(); return s.sfxOn && !s.muteAll && s.sfxVol > 0; };
   const musicVol = (name) => { const s = settings(); return s.musicOn && !s.muteAll ? (s.musicVol / 100) * (map?.music?.[name]?.volume ?? 1) : 0; };
 
@@ -17,7 +24,7 @@ export function createAudio({ settings = () => current, map = null, base = '', f
     if (bufs.has(name)) return bufs.get(name);
     const def = map?.sfx?.[name];
     const p = !def || !ctx || !fetchFn ? Promise.resolve(null)
-      : Promise.resolve().then(() => fetchFn(url(def.file))).then((r) => (r && r.ok ? r.arrayBuffer() : null))
+      : Promise.resolve().then(() => fetchFn(url(def.file, def))).then((r) => (r && r.ok ? r.arrayBuffer() : null))
         .then((ab) => (ab ? new Promise((res) => { const r = ctx.decodeAudioData(ab, res, () => res(null)); r?.then?.(res, () => res(null)); }) : null)).catch(() => null);
     bufs.set(name, p); return p;
   }
@@ -58,7 +65,7 @@ export function createAudio({ settings = () => current, map = null, base = '', f
   function track(name) {
     if (music.has(name)) return music.get(name);
     const def = map?.music?.[name]; if (!def || !AudioEl) return null;
-    const el = safe(() => { const a = new AudioEl(url(def.file)); a.loop = true; a.preload = 'none'; a.volume = 0; a.addEventListener?.('error', () => { t.failed = true; }); return a; });
+    const el = safe(() => { const a = new AudioEl(url(def.file, def)); a.loop = true; a.preload = 'none'; a.volume = 0; a.addEventListener?.('error', () => { t.failed = true; }); return a; });
     const t = el ? { name, el, vol: 0, goal: 0, failed: false } : null;
     music.set(name, t); return t;
   }

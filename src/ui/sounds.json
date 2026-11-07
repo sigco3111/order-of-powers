@@ -1,29 +1,120 @@
 {
   "base": "assets/audio/",
   "sfx": {
-    "click":       { "file": "sfx/kenney-ui-audio/click2.ogg", "volume": 0.7 },
-    "toggle":      { "file": "sfx/kenney-interface-sounds/toggle_001.ogg", "volume": 0.8 },
-    "confirm":     { "file": "sfx/kenney-interface-sounds/confirmation_001.ogg", "volume": 0.6 },
-    "cardPick":    { "file": "sfx/kenney-casino-audio/card_slide1.ogg", "volume": 0.8 },
-    "cardPlace":   { "file": "sfx/kenney-casino-audio/card_place2.ogg", "volume": 0.9 },
-    "cardReturn":  { "file": "sfx/kenney-casino-audio/card_slide3.ogg", "volume": 0.7, "rate": 0.9 },
-    "cardFlip":    { "file": "sfx/kenney-casino-audio/card_fan1.ogg", "volume": 0.9 },
-    "stamp":       { "file": "sfx/kenney-rpg-audio/book_place1.ogg", "volume": 1, "rate": 0.9 },
-    "coin":        { "file": "sfx/kenney-rpg-audio/handle_coins.ogg", "volume": 0.8 },
-    "tokenAdd":    { "file": "sfx/kenney-casino-audio/chip_lay1.ogg", "volume": 0.9 },
-    "tokenRemove": { "file": "sfx/kenney-casino-audio/chips_collide1.ogg", "volume": 0.7, "rate": 0.85 },
-    "region":      { "file": "sfx/kenney-interface-sounds/tick_001.ogg", "volume": 0.7 },
-    "phase":       { "file": "sfx/kenney-interface-sounds/open_001.ogg", "volume": 0.5 },
-    "round":       { "file": "sfx/kenney-interface-sounds/bong_001.ogg", "volume": 0.6 },
-    "event":       { "file": "sfx/kenney-casino-audio/card_open_package1.ogg", "volume": 0.9 },
-    "summary":     { "file": "sfx/kenney-rpg-audio/book_flip2.ogg", "volume": 0.8 },
-    "win":         { "file": "sfx/oga-win-sound-effect/win_sound.ogg", "volume": 0.8 },
-    "lose":        { "file": "sfx/oga-game-over-bad-chest/game_over_bad_chest.ogg", "volume": 0.7 },
-    "error":       { "file": "sfx/kenney-interface-sounds/error_003.ogg", "volume": 0.4 },
-    "alert":       { "file": "sfx/kenney-interface-sounds/question_001.ogg", "volume": 0.7 }
+    "click": {
+      "file": "sfx/kenney-ui-audio/click2.ogg",
+      "volume": 0.7,
+      "mp3": "sfx/kenney-ui-audio/click2.mp3"
+    },
+    "toggle": {
+      "file": "sfx/kenney-interface-sounds/toggle_001.ogg",
+      "volume": 0.8,
+      "mp3": "sfx/kenney-interface-sounds/toggle_001.mp3"
+    },
+    "confirm": {
+      "file": "sfx/kenney-interface-sounds/confirmation_001.ogg",
+      "volume": 0.6,
+      "mp3": "sfx/kenney-interface-sounds/confirmation_001.mp3"
+    },
+    "cardPick": {
+      "file": "sfx/kenney-casino-audio/card_slide1.ogg",
+      "volume": 0.8,
+      "mp3": "sfx/kenney-casino-audio/card_slide1.mp3"
+    },
+    "cardPlace": {
+      "file": "sfx/kenney-casino-audio/card_place2.ogg",
+      "volume": 0.9,
+      "mp3": "sfx/kenney-casino-audio/card_place2.mp3"
+    },
+    "cardReturn": {
+      "file": "sfx/kenney-casino-audio/card_slide3.ogg",
+      "volume": 0.7,
+      "rate": 0.9,
+      "mp3": "sfx/kenney-casino-audio/card_slide3.mp3"
+    },
+    "cardFlip": {
+      "file": "sfx/kenney-casino-audio/card_fan1.ogg",
+      "volume": 0.9,
+      "mp3": "sfx/kenney-casino-audio/card_fan1.mp3"
+    },
+    "stamp": {
+      "file": "sfx/kenney-rpg-audio/book_place1.ogg",
+      "volume": 1,
+      "rate": 0.9,
+      "mp3": "sfx/kenney-rpg-audio/book_place1.mp3"
+    },
+    "coin": {
+      "file": "sfx/kenney-rpg-audio/handle_coins.ogg",
+      "volume": 0.8,
+      "mp3": "sfx/kenney-rpg-audio/handle_coins.mp3"
+    },
+    "tokenAdd": {
+      "file": "sfx/kenney-casino-audio/chip_lay1.ogg",
+      "volume": 0.9,
+      "mp3": "sfx/kenney-casino-audio/chip_lay1.mp3"
+    },
+    "tokenRemove": {
+      "file": "sfx/kenney-casino-audio/chips_collide1.ogg",
+      "volume": 0.7,
+      "rate": 0.85,
+      "mp3": "sfx/kenney-casino-audio/chips_collide1.mp3"
+    },
+    "region": {
+      "file": "sfx/kenney-interface-sounds/tick_001.ogg",
+      "volume": 0.7,
+      "mp3": "sfx/kenney-interface-sounds/tick_001.mp3"
+    },
+    "phase": {
+      "file": "sfx/kenney-interface-sounds/open_001.ogg",
+      "volume": 0.5,
+      "mp3": "sfx/kenney-interface-sounds/open_001.mp3"
+    },
+    "round": {
+      "file": "sfx/kenney-interface-sounds/bong_001.ogg",
+      "volume": 0.6,
+      "mp3": "sfx/kenney-interface-sounds/bong_001.mp3"
+    },
+    "event": {
+      "file": "sfx/kenney-casino-audio/card_open_package1.ogg",
+      "volume": 0.9,
+      "mp3": "sfx/kenney-casino-audio/card_open_package1.mp3"
+    },
+    "summary": {
+      "file": "sfx/kenney-rpg-audio/book_flip2.ogg",
+      "volume": 0.8,
+      "mp3": "sfx/kenney-rpg-audio/book_flip2.mp3"
+    },
+    "win": {
+      "file": "sfx/oga-win-sound-effect/win_sound.ogg",
+      "volume": 0.8,
+      "mp3": "sfx/oga-win-sound-effect/win_sound.mp3"
+    },
+    "lose": {
+      "file": "sfx/oga-game-over-bad-chest/game_over_bad_chest.ogg",
+      "volume": 0.7,
+      "mp3": "sfx/oga-game-over-bad-chest/game_over_bad_chest.mp3"
+    },
+    "error": {
+      "file": "sfx/kenney-interface-sounds/error_003.ogg",
+      "volume": 0.4,
+      "mp3": "sfx/kenney-interface-sounds/error_003.mp3"
+    },
+    "alert": {
+      "file": "sfx/kenney-interface-sounds/question_001.ogg",
+      "volume": 0.7,
+      "mp3": "sfx/kenney-interface-sounds/question_001.mp3"
+    }
   },
   "music": {
-    "menu": { "file": "music/oga-meadow-thoughts/meadow_thoughts.ogg", "volume": 0.8 },
-    "game": { "file": "music/oga-contemplation/contemplation.ogg", "volume": 0.8 }
+    "menu": {
+      "file": "music/oga-meadow-thoughts/meadow_thoughts.ogg",
+      "volume": 0.8,
+      "mp3": "music/oga-meadow-thoughts/meadow_thoughts.mp3"
+    },
+    "game": {
+      "file": "music/oga-contemplation/contemplation.ogg",
+      "volume": 0.8,
+      "mp3": "music/oga-contemplation/contemplation.mp3"
+    }
   }
 }
