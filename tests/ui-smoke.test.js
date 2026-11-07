@@ -91,3 +91,97 @@ test('멈춤 요청 뒤에는 더 진행하지 않는다', async () => {
   await new Promise((r) => setTimeout(r, 40));
   assert.equal(hashState(loop.state), h);
 });
+
+// ── 스크립트된 사람: UI와 같은 경로(loop.submit = 합법 검사 + dispatch)로 무작위 합법 행동을 낸다 ──
+import { planSlotsOf } from '../src/engine/state.js';
+import { seedToState, nextInt } from '../src/engine/rng.js';
+
+function scriptedHuman(seed) {
+  let rng = seedToState(seed);
+  const pick = (n) => { const r = nextInt(rng, n); rng = r.rng; return r.value; };
+  return {
+    pick,
+    /** 지금 사람 차례에 UI가 낼 만한 행동 하나 */
+    next(state, loop) {
+      const me = state.config.humanFaction, p = state.players[me], pc = state.pending?.[0];
+      if (pc) {
+        const o = pc.options;
+        if (pc.kind === 'regionPair') { const a = pick(o.length), b = (a + 1 + pick(o.length - 1)) % o.length; return { type: 'CHOOSE', faction: me, pendingId: pc.id, choice: [o[a], o[b]] }; } // 순서가 뒤바뀐 쌍도 받아야 한다
+        if (pc.kind === 'confirm') return { type: 'CHOOSE', faction: me, pendingId: pc.id, choice: pick(2) === 0 };
+        return { type: 'CHOOSE', faction: me, pendingId: pc.id, choice: o[pick(o.length)] };
+      }
+      switch (state.phase) {
+        case 'setup': return { type: 'PICK_ASSET', faction: me, assetId: p.assetOptions[pick(p.assetOptions.length)] };
+        case 'plan': {
+          if (p.strategicAsset && !p.usedAsset && pick(5) === 0) return { type: 'USE_ASSET', faction: me };
+          if (pick(8) === 0) return { type: 'SKIP_PLAN', faction: me };
+          const slots = planSlotsOf(state, me), hand = p.hand.slice(), cards = [];
+          for (let n = pick(slots + 1); n > 0 && hand.length; n--) cards.push(hand.splice(pick(hand.length), 1)[0]);
+          return { type: 'PLAN', faction: me, cards };
+        }
+        case 'shop': return pick(3) === 0 ? { type: 'END_SHOP', faction: me } : loop.pick(me);
+        default: return null;
+      }
+    },
+  };
+}
+
+for (const rounds of [6, 8, 10]) {
+  test(`스크립트된 사람 ${rounds}라운드: submit 경로로 PLAN/CHOOSE/USE_ASSET/SKIP_PLAN, 선택 대기 중 저장`, async () => {
+    const storage = mockStorage(), loop = createLoop({ data, storage }), hu = scriptedHuman(`h${rounds}`);
+    loop.start(cfg(rounds, { seed: 700 + rounds }));
+    const seen = { PLAN: 0, SKIP_PLAN: 0, CHOOSE: 0, USE_ASSET: 0, PICK_ASSET: 0, pendingSaves: 0, rejected: 0 };
+    for (let guard = 0; guard < 1500; guard++) {
+      const why = await loop.run({ auto: false });
+      if (why === 'end') break;
+      assert.equal(why, 'human');
+      const s = loop.state, me = s.config.humanFaction;
+      assert.deepEqual(loop.waiting(), [me]);
+      // 형식이 틀린 행동은 UI 검사에서 거절된다 (상태는 그대로)
+      const before = hashState(s);
+      const bad = s.pending?.length ? { type: 'CHOOSE', faction: me, pendingId: s.pending[0].id, choice: 'nowhere' }
+        : s.phase === 'plan' ? { type: 'PLAN', faction: me, cards: ['no-such-card'] } : { type: 'PLAN', faction: me, cards: [] };
+      if (s.pending?.length || s.phase === 'plan' || s.phase === 'shop') { assert.equal(loop.submit(bad).ok, false); seen.rejected++; }
+      assert.equal(loop.submit({ type: 'PLAN', faction: 'nobody', cards: [] }).ok, false);
+      assert.equal(hashState(loop.state), before);
+      const a = hu.next(s, loop);
+      assert.ok(a, `${s.phase}에서 낼 행동이 없다`);
+      const r = loop.submit(a);
+      assert.equal(r.ok, true, `${JSON.stringify(a)} → ${r.reason}`);
+      seen[a.type] = (seen[a.type] || 0) + 1;
+      validateInvariants(loop.state);
+      const sv = readSave(storage);
+      assert.equal(hashState(sv.state), hashState(loop.state), '매 행동 뒤 자동 저장');
+      if (loop.state.pending?.length && loop.state.pending[0].faction === me) { // 선택 대기 중 저장 → 불러오기
+        seen.pendingSaves++;
+        const again = createLoop({ data, storage }); again.load();
+        assert.deepEqual(again.state.pending, loop.state.pending);
+        assert.deepEqual(again.waiting(), [me]);
+      }
+    }
+    const s = loop.state;
+    assert.equal(s.phase, 'end'); assert.equal(s.round, rounds);
+    assert.equal(s.result.ranking.length, 4);
+    assert.ok(seen.PLAN + seen.SKIP_PLAN >= rounds - 1, JSON.stringify(seen));
+    assert.ok(seen.CHOOSE > 0 && seen.PICK_ASSET === 1 && seen.rejected > rounds, JSON.stringify(seen));
+    assert.ok(seen.pendingSaves > 0, '선택 대기 중 저장을 한 번도 못 봤다: ' + JSON.stringify(seen));
+  });
+}
+
+test('사람 행동 검사: 슬롯 초과·없는 카드·순서 뒤바뀐 지역 쌍', () => {
+  const loop = createLoop({ data, storage: mockStorage() });
+  loop.start(cfg(6));
+  const run = async () => { await loop.run(); };
+  return run().then(() => {
+    const me = 'polarStar', s0 = loop.state;
+    assert.equal(loop.submit({ type: 'PICK_ASSET', faction: me, assetId: 'nope' }).ok, false);
+    assert.equal(loop.submit({ type: 'PICK_ASSET', faction: me, assetId: s0.players[me].assetOptions[0] }).ok, true);
+    return loop.run().then(() => {
+      const s = loop.state, hand = s.players[me].hand, slots = planSlotsOf(s, me);
+      assert.equal(loop.submit({ type: 'PLAN', faction: me, cards: Array(slots + 1).fill(hand[0]) }).ok, false, '슬롯보다 많이');
+      assert.equal(loop.submit({ type: 'PLAN', faction: me, cards: ['ghost'] }).ok, false, '없는 카드');
+      assert.equal(loop.submit({ type: 'PLAN', faction: me, cards: hand.slice(0, slots) }).ok, true);
+      assert.equal(loop.submit({ type: 'PLAN', faction: me, cards: [] }).ok, false, '이미 제출');
+    });
+  });
+});
