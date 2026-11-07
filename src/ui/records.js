@@ -25,6 +25,7 @@ export const ACHIEVEMENTS = [
   { id: 'goals-3', name: '비밀 목표 3개', desc: '비밀 목표를 누적 3개 달성한다', test: (m) => m.goalsMet >= 3 },
   { id: 'hard-win', name: '어려움 승리', desc: 'AI 난이도 어려움에서 승리한다', test: (m, r) => r.win && r.level === 'hard' },
   { id: 'four-types', name: '네 성향 4승', desc: '서로 다른 성향 네 가지로 승리한다', test: (m) => m.winTypes.length >= 4 },
+  { id: 'tutorial', name: '튜토리얼 수료', desc: '튜토리얼을 끝까지 마친다', manual: true, test: () => false }, // 판이 아니라 튜토리얼이 직접 준다
 ];
 const freshMeta = () => ({ v: 1, games: 0, wins: 0, goalsMet: 0, winTypes: [], achievements: {} });
 export const readMeta = (storage = globalThis.localStorage) => ({ ...freshMeta(), ...load(storage, META_KEY, {}) });
@@ -38,4 +39,12 @@ export function updateMeta(storage, rec, goalsMet = 0) {
   for (const a of unlocked) meta.achievements[a.id] = rec.date;
   save(storage, META_KEY, meta);
   return { meta, unlocked };
+}
+
+/** 판과 상관없이 업적 하나를 직접 준다 (이미 있으면 그대로). 새로 얻었으면 true */
+export function unlockAchievement(storage, id, date = new Date().toISOString()) {
+  const meta = readMeta(storage);
+  if (meta.achievements[id]) return false;
+  meta.achievements[id] = date; save(storage, META_KEY, meta);
+  return true;
 }

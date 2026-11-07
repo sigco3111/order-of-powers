@@ -1,0 +1,22 @@
+/* 튜토리얼 코치: 스포트라이트(각진 구멍이 난 덮개) + 인쇄된 메모 패널. 블러·글로우·알약 없음. */
+.tut__dim { position: fixed; z-index: 45; background: rgba(27, 34, 48, .66); }
+.tut__frame { position: fixed; z-index: 46; box-sizing: border-box; pointer-events: none; border: 3px solid var(--brass); box-shadow: 4px 4px 0 rgba(27, 34, 48, .5); }
+.tut__frame.is-over { z-index: 65; }
+.tut__panel { position: fixed; z-index: 80; box-sizing: border-box; width: min(360px, calc(100vw - 16px)); max-height: 46vh; overflow: auto; padding: var(--s3) var(--s4) var(--s4);
+  background: var(--paper-light); color: var(--ink); border: var(--line); border-radius: 2px; box-shadow: var(--shadow); }
+.tut__panel:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+.tut__top { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); margin-bottom: var(--s2); padding-bottom: var(--s2); border-bottom: 2px dotted var(--ink-soft); }
+.tut__count { font-size: var(--fs-small); letter-spacing: .08em; }
+.tut__title { font-size: 1.125rem; margin: 0 0 var(--s2); }
+.tut__text { margin: 0 0 var(--s2); font-size: var(--fs-small); line-height: 1.6; }
+.tut__ask { margin: 0 0 var(--s2); padding: var(--s1) var(--s2); border-left: 4px solid var(--stamp); background: var(--paper-dark); font-size: var(--fs-small); font-weight: 700; }
+.tut__btns { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s3); }
+.tut__btns .btn { flex: 1 1 auto; padding: 0 var(--s3); }
+.tut__warn { border-color: var(--stamp); color: var(--stamp); }
+
+/* 첫 실행 안내 도장 (표지) */
+.tut-offer { position: relative; margin: 0 0 var(--s4); padding: var(--s3) var(--s4); background: var(--paper-light); border: var(--line); border-radius: 2px; box-shadow: var(--shadow); }
+.tut-offer .stamp { display: block; margin: 0 0 var(--s3); white-space: normal; text-align: center; }
+.tut-offer__btns { display: flex; gap: var(--s2); }
+.tut-offer__btns .btn { flex: 1; }
+@media (max-width: 899px) { .tut__panel { max-height: 40vh; padding: var(--s2) var(--s3) var(--s3); } .tut__text { margin-bottom: var(--s1); } }
