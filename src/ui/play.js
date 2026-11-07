@@ -10,13 +10,16 @@ import { sfx } from './audio.js';
 const NUM = ['①', '②', '③', '④', '⑤', '⑥'];
 const HINT_KEY = 'oop-seen-hints';
 const HINTS = [
-  ['손패', '아래 줄이 이번 라운드 손패입니다. 카드를 누르면 바로 계획 칸에 들어갑니다. 지역이 필요한 카드는 지역을 한 번 더 고릅니다. 설명 버튼을 누르면 큰 카드가 열립니다.'],
+  ['손패', '아래 줄이 이번 라운드 손패입니다. 카드를 누르면 바로 계획 칸에 들어갑니다. 지역이나 대상 세력이 필요한 카드는 그 자리에서 단계별로 고릅니다(해결 때 다시 묻지 않습니다). 설명 버튼을 누르면 큰 카드가 열립니다.'],
   ['계획 칸', '카드는 ① ② ③ 순서대로 해결됩니다. ◀ ▶로 순서를 바꾸고, 빼기를 누르면 손패로 돌아갑니다.'],
   ['확정', '계획 확정을 누르면 비공개로 제출되며 고칠 수 없습니다. 카드를 내지 않으려면 건너뛰기.'],
   ['지도', '영향력 칩이 가장 많은 세력이 그 지역을 주도해 매 라운드 점수를 얻습니다. 지역을 누르면 정보가 열립니다.'],
   ['추격 보너스', '라운드 시작 때 누적 점수가 가장 낮은 세력은 💰 +1, 그 라운드 첫 영향력 배치 +1을 받습니다.'],
 ];
 const DO = { influence: '에 영향력 놓기', removeInfluence: '에서 영향력 줄이기', defense: '에 방어 세우기', base: '에 기지 세우기' };
+const ASK_KEY = { victim: '영향력을 줄일 세력', baseRegion: '기지를 부술 지역', drop: '버릴 카드', ignore: '이벤트 효과를 무시할 지역' };
+const DEF_STAGE = { region: 'region', regionPair: 'pair', faction: 'target', confirm: 'confirm', card: 'card' };
+const RES_KO = { capital: '자본', energy: '에너지', industry: '산업' };
 const ASK = { influence: '영향력을 놓을 지역', removeInfluence: '영향력을 줄일 지역', defense: '방어를 세울 지역', base: '기지를 세울 지역', treaty: '조약을 맺을 세력', drain: '자원을 빼앗을 세력', destroyBase: '기지를 부술 세력', discard: '손패를 버리게 할 세력', peek: '손패를 볼 세력', custom: '효과를 줄 세력' };
 
 export function createPlay({ loop, data, view, repaint, submit, announce, C, A, E, R, F, fName, regionName }) {
@@ -34,6 +37,8 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   // ── 카드 넣기 · 빼기 (카드 한 번 누르기 = 첫 빈 칸, 지역이 필요하면 지역 한 번 더) ──
   const focusSoon = (sel) => setTimeout(() => document.querySelector(sel)?.focus(), 30);
   const handOf = () => loop.state.players[me()].hand;
+  /** 카드의 계획 단계 (앞에서 고른 값 picks에 따라 뒤 단계 후보가 달라진다). inPlan=false면 이 카드를 계획에 든 것으로 쳐서 계산 */
+  const stepsOf = (s, card, picks = {}, inPlan = true) => planSteps(card, s, me(), picks, [...view.plan.map((i) => handOf()[i]), ...(inPlan ? [] : [card.id])]);
   function removeAt(i) {
     const idx = view.plan[i], card = C[handOf()[idx]];
     sfx('cardReturn'); view.plan.splice(i, 1); delete view.picks[idx]; announce(`${card.name}을 손패로 되돌렸습니다`); repaint();
@@ -43,22 +48,26 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     const s = loop.state, card = C[handOf()[idx]];
     if (view.plan.includes(idx)) return;
     if (view.plan.length >= planSlotsOf(s, me())) { sfx('error'); announce('계획 칸이 가득 찼어요. 빼기로 칸을 비우세요'); return; }
-    if (picks === undefined && planSteps(card, s, me()).length) { view.pickFor = idx; view.pickAcc = {}; view.pairSel = []; view.dock = true; sfx('cardPick'); announce(`${card.name}: ${stepAsk(planSteps(card, s, me())[0])}을 고르세요`); repaint(); focusSoon('.rpick .opt'); return; }
+    if (picks === undefined && stepsOf(s, card, {}, false).length) { view.pickFor = idx; view.pickAcc = {}; view.pairSel = []; view.dock = true; sfx('cardPick'); announce(`${card.name}: ${stepAsk(stepsOf(s, card, {}, false)[0], card)}`); repaint(); focusSoon('.rpick .opt'); return; }
     sfx('cardPlace'); view.plan.push(idx); if (picks && Object.keys(picks).length) view.picks[idx] = picks; view.pickFor = null; view.pickAcc = {}; view.pairSel = []; view.focus = null;
-    announce(`${card.name}을 ${view.plan.length}번 칸에 넣었습니다${picks ? `, ${pickText(picks)}` : ''}`); repaint();
+    announce(`${card.name}을 ${view.plan.length}번 칸에 넣었습니다${picks && Object.keys(picks).length ? `, ${pickText(picks, stepsOf(s, card, picks))}` : ''}`); repaint();
   }
   /** 선택판에서 현재 단계의 값을 정한다. 마지막 단계면 카드를 칸에 넣는다 */
   function choose(idx, step, value) {
-    const s = loop.state, card = C[handOf()[idx]], steps = planSteps(card, s, me());
-    const acc = { ...view.pickAcc, [step.kind === 'region' ? 'region' : step.kind === 'regionPair' ? 'pair' : 'target']: value };
+    const s = loop.state, card = C[handOf()[idx]];
+    const acc = { ...view.pickAcc, [step.key]: value };
     view.pairSel = [];
-    const next = steps.find((st) => !stepDone(st, acc));
+    const next = stepsOf(s, card, acc, false).find((st) => !stepDone(st, acc));
     if (!next) return addCard(idx, acc);
-    view.pickAcc = acc; sfx('cardPick'); announce(`${stepName(step, value)} 선택. 다음: ${stepAsk(next)}을 고르세요`); repaint(); focusSoon('.rpick .opt');
+    view.pickAcc = acc; sfx('cardPick'); announce(`${stepName(step, value)} 선택. 다음: ${stepAsk(next, card)}`); repaint(); focusSoon('.rpick .opt');
   }
-  const stepName = (st, v) => (st.kind === 'faction' ? fName(v) : Array.isArray(v) ? v.map(regionName).join(' + ') : regionName(v));
-  const pickText = (p) => [p.region && `지역 ${regionName(p.region)}`, p.pair && `지역 ${p.pair.map(regionName).join(', ')}`, p.target && `대상 ${fName(p.target)}`].filter(Boolean).join(', ');
-  const stepAsk = (st) => (st.kind === 'regionPair' ? '영향력을 놓을 서로 다른 지역 두 곳' : st.kind === 'region' ? ASK[st.fx] ?? '지역' : ASK[st.fx] ?? '대상 세력');
+  const stepName = (st, v) => (st.kind === 'confirm' ? (v ? '추가 지불함' : '추가 지불 안 함') : st.kind === 'card' ? C[v]?.name ?? String(v) : st.kind === 'faction' ? fName(v) : Array.isArray(v) ? v.map(regionName).join(' + ') : regionName(v));
+  const LBL = { region: '지역', pair: '지역', target: '대상', victim: '줄일 세력', baseRegion: '기지 지역', pay: '추가 지불', drop: '버릴 카드', ignore: '무시할 지역' };
+  /** 고른 값들을 "지역 X, 대상 Y" 꼴로 */
+  const pickText = (p, steps) => steps.filter((st) => stepDone(st, p)).map((st) => `${LBL[st.key]} ${stepName(st, p[st.key])}`).join(', ');
+  /** 칸에 표시할 고른 값 */
+  const pickShort = (p, steps) => steps.filter((st) => stepDone(st, p)).map((st) => stepName(st, p[st.key])).join(' · ');
+  const stepAsk = (st, card) => (st.kind === 'confirm' ? `${RES_KO[st.pay.res]} ${st.pay.amount}을 추가로 낼지` : `${st.kind === 'regionPair' ? '영향력을 놓을 서로 다른 지역 두 곳' : ASK_KEY[st.key] ?? (st.kind === 'region' ? ASK[st.fx] ?? '지역' : ASK[st.fx] ?? '대상 세력')}을 고르세요`);
   const cancelPick = () => { view.pickFor = null; view.pickAcc = {}; view.pairSel = []; announce('선택을 취소했습니다'); repaint(); };
   const regionSlots = (s) => view.plan.map((i) => ({ card: C[s.players[me()].hand[i]], ...view.picks[i] }));
 
@@ -67,14 +76,14 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   function slot(s, i, hand) {
     const idx = view.plan[i], n = view.plan.length;
     if (idx == null) return h('li', { class: 'slot slot--empty', 'aria-label': `${i + 1}번 칸, 비어 있음` }, h('span', { class: 'slot__no num' }, NUM[i]), h('span', { class: 'slot__ph' }, '빈 칸'));
-    const card = C[hand[idx]], pk = view.picks[idx] || {}, steps = planSteps(card, s, me()), missing = steps.some((st) => !stepDone(st, pk)), tag = steps.some((st) => st.kind === 'region' && !stepDone(st, pk)) ? NEED_REGION_TAG : NEED_TARGET_TAG;
+    const card = C[hand[idx]], pk = view.picks[idx] || {}, steps = stepsOf(s, card, pk), missing = steps.some((st) => !stepDone(st, pk)), tag = steps.some((st) => st.key === 'region' && !stepDone(st, pk)) ? NEED_REGION_TAG : NEED_TARGET_TAG;
     const move = (d) => { const a = view.plan; [a[i], a[i + d]] = [a[i + d], a[i]]; announce(`${card.name}을 ${i + d + 1}번 칸으로 옮겼습니다`); repaint(); };
     return h('li', { class: 'slot slot--full' },
       h('button', { class: 'slot__main', type: 'button', 'aria-label': `${i + 1}번 칸 ${card.name}. 누르면 손패로 되돌립니다`, onclick: () => removeAt(i) },
         h('span', { class: 'slot__no num' }, NUM[i]), renderCard(card, { size: 'mini' })),
       chips(card),
       missing ? h('button', { class: 'slot__reg slot__reg--need', type: 'button', 'aria-label': `${card.name}: ${tag}. 누르면 다시 고릅니다`, onclick: () => { removeAt(i); addCard(idx); } }, tag)
-        : steps.length ? h('span', { class: 'slot__reg' }, [pk.region && regionName(pk.region), pk.pair && pk.pair.map(regionName).join(' + '), pk.target && fName(pk.target)].filter(Boolean).join(' · ')) : null,
+        : steps.length ? h('span', { class: 'slot__reg' }, pickShort(pk, steps)) : null,
       h('div', { class: 'slot__ord' }, h('button', { class: 'ord', type: 'button', 'aria-label': `${card.name} 앞으로`, disabled: i === 0, onclick: () => move(-1) }, '◀'),
         h('button', { class: 'ord ord--del', type: 'button', 'aria-label': `${card.name} 계획에서 빼기`, onclick: () => removeAt(i) }, '빼기'),
         h('button', { class: 'ord', type: 'button', 'aria-label': `${card.name} 뒤로`, disabled: i >= n - 1, onclick: () => move(1) }, '▶')));
@@ -139,7 +148,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     const cardEls = hand.map((id, i) => {
       const at = placed.indexOf(i), card = C[id];
       return h('div', { class: 'hand__w', role: 'listitem' },
-        h('button', { class: 'hand__c', type: 'button', 'aria-label': `${card.name}${at >= 0 ? `, ${at + 1}번 칸에 넣음. 누르면 뺍니다` : planSteps(card, s, f).length ? '. 누르면 지역이나 대상을 고릅니다' : '. 누르면 계획 칸에 넣습니다'}`, 'aria-pressed': String(at >= 0), onclick: () => (at >= 0 ? removeAt(at) : addCard(i)) },
+        h('button', { class: 'hand__c', type: 'button', 'aria-label': `${card.name}${at >= 0 ? `, ${at + 1}번 칸에 넣음. 누르면 뺍니다` : stepsOf(s, card, {}, false).length ? '. 누르면 지역이나 대상을 고릅니다' : '. 누르면 계획 칸에 넣습니다'}`, 'aria-pressed': String(at >= 0), onclick: () => (at >= 0 ? removeAt(at) : addCard(i)) },
           renderCard(card, { size: 'hand', iso: p.iso, state: at >= 0 ? 'disabled' : view.focus === i || view.pickFor === i ? 'selected' : 'normal', mark: at >= 0 ? `계획 ${NUM[at]}` : null })),
         h('button', { class: 'hand__i', type: 'button', 'aria-haspopup': 'dialog', 'aria-label': `${card.name} 자세히 보기`, onclick: () => detail(i) }, '설명'));
     });
@@ -165,30 +174,36 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     return [h('div', { class: `dock${open ? ' is-open' : ''}` }, strip, sheet)];
   }
 
-  /** 카드를 눌렀을 때 손패 자리에 뜨는 선택판: 단계마다 한 번 (지역 → 지역 두 곳 → 대상 세력 중 필요한 것). 칩 한 번 = 한 단계 */
+  /** 카드를 눌렀을 때 손패 자리에 뜨는 선택판: 단계마다 한 번 (추가 지불 → 지역 → 피해 세력 → 지역 두 곳 → 대상 세력 → 기지 지역 → 버릴 카드 …). 칩 한 번 = 한 단계 */
   function choicePanel(s, hand) {
-    const idx = view.pickFor, card = C[hand[idx]], steps = planSteps(card, s, me()), acc = view.pickAcc || {};
+    const idx = view.pickFor, card = C[hand[idx]], acc = view.pickAcc || {}, steps = stepsOf(s, card, acc, false);
     const k = steps.findIndex((st) => !stepDone(st, acc)), st = steps[k];
     if (!st) { setTimeout(() => addCard(idx, acc), 0); return h('section', { class: 'rpick', 'aria-label': '선택' }); }
-    const sel = view.pairSel || [], pair = st.kind === 'regionPair';
+    const sel = view.pairSel || [], pair = st.kind === 'regionPair', isReg = st.kind === 'region' || pair;
+    const total = steps.length; // 앞 선택에 따라 뒤 단계(피해 세력 · 기지 지역)가 생기거나 사라질 수 있다
     const onPick = (id) => {
       if (!pair) return choose(idx, st, id);
       const a = sel.includes(id) ? sel.filter((x) => x !== id) : [...sel, id].slice(-2);
       view.pairSel = a; repaint();
     };
-    const opts = st.options.map((id) => h('button', { class: 'opt', type: 'button', ...(pair ? { 'aria-pressed': String(sel.includes(id)) } : {}), onclick: () => onPick(id) }, st.kind === 'faction' ? fName(id) : regionName(id)));
-    return h('section', { class: 'rpick', 'aria-label': st.kind === 'faction' ? '대상 선택' : '지역 선택', onkeydown: (e) => { if (e.key === 'Escape') { e.stopPropagation(); cancelPick(); } } },
-      h('div', { class: 'rpick__head' }, renderCard(card, { size: 'mini' }), h('div', {}, h('p', { class: 'label' }, `${st.kind === 'faction' ? '대상 선택' : '지역 선택'}${steps.length > 1 ? ` · ${k + 1}/${steps.length}단계` : ' · 카드 다음 단계'}`),
-        h('p', { class: 'cq' }, `${card.name}: ${josa(stepAsk(st), '을', '를')} 고르세요.${st.kind === 'faction' ? '' : ' 지도의 점선 지역을 눌러도 됩니다.'}`))),
-      h('div', { class: `copts ${st.kind === 'faction' ? 'copts--row' : 'copts--grid'}`, role: 'group', 'aria-label': st.kind === 'faction' ? '선택할 수 있는 세력' : '선택할 수 있는 지역' }, opts),
+    const label = { confirm: (v) => (v ? '예, 추가로 냅니다' : '아니오'), card: (v) => C[v]?.name ?? v, faction: fName }[st.kind];
+    const opts = st.options.map((id) => st.kind === 'card'
+      ? h('button', { class: 'opt opt--c', type: 'button', 'aria-label': C[id]?.name, onclick: () => onPick(id) }, renderCard(C[id], { size: 'mini' }))
+      : h('button', { class: 'opt', type: 'button', ...(pair ? { 'aria-pressed': String(sel.includes(id)) } : {}), onclick: () => onPick(id) }, label ? label(id) : regionName(id)));
+    const head = isReg ? '지역 선택' : st.kind === 'confirm' ? '추가 지불 선택' : st.kind === 'card' ? '카드 선택' : '대상 선택';
+    const no = k + 1;
+    return h('section', { class: 'rpick', 'aria-label': head, onkeydown: (e) => { if (e.key === 'Escape') { e.stopPropagation(); cancelPick(); } } },
+      h('div', { class: 'rpick__head' }, renderCard(card, { size: 'mini' }), h('div', {}, h('p', { class: 'label' }, `${head}${total > 1 ? ` · ${no}/${total}단계` : ' · 카드 다음 단계'}`),
+        h('p', { class: 'cq' }, `${card.name}: ${st.kind === 'confirm' ? `${josa(RES_KO[st.pay.res] + ' ' + st.pay.amount, '을', '를')} 추가로 내고 효과를 얻을까요?` : `${josa(stepAsk(st, card).replace(/을 고르세요$/, ''), '을', '를')} 고르세요.`}${isReg ? ' 지도의 점선 지역을 눌러도 됩니다.' : ''}`))),
+      h('div', { class: `copts ${isReg ? 'copts--grid' : 'copts--row'}`, role: 'group', 'aria-label': isReg ? '선택할 수 있는 지역' : '선택할 수 있는 항목' }, opts),
       h('div', { class: 'cbar__b' },
         pair ? btn(sel.length === 2 ? `확인 · ${sel.map(regionName).join(' + ')}` : `${sel.length}/2곳 고름`, () => choose(idx, st, sel.slice()), 'btn--primary', { disabled: sel.length !== 2 }) : null,
-        k > 0 ? btn('이전 단계', () => { const key = { region: 'region', regionPair: 'pair', faction: 'target' }[steps[k - 1].kind]; view.pickAcc = { ...acc, [key]: undefined }; repaint(); }) : null,
+        k > 0 ? btn('이전 단계', () => { const nx = { ...acc }; delete nx[steps[k - 1].key]; view.pickAcc = nx; repaint(); }) : null,
         btn('취소', cancelPick)));
   }
   /** 지도에서 강조할 후보 지역 (계획 단계에서 카드의 지역을 고르는 중일 때) */
-  const planStep = (s) => { if (view.pickFor == null || s.phase !== 'plan') return null; const steps = planSteps(C[s.players[me()].hand[view.pickFor]], s, me()); return steps.find((x) => !stepDone(x, view.pickAcc || {})) ?? null; };
-  const planCandidates = (s) => { const st = planStep(s); return st && st.kind !== 'faction' ? st.options : []; };
+  const planStep = (s) => { if (view.pickFor == null || s.phase !== 'plan') return null; const card = C[s.players[me()].hand[view.pickFor]], acc = view.pickAcc || {}; return stepsOf(s, card, acc, false).find((x) => !stepDone(x, acc)) ?? null; };
+  const planCandidates = (s) => { const st = planStep(s); return st && (st.kind === 'region' || st.kind === 'regionPair') ? st.options : []; };
   /** 계획 때 정한 선택(지역 · 지역 두 곳 · 대상 세력)을 해결 단계의 질문에 자동으로 답한다. 처리 중이면 true (고를 수 없게 됐으면 false → 직접 고름).
    *  미리 고른 값은 loop.ui.pre(저장에 포함)에 있어서 새로고침해도 다시 묻지 않는다 */
   function autoChoose(s) {
@@ -196,7 +211,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     if (!pc || !pre || pc.faction !== me() || (pc.actor ?? pc.faction) !== me()) return false;
     const st = preState(pre, pc);
     if (!st) return false;
-    if (st === 'stale') { takePre(pre, pc); return false; }
+    if (st === 'stale') { const old = pre[pc.ctx.cardId].find((e) => e.kind === pc.kind && (e.stage ?? DEF_STAGE[e.kind]) === pc.stage)?.v; takePre(pre, pc); view.stale = { id: pc.id, text: `계획 때 고른 ${optLabel(pc, old)}은(는) 이제 고를 수 없어요. 다시 고르세요.` }; return false; }
     if (view.autoFor !== pc.id) {
       view.autoFor = pc.id;
       setTimeout(() => {
@@ -230,7 +245,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     if (view.pickFor != null && loop.state.phase === 'plan') {
       const s = loop.state;
       const st = planStep(s);
-      if (!st || st.kind === 'faction' || !st.options.includes(id)) return false;
+      if (!st || (st.kind !== 'region' && st.kind !== 'regionPair') || !st.options.includes(id)) return false;
       if (st.kind === 'region') choose(view.pickFor, st, id);
       else { const a = view.pairSel || [], sel = a.includes(id) ? a.filter((x) => x !== id) : [...a, id].slice(-2); view.pairSel = sel; repaint(); }
       return true;
@@ -246,6 +261,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     if (view.choiceFor !== pc.id) { view.choiceFor = pc.id; view.choice = null; sfx('alert'); }
     const src = source(pc), c = view.choice, ready = pc.kind === 'regionPair' ? Array.isArray(c) && c.length === 2 : c != null;
     const go = (v) => { const r = submit({ type: 'CHOOSE', faction: me(), pendingId: pc.id, choice: v }); if (!r.ok) announce(r.reason); else { sfx('confirm'); view.choice = null; announce('선택을 확정했습니다'); } };
+    const why = pc.ctx?.cardId && pc.faction === me() ? (view.stale?.id === pc.id ? view.stale.text : pc.kind === 'card' && pc.effect?.type === 'discard' && pc.effect.who !== 'self' ? '손패를 확인한 뒤 고르는 선택이라 지금 묻습니다.' : '계획 뒤 상황이 바뀌어, 계획 때 없던 질문이 생겼어요.') : null;
     const ask = ASK[pc.effect?.type] ?? { region: '지역', regionPair: '지역 두 곳', faction: '세력', card: '카드', confirm: '확인' }[pc.kind];
     let list;
     if (pc.kind === 'region' || pc.kind === 'regionPair') {
@@ -259,11 +275,12 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
       list = h('div', { class: 'copts copts--row', role: 'group', 'aria-label': '선택할 수 있는 카드' }, pc.options.map((id) => h('button', { class: 'opt opt--c', type: 'button', 'aria-pressed': String(c === id), 'aria-label': C[id]?.name, onclick: () => { view.choice = id; repaint(); } }, renderCard(C[id], { size: 'mini', state: c === id ? 'selected' : 'normal' }))));
     } else {
       const cond = pc.effect?.if?.payOptional, thenTxt = effectsToKorean(pc.effect?.then || [], null).join(', ');
-      return [h('div', { class: 'chead' }, h('p', { class: 'label' }, '선택 필요 · 확인'), h('p', { class: 'cq' }, cond ? `${{ capital: '자본', energy: '에너지', industry: '산업' }[cond.res]} ${cond.amount}을 내고 효과를 얻으시겠습니까?` : '진행하시겠습니까?'), thenTxt ? h('p', { class: 'cdesc' }, `얻는 효과: ${thenTxt}`) : null), h('div', { class: 'cyn' }, btn('예', () => go(true), 'btn--primary stampbtn'), btn('아니오', () => go(false), 'stampbtn'))];
+      return [h('div', { class: 'chead' }, h('p', { class: 'label' }, '선택 필요 · 확인'), why ? h('p', { class: 'cwhy', role: 'status' }, why) : null, h('p', { class: 'cq' }, cond ? `${{ capital: '자본', energy: '에너지', industry: '산업' }[cond.res]} ${cond.amount}을 내고 효과를 얻으시겠습니까?` : '진행하시겠습니까?'), thenTxt ? h('p', { class: 'cdesc' }, `얻는 효과: ${thenTxt}`) : null), h('div', { class: 'cyn' }, btn('예', () => go(true), 'btn--primary stampbtn'), btn('아니오', () => go(false), 'stampbtn'))];
     }
     return [
       h('div', { class: 'chead' }, h('p', { class: 'label' }, `선택 필요 · ${src.label}`),
         h('div', { class: 'csrc' }, src.card ? renderCard(src.card, { size: 'mini' }) : null, h('div', {}, h('b', {}, src.name), h('p', { class: 'cdesc' }, plainText(src.text)))),
+        why ? h('p', { class: 'cwhy', role: 'status' }, why) : null,
         h('p', { class: 'cq' }, `${josa(ask, '을', '를')} 고르십시오${pc.kind === 'regionPair' ? ' (서로 다른 두 곳)' : ''}. ${pc.kind.startsWith('region') ? '지도의 점선 지역을 눌러도 됩니다.' : ''}`)),
       list,
       h('div', { class: 'cbar' }, h('p', { class: 'cbar__t', 'aria-live': 'polite' }, ready ? sentence(pc, c) : '아직 고르지 않았습니다'), h('div', { class: 'cbar__b' }, btn('확정', () => go(c), 'btn--primary', { disabled: !ready }), btn('취소', () => { view.choice = null; repaint(); }, '', { disabled: c == null }))),

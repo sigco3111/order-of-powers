@@ -54,6 +54,7 @@
 .csrc { display: flex; gap: var(--s2); align-items: center; } .csrc b { font: 800 1rem var(--font-display); }
 .cdesc { font-size: var(--fs-small); line-height: 1.4; }
 .cq { font-size: var(--fs-small); font-weight: 700; }
+.cwhy { font-size: var(--fs-small); margin: 0 0 var(--s2); padding: var(--s2) var(--s3); border-left: 3px solid var(--stamp, #9A3025); background: color-mix(in srgb, var(--stamp, #9A3025) 8%, transparent); }
 .copts { display: grid; gap: var(--s2); margin-top: var(--s2); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .copts--row { display: flex; overflow-x: auto; padding: 4px 4px 8px 0; scroll-snap-type: x proximity; }
 .copts--grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: var(--s2); overflow: visible; padding: 4px 0 var(--s1); }
