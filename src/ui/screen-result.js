@@ -96,6 +96,7 @@ export function resultScreen({ store, show }) {
     rep.highlights.length ? h('section', { class: 'rep__sec' }, h('h3', {}, '하이라이트'), rep.highlights.map((x) => h('div', { class: 'leader' }, h('span', {}, x.label), h('i'), h('b', { class: 'rep__hv' }, x.value, h('small', {}, ` ${x.note}`))))) : null,
     h('section', { class: 'rep__sec' }, h('h3', {}, '작전 조건'),
       [['국가', rep.settings.country], ['라운드 수', `${rep.settings.rounds}`], ['AI 난이도', rep.settings.levelKo], ['시드', String(rep.settings.seed)]].map(([a, b]) => h('div', { class: 'leader' }, h('span', {}, a), h('i'), h('b', {}, b)))),
+    h('p', { class: 'label rep__diff' }, `난이도: ${rep.settings.levelKo}${data.difficulty?.[rep.settings.level]?.income?.length ? ' — ' + data.difficulty[rep.settings.level].line.replace(/^[^:]*: /, '') : ''}`),
     h('div', { class: 'rep__btns' },
       h('button', { class: 'btn btn--primary', type: 'button', onclick: again }, '다시 하기'),
       h('button', { class: 'btn', type: 'button', onclick: () => show('setup') }, '설정으로'),

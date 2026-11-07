@@ -53,7 +53,7 @@ export function setupScreen({ store, show }) {
       ui.faction = cur().archetype;
       minutes.textContent = `약 ${MINUTES[ui.rounds]}분`;
       modeLine.textContent = data.roundModes?.[ui.rounds]?.line || '';
-      note.textContent = aiMeta[ui.level].description;
+      note.textContent = aiMeta[ui.level].description + (data.difficulty?.[ui.level]?.income?.length ? ' · ' + data.difficulty[ui.level].line : '');
       const lu = lineup();
       sum.replaceChildren(h('b', {}, `${cur().nameKo} · ${ARCHETYPE_KO[cur().archetype]}`), `${ui.rounds}라운드 · ${LEVEL_KO[ui.level]}`);
       opps.replaceChildren(h('p', { class: 'label', style: 'margin:0 0 6px' }, '상대 (컴퓨터)'), ...ARCHETYPES.filter((a) => a !== cur().archetype).map((a) => h('div', { class: 'opps__row', style: `--fc:var(--f-${a})` }, mono(byId[lu[a]]), h('span', {}, h('b', {}, byId[lu[a]].nameKo), h('small', {}, ` ${ARCHETYPE_KO[a]}`)))));

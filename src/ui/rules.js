@@ -29,6 +29,7 @@ export function rulesDoc(data) {
     ],
     setup: [
       { t: 'p', text: '새 게임에서 국가 하나, 라운드 수, AI 난이도(쉬움·보통·어려움)를 고릅니다. 시드(고급)를 같게 하면 같은 판을 다시 할 수 있습니다.' },
+      ...(data.difficulty ? [{ t: 'p', text: '난이도: ' + ['easy', 'normal', 'hard'].map((k) => data.difficulty[k].line).join(' / ') + '. 보정은 컴퓨터 자리에만 적용되고 사람 자리에는 없습니다. 어려움 컴퓨터는 보정과 더 깊은 계산을 함께 씁니다.' }] : []),
       { t: 'table', head: ['항목', '값'], rows: [
         ['시작 자원', `자본 ${st.capital} · 에너지 ${st.energy} · 산업 ${st.industry} · 위신 ${RULES.startPrestige}`],
         ['손패', `${RULES.handSize}장`], ['계획 칸', `${RULES.planSlots}개 (성장 카드로 늘릴 수 있음)`],
