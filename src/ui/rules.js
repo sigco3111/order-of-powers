@@ -175,7 +175,7 @@ export async function openRules({ data, at = null } = {}) {
   if (!data) return null;
   const doc = rulesDoc(data), from = document.activeElement;
   const scroller = h('div', { class: 'rules__scroll', tabIndex: -1 });
-  const jump = (id) => { const el = root.querySelector(`#rules-${id}`); if (!el) return; el.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); mdet.open = false; };
+  const jump = (id) => { const el = root.querySelector(`#rules-${id}`); if (!el) return; mdet.open = false; /* 차례를 먼저 접어야 위쪽 높이가 변하지 않는다 */ requestAnimationFrame(() => el.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })); };
   const tocItem = (c) => h('li', {}, h('a', { href: `#rules-${c.id}`, 'data-ch': c.id, onclick: (e) => { e.preventDefault(); jump(c.id); } }, h('span', { class: 'num' }, c.no), h('span', {}, c.title)));
   const side = h('nav', { class: 'rules__toc', 'aria-label': '규칙서 차례' }, h('p', { class: 'label' }, '차례'), h('ol', {}, doc.map(tocItem)));
   const mdet = h('details', { class: 'rules__mtoc' }, h('summary', {}, h('span', { class: 'label' }, '차례'), h('span', { class: 'rules__cur' }, doc[0].title)), h('ol', {}, doc.map(tocItem)));
