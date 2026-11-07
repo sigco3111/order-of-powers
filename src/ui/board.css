@@ -135,14 +135,14 @@
 
 @media (min-width: 900px) {
   .screen--board { padding: var(--s4) var(--s5) var(--s6); }
-  .board { grid-template-columns: 340px minmax(0, 1fr); grid-template-areas: "head head" "rail map" "rail body" "rail act" "rail .";
+  .board { grid-template-columns: 340px minmax(0, 1fr); grid-template-areas: "head head" "rail map" "rail act" "rail body" "rail .";
     grid-template-rows: auto auto auto auto 1fr; gap: var(--s4) var(--s5); align-items: start; }
   .bhead { grid-area: head; grid-template-columns: auto auto 1fr; align-items: center; gap: var(--s5); }
   .bhead .evt { grid-column: auto; }
   .brail { grid-area: rail; }
   .map { grid-area: map; }
   .pbody-host { grid-area: body; }
-  .map__stage { height: clamp(380px, calc(100vh - 400px), 600px); }
+  .map__stage { height: clamp(340px, calc(100vh - 480px), 600px); }
   .act { grid-area: act; position: static; margin: 0; max-height: none; border: var(--line); box-shadow: var(--shadow); background: var(--paper-light); padding: var(--s4); }
   .tabs { display: none; }
   .brail > section { display: block !important; }
