@@ -82,7 +82,7 @@ export function resultScreen({ store, show }) {
       h('div', {}, h('p', { class: 'label' }, rep.tie ? '공동 승리' : '승자'),
         h('h2', { id: 'rep-title', class: 'rep__title' }, rep.winnerNames.join(' · ')),
         h('p', { class: 'rep__sub' }, rep.humanWon ? '당신의 나라가 승리했습니다.' : `당신은 ${you.rank}위 (${you.total}점)로 마쳤습니다.`)),
-      h('div', { class: 'rep__stamps' }, h('span', { class: 'stamp stamp--brass stamp--press rep__win' }, rep.tie ? '공동 승리' : '승리'), h('span', { class: 'stamp stamp--ink rep__iso-s num' }, win.iso))),
+      h('div', { class: 'rep__stamps' }, h('span', { class: `stamp ${rep.humanWon ? 'stamp--brass' : 'stamp--ink'} stamp--press rep__win` }, rep.humanWon ? (rep.tie ? '공동 승리' : '승리') : '패배'), h('span', { class: 'stamp stamp--ink rep__iso-s num' }, win.iso))),
     table,
     rep.tieNote ? h('p', { class: 'rep__tie' }, h('span', { class: 'tag' }, '동점 처리'), rep.tieNote) : null,
     unlocked.length ? h('p', { class: 'rep__ach' }, h('span', { class: 'label' }, '새 업적'), unlocked.map((a) => h('span', { class: 'stamp stamp--brass', title: a.desc }, a.name))) : null,
