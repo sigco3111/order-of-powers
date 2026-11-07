@@ -69,7 +69,7 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
 
   const state = {
     version: 1, seed, rng,
-    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction, ...(cmap && { countries: cmap }) },
+    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction, ...(cmap && { countries: cmap }), ...(!tutorial && data.roundModes?.[rounds] && { roundMode: deepClone(data.roundModes[rounds]) }) },
     round: 1, phase: 'setup', turnOrder: ids.slice(),
     eventDeck, eventDiscard: [], currentEvent: null,
     modifiers: { round: {}, game: {} },
