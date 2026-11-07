@@ -10,12 +10,12 @@ import { chooseAction, LEVELS, tune } from '../src/ai/ai.js';
 const FACTIONS = ['atlas', 'redDragon', 'polarStar', 'emerald'];
 
 export function parseArgs(argv) {
-  const o = { games: 500, rounds: 8, levels: ['hard', 'hard', 'hard', 'hard'], seed: 1, rotate: false, json: null, countries: null, tune: null };
+  const o = { games: 500, rounds: 8, levels: ['hard', 'hard', 'hard', 'hard'], seed: 1, rotate: false, json: null, countries: null, tune: null, difficulty: null };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i], v = () => argv[++i];
     if (k === '--games') o.games = +v(); else if (k === '--rounds') o.rounds = +v();
     else if (k === '--levels') o.levels = v().split(','); else if (k === '--seed') o.seed = +v();
-    else if (k === '--countries') o.countries = v(); else if (k === '--rotate-seats') o.rotate = true; else if (k === '--json') o.json = v(); else if (k === '--tune') o.tune = JSON.parse(v());
+    else if (k === '--countries') o.countries = v(); else if (k === '--rotate-seats') o.rotate = true; else if (k === '--json') o.json = v(); else if (k === '--tune') o.tune = JSON.parse(v()); else if (k === '--difficulty') o.difficulty = JSON.parse(v());
     else throw new Error('알 수 없는 옵션: ' + k);
   }
   if (o.levels.length !== 4 || o.levels.some((l) => !LEVELS.includes(l))) throw new Error('--levels는 easy|normal|hard 4개');
@@ -24,7 +24,7 @@ export function parseArgs(argv) {
 
 /** 한 판. levelOf: {faction: level}. 반환: 결과 요약 */
 export function playGame(data, { rounds, seed, levelOf, order = FACTIONS, countries }) {
-  let s = createGame({ data, rounds, seed, factions: order, countries });
+  let s = createGame({ data, rounds, seed, factions: order, countries, seatLevels: levelOf });
   const t0 = performance.now(), plays = {}, buys = {}, timing = {};
   let steps = 0;
   while (s.phase !== 'end') {
@@ -48,6 +48,7 @@ export function playGame(data, { rounds, seed, levelOf, order = FACTIONS, countr
 function main() {
   const o = parseArgs(process.argv.slice(2)), data = loadData();
   if (o.tune) Object.assign(tune, o.tune);
+  if (o.difficulty) data.difficulty = { ...data.difficulty, ...Object.fromEntries(Object.entries(o.difficulty).map(([l, income]) => [l, { ...data.difficulty[l], income }])) }; // 후보 보정 실험: --difficulty '{"hard":[{"res":"capital","amount":1}]}'
   const name = Object.fromEntries([...data.factions, ...data.cards, ...data.growth].map((x) => [x.id, x.name]));
   const each = o.countries?.startsWith('randomEach:') ? +o.countries.slice(11) : null; // 판마다 다른 무작위 국가
   const cm = each !== null ? { ...DEFAULT_COUNTRIES } : !o.countries ? { ...DEFAULT_COUNTRIES } : o.countries.startsWith('random:') ? randomCountries(data, o.countries.slice(7))
