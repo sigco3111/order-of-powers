@@ -170,6 +170,8 @@ test('지연 이벤트: 해결 단계 뒤에 적용', () => {
   setHand(s, A, ['st-common-4']);
   s = act(s, { type: 'PLAN', faction: A, cards: ['st-common-4'] }).state;
   for (const f of [B, C, D]) s = act(s, { type: 'SKIP_PLAN', faction: f }).state;
+  assert.equal(s.pending[0].kind, 'region'); // M1f: 외교 서한은 아무 지역에나 놓는다
+  s = act(s, { type: 'CHOOSE', faction: A, choice: 'europe' }).state;
   assert.equal(s.phase, 'shop');
   assert.deepEqual(F.map((f) => s.players[f].prestige), [1, 0, 0, 0]);
 });
