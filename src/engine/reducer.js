@@ -1,6 +1,6 @@
 // 라운드 리듀서. reduce(state, action) → {ok, state, events, reason?}. 순수 함수: 입력 상태는 바뀌지 않는다.
 // 단계: setup → (event → plan → reveal → resolve → upkeep → shop) × 라운드 → end. advance가 입력이 필요한 곳까지 자동 진행한다.
-import { deepClone, indexData } from './util.js';
+import { deepClone, indexData, snapState } from './util.js';
 import { createGame, drawToHandSize, resolveOrder, planSlotsOf, pickAsset, validateInvariants } from './state.js';
 import { applyEvent, playCard, runEffects, resolveChoice, clearRoundEffects, isDeferredEvent } from './effects.js';
 import { scoreRound, finalScores } from './score.js';
@@ -77,18 +77,22 @@ export function advance(state, data = getData()) {
       enter(s, 'resolve', ev);
       s.flow = { order, idx: 0, deferredDone: false };
       say(s, 'system', `해결 순서: ${order.map((x) => seatName(s, x, data)).join(' → ')}`);
-      ev.push({ type: 'order', order });
+      ev.push({ type: 'order', order, snap: snapState(s) });
     } else if (s.phase === 'resolve') {
       if (f.idx < f.order.length) {
         const x = f.order[f.idx], p = s.players[x];
         if (!p.plan.length) { f.idx++; continue; }
-        const r = playCard(s, x, p.plan[0], { data });
-        if (!r.ok) { say(s, x, `카드 사용 불가: ${p.plan[0]}`); p.plan.shift(); continue; }
-        ev.push({ type: 'play', faction: x, cardId: p.plan[0] });
+        const cardId = p.plan[0], r = playCard(s, x, cardId, { data });
+        if (!r.ok) { say(s, x, `카드 사용 불가: ${cardId}`); p.plan.shift(); continue; }
         s = r.state;
+        ev.push({ type: 'play', faction: x, cardId, snap: snapState(s) });
       } else if (!f.deferredDone) {
         f.deferredDone = true;
-        if (s.deferredEvent) { say(s, 'event', `이벤트 적용: ${ix.events[s.deferredEvent].name}`); s = applyEvent(s, ix.events[s.deferredEvent], { data }).state; }
+        if (s.deferredEvent) {
+          const id = s.deferredEvent;
+          say(s, 'event', `이벤트 적용: ${ix.events[id].name}`); s = applyEvent(s, ix.events[id], { data }).state;
+          ev.push({ type: 'deferred', id, snap: snapState(s) });
+        }
       } else enter(s, 'upkeep', ev);
     } else if (s.phase === 'upkeep') {
       s = scoreRound(s);
@@ -152,7 +156,7 @@ const ACTIONS = {
     const r = resolveChoice(s, pc.id, a.choice, data);
     if (!r.ok) return '선택할 수 없는 값입니다';
     say(r.state, a.faction, `선택: ${JSON.stringify(a.choice)}`);
-    ev.push({ type: 'choose', faction: a.faction, choice: a.choice });
+    ev.push({ type: 'choose', faction: a.faction, choice: a.choice, snap: snapState(r.state) });
     return r.state;
   },
   BUY(s, a, data, ev) {
