@@ -51,7 +51,7 @@ Order of Powers의 화면은 **인쇄된 정세 보고서**이자 **탁상 보�
 | 내비 | `.rail` `.steps` (src/ui/screens.css) | 데스크톱은 왼쪽 사건 철 레일, 모바일은 상단 3단계 괘선 띠 |
 | 기타 | `.tag` `.rule` `.leader` `.res-row` `.sheet` `.check` `.icon` | 분류 태그, 괘선, 점선 리더, 자원 행, 모달 시트, 네모 체크, 마스크 아이콘 |
 
-아이콘은 `assets/` 의 CC0 PNG를 `.icon` 마스크로 쓴다(색은 `currentColor`). 자본 `kenney-game-icons/coin`, 위신 `kenney-game-icons/star`, 에너지 `kenney-board-game-icons/fire`, 산업 `kenney-board-game-icons/resource_iron`, 카드 `kenney-board-game-icons/cards_fan`. 세력 엠블럼 4종은 직접 그린 `assets/ui/emblem-<세력>.svg` (아틀라스: 동심원 + 북쪽 눈금, 적룡: 사각 안 뱀 곡선, 북극성: 원 안 8갈래 별, 에메랄드: 쌓인 잎·마름모 화살표).
+아이콘은 `assets/` 의 CC0 PNG를 `.icon` 마스크로 쓴다(색은 `currentColor`). 자본 `kenney-game-icons/coin`, 위신 `kenney-game-icons/star`, 에너지 `kenney-board-game-icons/fire`, 산업 `kenney-board-game-icons/resource_iron`, 카드 `kenney-board-game-icons/cards_fan`. 세력 엠블럼 4종은 직접 그린 `assets/ui/emblem-<세력>.svg` (외교형: 동심원 + 북쪽 눈금, 산업형: 사각 안 뱀 곡선, 군사형: 원 안 8갈래 별, 성장형: 쌓인 잎·마름모 화살표).
 
 ## 5. 화면 목록
 | 화면 | 상태 | 내용 |
@@ -79,3 +79,10 @@ Order of Powers의 화면은 **인쇄된 정세 보고서**이자 **탁상 보�
 
 ## 7. 브라우저 빌드와 엔진
 `src/engine`은 Node 전용 API를 쓰지 않는다. 단, `node-data.js`만 `node:fs`로 JSON을 읽으므로 브라우저에서는 쓰지 않고 `src/engine/browser-data.js`(`fetch`로 `src/data/*.json`을 읽어 `setData`로 등록)를 쓴다. 두 파일은 같은 모양의 data 묶음을 돌려준다. 진입점은 저장소 루트 `index.html` → `src/ui/app.js`. 저장 키는 `oop-save-v1`.
+
+## T1 추가: 국가 지정 화면
+
+- 편성 화면은 국가 선택기다. 유형 탭 4개(외교형·산업형·군사형·성장형, 각 탭 윗선은 유형 색)와 이름·코드 검색, 국가 카드 목록으로 이루어진다. 검색은 탭과 상관없이 전체 국가를 찾는다.
+- 카드 왼쪽 띠는 유형 색, 엠블럼 위에는 ISO 코드 도장(55% 투명도)을 얹는다. 국가는 색을 따로 갖지 않는다.
+- 900px 이상에서는 오른쪽에 큰 국가 자료철(`.cty-big`)과 상대 미리보기가 고정되고, 모바일에서는 선택한 카드가 그 자리에서 펼쳐진다. "고급 설정"에서 상대 국가를 직접 고를 수 있다.
+- 스크린샷: `docs/screens/t1-*.png`.

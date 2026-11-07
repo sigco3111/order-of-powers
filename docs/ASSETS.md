@@ -36,7 +36,7 @@
 
 ## 필요하지만 아직 없는 에셋
 - ~~세계 지도 8개 지역 SVG~~ → 완료: `assets/map/world-regions.svg` (Natural Earth 기반, [지도 미리보기](https://sigco3111.github.io/order-of-powers/map/))
-- 세력 문장 4종 (아틀라스 연합, 적룡 공화국, 북극성 연방, 에메랄드 연맹) — 색 + 문양으로 구분
+- 세력 문장 4종 (외교형, 산업형, 군사형, 성장형) — 색 + 문양으로 구분
 - 카드 일러스트 (아이콘 조합으로 직접 제작)
 - 긴장감 있는 분위기의 배경음 (후반 라운드/정산용)
 - 한국어 폰트: Google Fonts의 Noto Sans KR, Black Han Sans (웹폰트로 불러오기)
