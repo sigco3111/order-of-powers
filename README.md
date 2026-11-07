@@ -1,10 +1,10 @@
-# 🏛 Order of Powers — 권력의 질서
+문서: README 현재 상태를 'M5 완료: 난이도 보정'으로 갱신# 🏛 Order of Powers — 권력의 질서
 
 현대 지정학 보드게임에서 영감을 받은, 실제 G20 국가로 겨루는 **독자 창작 웹 전략 보드게임**. 4라운드 튜토리얼부터 10라운드 본 게임까지.
 
 **▶ 라이브: https://sigco3111.github.io/order-of-powers/**
 
-현재 상태: **M4 완료: 어려움 AI와 판 길이** (선택 감점·상점 구매 문턱 조정, 어려움 종반·견제 보정, 결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M4'). 직전 **F1 완료: 마무리 점검** (계획 때 미리 고른 지역·대상을 저장에 포함, 지역 두 곳·대상 세력 카드도 계획 단계에서 선택, 접근성 점검, 결과는 [docs/QA_F1.md](docs/QA_F1.md)).
+현재 상태: **M5 완료: 난이도 보정** (어려움 컴퓨터가 매 라운드 자본 +1, `src/data/difficulty.json`에 공개, 결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M5'). 이전: M4 완료: 어려움 AI와 판 길이
 
 ## 특징
 - G20 국가 20개 중 하나를 골라 플레이 (실제 국가 특성 반영)
