@@ -1,5 +1,7 @@
 import { h, icon, openSheet } from './dom.js';
 import { applySettings, ensureLoop } from './app.js';
+import { openRecords } from './records-view.js';
+import { readRecords } from './records.js';
 
 const LOOP = ['라운드 시작: 이벤트 카드 1장이 공개되어 전 세계에 영향을 줍니다.', '계획: 손패 5장 중 3장을 골라 비공개로 배치합니다.', '공개와 실행: 모두 동시에 공개하고 우선권 순서대로 효과를 실행합니다.', '정산: 지역별 영향력을 비교해 점수를 얻고 자원 수입을 받습니다.', '성장: 시장에서 카드를 구매해 덱을 키웁니다.', '마지막 라운드가 끝나면 최종 점수를 집계합니다.'];
 
@@ -40,6 +42,7 @@ export function titleScreen({ store, show, saved }) {
         h('button', { class: 'btn btn--primary btn--block', onclick: () => show('setup') }, h('span', {}, h('span', { class: 'num' }, '01  '), '새 게임'), icon('assets/icons/kenney-board-game-icons/arrow_right.png')),
         row('02', '이어하기', has ? '저장됨' : '저장 없음', { disabled: !has, onclick: cont }),
         row('03', '규칙', '6단계', { onclick: rules }),
-        row('04', '설정', '', { onclick: settings }))),
+        row('04', '설정', '', { onclick: settings }),
+        row('05', '기록', `${readRecords().length}판`, { onclick: () => openRecords() }))),
     h('p', { class: 'label title__fig' }, '도 1 · 세계 8개 지역 · 축척 없음'));
 }
