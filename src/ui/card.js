@@ -27,6 +27,9 @@ export const catClass = (c) => `card--${CAT_CLS[c] || 'domestic'}`;
 const tag = (t, cls = '') => h('span', { class: `ctag ${cls}` }, t);
 
 /** 카드 한 장. size: hand(112×160 / 데스크톱 140×200) · detail(큰 카드) · mini(계획 칸·공개·선택용) */
+const squash = (t) => t.replace(/[\s,.·]/g, '');
+const same = (text, lines) => squash(lines.join('')) === squash(text);
+
 export function renderCard(card, { size = 'hand', state = 'normal', iso = null, mark = null, count = null } = {}) {
   const text = plainText(card.text || ''), long = text.length > 24 ? (text.length > 32 ? 'xl' : 'l') : 'm';
   const own = card.faction ? h('span', { class: 'card__own' }, h('img', { src: new URL(`../../assets/ui/emblem-${card.faction}.svg`, import.meta.url).href, alt: '', width: 18, height: 18 }), h('span', { class: 'card__iso' }, iso || 'ISO')) : null;
@@ -43,13 +46,12 @@ export function renderCard(card, { size = 'hand', state = 'normal', iso = null, 
       h('div', { class: 'card__name' }, name),
       h('div', { class: 'card__mid' }, icon(cardIconPath(card)), h('span', { class: 'card__tags' }, tag(timingTag(card)), detail || card.faction ? tag(DECK_KO[card.deck] || (card.permanent ? '성장' : '카드'), 'ctag--ink') : null, detail && card.oncePerGame ? tag('1회') : null)),
       h('p', { class: 'card__text' }, text),
-      detail ? h('ul', { class: 'card__plain', 'aria-label': '쉬운 말로' }, effectsToKorean(card.effects, card).map((t) => h('li', {}, t))) : null,
+      detail && !same(text, effectsToKorean(card.effects, card)) ? h('ul', { class: 'card__plain', 'aria-label': '쉬운 말로' }, effectsToKorean(card.effects, card).map((t) => h('li', {}, t))) : null,
       state === 'disabled' && mark ? h('span', { class: 'stamp stamp--ink card__placed' }, mark) : null,
       count > 1 ? h('span', { class: 'card__count num' }, '×' + count) : null)));
 }
 
 const EVT_TYPE = { '01': '경제', '02': '경제', '03': '경제', '04': '경제', '16': '경제', '17': '경제', '05': '위기', '06': '위기', '09': '위기', '10': '위기', '12': '위기', '13': '위기', '18': '위기', '07': '정세', '08': '정세', '14': '정세', '15': '정세', '11': '기회', '19': '기회', '20': '기회' };
-const same = (text, lines) => lines.length === 1 && lines[0].replace(/\s/g, '') === text.replace(/\s/g, '');
 export const eventType = (e) => EVT_TYPE[e.id.slice(4)] || '정세';
 /** 사건 카드: 큰 카드 + '사건' 도장 + 유형 도장 */
 export function renderEventCard(evt, { size = 'detail' } = {}) {

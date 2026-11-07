@@ -97,9 +97,9 @@
 .sum__i { display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; font-size: .8125rem; } .sum__i .icon { width: 14px; height: 14px; }
 @media (min-width: 900px) {
   .act--tray, .act--choice, .act--strip { max-height: none; position: static; }
-  .board.is-tray { grid-template-areas: "head head" "rail map" "act act" "body body"; }
   .hand { margin: var(--s2) 0 0; padding: 18px var(--s1) 12px; }
-  .act--tray { grid-area: act; grid-column: 1 / -1; }
+  .act--tray { grid-area: act; }
+  .board.is-tray .map__stage { height: clamp(250px, calc(100vh - 560px), 600px); }
   .slots { grid-template-columns: repeat(var(--slots, 3), minmax(0, 220px)); }
   .slot { flex-direction: row; flex-wrap: wrap; min-height: 56px; padding: 4px 6px; }
   .slot--full { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main ord" "chips ord"; align-items: center; gap: 2px 6px; }

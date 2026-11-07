@@ -5,6 +5,7 @@ import { regionLeaders } from '../engine/score.js';
 import { aiMeta } from '../ai/ai.js';
 import { createPlay } from './play.js';
 import { createPresenter } from './presenter.js';
+import { effectsToKorean } from './effect-text.js';
 
 const PHASE = { setup: '준비', event: '사건', plan: '계획', reveal: '공개', resolve: '해결', upkeep: '정산', shop: '상점', end: '종료' };
 const RIBBON = ['event', 'plan', 'reveal', 'resolve', 'upkeep', 'shop'];
@@ -40,7 +41,8 @@ export function gameScreen({ store, show }) {
   const submit = (a) => { const r = loop.submit(a); if (!r.ok) console.warn(r.reason); else run(); return r; };
   const announce = (t) => { live.textContent = ''; setTimeout(() => { live.textContent = t; }, 30); };
   const regionName = (id) => R[id]?.name ?? id;
-  const nice = (t = '') => plain(t).replace(rx, regionName).replace(/^선택: .*/, (m) => m.replace(/[\[\]"]/g, ''));
+  const modLine = (m, key, v, scope) => effectsToKorean([{ type: 'modifier', key, value: Number(String(v).replace('−', '-')), scope: scope === '게임' ? 'game' : 'round' }], null)[0] ?? m;
+  const nice = (t = '') => plain(t).replace(/^수정치 (\S+) ([+−-]\d+) \((게임|라운드)\)/, (m, k, v, sc) => modLine(m, k, v, sc)).replace(/(^|\s)(자본|에너지|산업|위신) \2(?=\s)/g, '$1$2').replace(rx, regionName).replace(/^선택: .*/, (m) => m.replace(/[\[\]"]/g, ''));
   const P = createPresenter({ loop, data, C, E, fName, regionName, isFast: () => view.fast, onChange: () => schedule() });
   const play = createPlay({ loop, data, view, repaint: () => paint(), submit, announce, C, A, E, R, F, fName, regionName });
   const shown = () => P.display || loop.state; // 연출 중에는 단계별로 따라가는 화면 상태
