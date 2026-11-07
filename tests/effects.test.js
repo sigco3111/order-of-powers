@@ -17,7 +17,12 @@ const data = {
 const card = (id) => data.cards.find((c) => c.id === id) || data.assets.find((c) => c.id === id) || data.events.find((c) => c.id === id);
 const [A, B, C, D] = ['atlas', 'redDragon', 'polarStar', 'emerald'];
 const R = data.regions.map((r) => r.id);
-const mk = (o = {}) => createGame({ data, seed: 7, humanFaction: A, ...o });
+/** 효과 단위 시험용: 국가 본거지 시작 영향력은 지워 빈 판에서 시작한다 */
+const mk = (o = {}) => {
+  const s = createGame({ data, seed: 7, humanFaction: A, ...o });
+  for (const r of Object.values(s.regions)) for (const f of Object.keys(r.influence)) r.influence[f] = 0;
+  return s;
+};
 const inf = (s, r, f, n) => { s.regions[r].influence[f] = n; return s; };
 const run = (s, f, effects, ctx = {}) => runEffects(s, f, effects, { data, ...ctx });
 const E = (type, o = {}) => ({ type, ...o });

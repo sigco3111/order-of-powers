@@ -23,6 +23,8 @@ const ready = (o) => {
   const s = pickAll(mk(o));
   assert.equal(s.phase, 'plan');
   for (const p of Object.values(s.players)) { p.resources = { capital: 4, energy: 2, industry: 2 }; p.prestige = 0; p.regionScore = 0; }
+  for (const r of Object.values(s.regions)) for (const f of F) r.influence[f] = 0; // 국가 본거지 시작 영향력·특성 제거
+  for (const p of Object.values(s.players)) p.trait = null;
   return s; // 1라운드 이벤트의 자원·위신 효과는 지워 둔다
 };
 const skipAll = (s) => F.reduce((st, f) => act(st, { type: 'SKIP_PLAN', faction: f }).state, s);

@@ -1,5 +1,6 @@
 import { seedToState, shuffle } from './rng.js';
 import { deepClone, countBy, indexData } from './util.js';
+import { resolveCountries, applyCountry, assetChoicesOf } from './countries.js';
 
 export const RULES = Object.freeze({
   factions: 4, handSize: 5, planSlots: 3, marketSlots: 6, maxInfluence: 6,
@@ -17,7 +18,7 @@ const newStats = () => ({
 const expand = (list) => list.flatMap((e) => Array(e.count).fill(e.cardId));
 
 /** 새 게임 상태. data = { cards, events, assets, goals, growth, factions, regions } (IO 없음) */
-export function createGame({ data, rounds = 8, factions, humanFaction = null, seed = 1, tutorial = false, aiLevel = 'normal', mode = 'single' }) {
+export function createGame({ data, rounds = 8, factions, humanFaction = null, seed = 1, tutorial = false, aiLevel = 'normal', mode = 'single', countries = null }) {
   const ix = indexData(data);
   const ids = factions || data.factions.map((f) => f.id);
   if (ids.length !== RULES.factions || new Set(ids).size !== ids.length) throw new Error('세력은 서로 다른 4개여야 한다');
@@ -25,6 +26,7 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
   if (humanFaction != null && !ids.includes(humanFaction)) throw new Error('humanFaction이 참가 세력이 아님');
   if (!(tutorial ? Number.isInteger(rounds) && rounds >= 2 : [6, 8, 10].includes(rounds))) throw new Error('라운드 수 오류: ' + rounds);
 
+  const cmap = resolveCountries(data, ids, countries), cx = indexData(data).countries;
   let rng = seedToState(seed);
   const sh = (a) => { const r = shuffle(rng, a); rng = r.rng; return r.array; };
 
@@ -41,7 +43,8 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
   const goalPool = sh(data.goals.map((g) => g.id));
 
   const players = {};
-  ids.forEach((f, i) => {
+  let assetAt = 0;
+  ids.forEach((f) => {
     const fd = ix.factions[f];
     const start = tutorial
       ? data.cards.filter((c) => c.deck === 'starter' && c.tutorialCount).flatMap((c) => Array(c.tutorialCount).fill(c.id))
@@ -51,9 +54,9 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
       hand: [], deck: sh(start), discard: [], played: [], plan: [],
       collection: countBy(start), growth: [], modifiers: {}, purchases: 0,
       firstPurchase: fd.uniqueCardIds.slice(0, RULES.firstPurchaseCards),
-      assetOptions: assetPool.slice(i * RULES.assetsDealt, (i + 1) * RULES.assetsDealt),
+      assetOptions: assetPool.slice(assetAt, assetAt += assetChoicesOf(cx?.[cmap?.[f]])),
       strategicAsset: null, usedAsset: false,
-      secretGoals: goalPool.slice(i * RULES.goalsDealt, (i + 1) * RULES.goalsDealt),
+      secretGoals: goalPool.slice(ids.indexOf(f) * RULES.goalsDealt, (ids.indexOf(f) + 1) * RULES.goalsDealt),
       stats: newStats(),
     };
   });
@@ -64,15 +67,17 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
     scoreValue: r.scoreValue, scoreBonus: r.scoreBonus || 0, produces: r.produces?.resource ?? null,
   }]));
 
-  return {
+  const state = {
     version: 1, seed, rng,
-    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction },
+    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction, ...(cmap && { countries: cmap }) },
     round: 1, phase: 'setup', turnOrder: ids.slice(),
     eventDeck, eventDiscard: [], currentEvent: null,
     modifiers: { round: {}, game: {} },
     market: { slots, deck: marketAll, growth: data.growth.map((g) => g.id) },
     regions, treaties: [], players, log: [],
   };
+  if (cmap) for (const f of ids) applyCountry(state, f, cx[cmap[f]], data);
+  return state;
 }
 
 /** 이번 라운드 해결 순서: 시작 인덱스 = (round-1) mod n */

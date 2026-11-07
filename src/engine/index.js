@@ -8,6 +8,7 @@ export { reduce, legalActions, waitingFor, phaseOf, advance, setData, getData };
 export { finalScores } from './score.js';
 export { validateInvariants, resolveOrder, RULES } from './state.js';
 export { hashState } from './util.js';
+export { ARCHETYPES, ARCHETYPE_KO, DEFAULT_COUNTRIES, randomCountries, seatName, localize, countryOf, countryIdOf } from './countries.js';
 
 /** 새 게임 (data를 기본 데이터로 등록한다) */
 export function createGame(opts) {

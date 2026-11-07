@@ -5,6 +5,7 @@ import { nextInt, shuffle } from './rng.js';
 import { RULES, getMod, drawCards } from './state.js';
 import { hasTreaty } from './score.js';
 import { CUSTOM } from './effects-custom.js';
+import { localize } from './countries.js';
 
 export const getModifier = getMod;
 const KO = { capital: '💰 자본', energy: '🛢 에너지', industry: '🏭 산업', prestige: '⭐ 위신' };
@@ -13,7 +14,7 @@ const sign = (n) => (n >= 0 ? '+' : '') + n;
 // ---------- 공용 헬퍼 (effects-custom.js에서도 사용) ----------
 export const opponents = (s, f) => s.turnOrder.filter((x) => x !== f);
 export const partners = (s, f) => opponents(s, f).filter((x) => hasTreaty(s, f, x));
-export const log = (s, actor, text) => s.log.push({ round: s.round, phase: s.phase, actor, text });
+export const log = (s, actor, text) => s.log.push({ round: s.round, phase: s.phase, actor, text: localize(s, text) });
 export const roundMods = (s, f) => (s.players[f].roundModifiers ||= {});
 export function rand(s, n) { const r = nextInt(s.rng, n); s.rng = r.rng; return r.value; }
 export const pick = (s, arr) => arr[rand(s, arr.length)];
@@ -113,8 +114,10 @@ const H = {
     const rid = region(X, it, allRegions(s).filter((r) => e.filter !== 'owned' || s.regions[r].influence[f] > 0));
     if (!rid) return;
     if (e.filter === 'owned' && s.regions[rid].influence[f] === 0) return log(s, f, `${rid}에 내 영향력이 없어 영향력 효과 생략`);
-    const n = e.amount + (X.ctx.influenceBonus || 0);
+    let n = e.amount + (X.ctx.influenceBonus || 0);
     delete X.ctx.influenceBonus;
+    const pf = s.players[f], tr = pf.trait; // 국가 특성: 매 라운드 본거지(또는 지정 이웃 지역)에 처음 놓는 영향력 +n
+    if (tr?.type === 'regionFirstInfluence' && rid === (tr.region === 'home' ? pf.home : tr.region) && !pf.roundHomeUsed) { pf.roundHomeUsed = true; n += tr.amount; }
     const got = addInfluence(s, f, rid, n);
     log(s, f, `${rid} 영향력 +${got}${got < n ? ` (상한, ${n - got} 소실)` : ''}`);
   },
@@ -407,7 +410,7 @@ export function clearRoundEffects(state) {
   const carry = (bag) => Object.fromEntries(Object.entries(bag || {}).filter(([k]) => k.startsWith('nextRound.')).map(([k, v]) => [k.slice(10), v]));
   for (const r of Object.values(s.regions)) for (const f of Object.keys(r.defense)) r.defense[f] = 0;
   s.modifiers.round = carry(s.modifiers.round);
-  for (const p of Object.values(s.players)) { p.roundModifiers = carry(p.roundModifiers); p.roundPlays = {}; }
+  for (const p of Object.values(s.players)) { p.roundModifiers = carry(p.roundModifiers); p.roundPlays = {}; p.roundBuys = 0; p.roundHomeUsed = false; }
   s.treaties = []; s.peeked = {}; s.eventLosses = [];
   return s;
 }

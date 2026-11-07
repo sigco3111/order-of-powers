@@ -13,7 +13,8 @@ export function refill(state) {
 /** 구매 비용 = 기본비용 + shop.costDelta − (첫 구매면 shop.firstPurchaseDiscount), 최소 1 */
 export function cardCost(state, data, faction, id) {
   const ix = indexData(data), base = (ix.cards[id] || ix.growth[id]).cost, p = state.players[faction];
-  const disc = p.purchases === 0 ? getMod(state, faction, 'shop.firstPurchaseDiscount') : 0;
+  const disc = (p.purchases === 0 ? getMod(state, faction, 'shop.firstPurchaseDiscount') : 0)
+    + (p.trait?.type === 'firstBuyDiscount' && !p.roundBuys ? p.trait.amount : 0); // 국가 특성: 라운드 첫 구매 할인
   return Math.max(1, base + getMod(state, faction, 'shop.costDelta') - disc);
 }
 
@@ -37,6 +38,7 @@ export function buy(state, data, faction, id) {
   const q = s.players[faction];
   q.resources.capital -= cost;
   q.purchases += 1;
+  q.roundBuys = (q.roundBuys || 0) + 1;
   if (isGrowth) {
     q.growth.push(id);
     for (const e of ix.growth[id].effects) if (e.type === 'modifier') q.modifiers[e.key] = (q.modifiers[e.key] || 0) + e.value;

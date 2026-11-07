@@ -2,7 +2,7 @@
 // node-data.js(node:fs)의 브라우저 대응 파일이며 같은 모양의 data를 돌려준다.
 import { setData } from './data.js';
 
-const NAMES = { cards: 'cards', events: 'events', assets: 'strategic-assets', goals: 'secret-goals', growth: 'growth-cards', factions: 'factions', regions: 'regions' };
+const NAMES = { cards: 'cards', events: 'events', assets: 'strategic-assets', goals: 'secret-goals', growth: 'growth-cards', factions: 'factions', regions: 'regions', countries: 'countries' };
 
 /** 모듈 위치 기준으로 읽으므로 GitHub Pages 하위 경로에서도 동작한다 */
 export async function loadData(base = new URL('../data/', import.meta.url)) {

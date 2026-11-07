@@ -12,6 +12,9 @@ export function computeIncome(state, faction) {
     const res = state.regions[rid].produces;
     if (res && fs.includes(faction)) out[res] += 1;
   }
+  const t = state.players[faction].trait; // 국가 특성: 짝수 라운드 / 마지막 n라운드 수입
+  if (t?.type === 'evenRoundIncome' && state.round % 2 === 0) out[t.res] += t.amount;
+  if (t?.type === 'lateIncome' && state.round > state.config.rounds - t.rounds) out[t.res] += t.amount;
   for (const k of [...RESOURCES, 'prestige']) {
     out[k] += getMod(state, faction, 'income.' + k);
     if (k !== 'prestige') out[k] = Math.max(0, out[k]);

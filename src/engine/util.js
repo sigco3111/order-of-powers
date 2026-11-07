@@ -47,7 +47,7 @@ export function indexData(data) {
     const by = (a) => Object.fromEntries((a || []).map((x) => [x.id, x]));
     cache.set(data, {
       cards: by(data.cards), events: by(data.events), assets: by(data.assets),
-      goals: by(data.goals), growth: by(data.growth), factions: by(data.factions), regions: by(data.regions),
+      goals: by(data.goals), growth: by(data.growth), factions: by(data.factions), regions: by(data.regions), countries: data.countries && by(data.countries),
     });
   }
   return cache.get(data);

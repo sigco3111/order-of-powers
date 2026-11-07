@@ -4,6 +4,7 @@ import { legalActions, reduce, getData } from '../engine/index.js';
 import { finalScores } from '../engine/score.js';
 import { regionLeaders, metricValue } from '../engine/score.js';
 import { planSlotsOf } from '../engine/state.js';
+import { seatName, josa } from '../engine/countries.js';
 import { seedToState, nextInt, nextFloat, shuffle } from '../engine/rng.js';
 import { deepClone, indexData, hashState } from '../engine/util.js';
 
@@ -289,10 +290,9 @@ export function chooseAction(state, faction, { level = 'normal', rngSeed = 0, da
 }
 
 // ---------- UI 로그용 설명 ----------
-const josa = (w, a, b) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c < 11172 && c % 28 ? a : b); };
 /** 행동을 짧은 한국어 문장으로. (계획 카드는 공개 전이라 숨긴다) */
 export function describeIntent(state, action, data = getData()) {
-  const ix = indexData(data), fn = (f) => ix.factions[f]?.name ?? f, rn = (r) => ix.regions[r]?.name ?? r;
+  const ix = indexData(data), fn = (f) => seatName(state, f, data), rn = (r) => ix.regions[r]?.name ?? r;
   const who = josa(fn(action.faction), '이', '가');
   switch (action.type) {
     case 'PICK_ASSET': return `${who} 전략 자산을 골랐다`;

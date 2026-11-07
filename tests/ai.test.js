@@ -110,10 +110,10 @@ test('어려움 결정 시간: 계획 단계 평균 400ms 미만', { timeout: 24
 test('describeIntent: 한국어 한 줄 설명', () => {
   let s = createGame({ data, rounds: 6, seed: 4 });
   const asset = legalActions(s, 'polarStar', data)[0];
-  assert.match(describeIntent(s, asset, data), /북극성 연방이 전략 자산을 골랐다/);
+  assert.match(describeIntent(s, asset, data), /러시아가 전략 자산을 골랐다/);
   for (const f of F) s = reduce(s, legalActions(s, f, data)[0], data).state;
   const plan = legalActions(s, 'atlas', data).find((a) => a.type === 'PLAN' && a.cards.length);
-  assert.match(describeIntent(s, plan, data), /아틀라스 연합이 계획을 세웠다/);
+  assert.match(describeIntent(s, plan, data), /독일이 계획을 세웠다/);
   assert.ok(!describeIntent(s, plan, data).includes(plan.cards[0]), '계획 카드는 공개 전이라 숨긴다');
   // 선택 대기: 지역 영향력
   let t = s, n = 0;
@@ -127,5 +127,5 @@ test('describeIntent: 한국어 한 줄 설명', () => {
   }
   const reg = { type: 'CHOOSE', faction: 'polarStar', pendingId: 'x', choice: 'eastAsia' };
   const fake = { pending: [{ id: 'x', kind: 'region', effect: { type: 'influence' } }] };
-  assert.equal(describeIntent(fake, reg, data), '북극성 연방이 동아시아에 영향력을 놓았다');
+  assert.equal(describeIntent(fake, reg, data), '러시아가 동아시아에 영향력을 놓았다');
 });

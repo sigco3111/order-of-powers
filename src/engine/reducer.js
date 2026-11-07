@@ -8,19 +8,19 @@ import { refill, buy } from './market.js';
 import { payIncome } from './income.js';
 import { waitingFor, phaseOf, legalActions } from './legal.js';
 import { getData } from './data.js';
+import { localize, seatName } from './countries.js';
 
 export { waitingFor, phaseOf, legalActions };
 
 const PHASE_KO = { setup: '준비', event: '이벤트', plan: '계획', reveal: '공개', resolve: '해결', upkeep: '정비', shop: '상점', end: '종료' };
 const RES_KO = { capital: '💰', energy: '🛢', industry: '🏭', prestige: '⭐' };
-const say = (s, actor, text) => s.log.push({ round: s.round, phase: s.phase, actor, text });
+const say = (s, actor, text) => s.log.push({ round: s.round, phase: s.phase, actor, text: localize(s, text) });
 const enter = (s, phase, ev) => {
   s.phase = phase; s.flow = {};
   say(s, 'system', `[${s.round}라운드] ${PHASE_KO[phase]} 단계`);
   ev.push({ type: 'phase', phase, round: s.round });
 };
 const name = (ix, id) => ix.cards[id]?.name ?? ix.growth[id]?.name ?? id;
-const fname = (ix, f) => ix.factions[f]?.name ?? f;
 
 /** 이벤트 한 장 공개. 결과 상태를 반환 (선택 대기가 생길 수 있다) */
 function drawEvent(s, data, ev) {
@@ -43,8 +43,8 @@ function finish(s, data, ev) {
   const winners = fs.ranking.filter((f) => key(f) === key(top));
   s.result = { winner: top, winners, tie: winners.length > 1, ranking: fs.ranking, scores: fs.scores, unknownMetrics: fs.unknownMetrics };
   enter(s, 'end', ev);
-  say(s, 'system', fs.ranking.map((f, i) => `${i + 1}위 ${fname(indexData(data), f)} ${fs.scores[f].total}점`).join(', '));
-  say(s, 'system', winners.length > 1 ? `공동 승리: ${winners.join(', ')}` : `승자: ${fname(indexData(data), top)}`);
+  say(s, 'system', fs.ranking.map((f, i) => `${i + 1}위 ${seatName(s, f, data)} ${fs.scores[f].total}점`).join(', '));
+  say(s, 'system', winners.length > 1 ? `공동 승리: ${winners.join(', ')}` : `승자: ${seatName(s, top, data)}`);
   ev.push({ type: 'end', winner: top, winners, ranking: fs.ranking });
 }
 
@@ -76,7 +76,7 @@ export function advance(state, data = getData()) {
       const order = resolveOrder(s);
       enter(s, 'resolve', ev);
       s.flow = { order, idx: 0, deferredDone: false };
-      say(s, 'system', `해결 순서: ${order.map((x) => fname(ix, x)).join(' → ')}`);
+      say(s, 'system', `해결 순서: ${order.map((x) => seatName(s, x, data)).join(' → ')}`);
       ev.push({ type: 'order', order });
     } else if (s.phase === 'resolve') {
       if (f.idx < f.order.length) {
