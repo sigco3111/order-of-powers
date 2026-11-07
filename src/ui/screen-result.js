@@ -42,7 +42,8 @@ export function resultScreen({ store, show }) {
   const rep = buildReport(s, data), rec = recordOf(s, rep);
   store.reported = reportKey(s);
   // 기록과 업적 (같은 판은 한 번만)
-  const { added } = addRecord(localStorage, rec);
+  const practice = !!s.config.tutorial; // 튜토리얼 판은 기록·업적에 쓰지 않는다
+  const { added } = practice ? { added: false } : addRecord(localStorage, rec);
   const unlocked = added ? updateMeta(localStorage, rec, rep.goalsMet).unlocked : [];
 
   const win = rep.winner, you = rep.me;

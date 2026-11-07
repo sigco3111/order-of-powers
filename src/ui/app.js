@@ -7,6 +7,7 @@ import { gameScreen } from './screen-game.js';
 import { resultScreen } from './screen-result.js';
 import { createLoop, readSave, SAVE_KEY as SAVE } from './loop.js';
 import { current, init as initSettings, onSettings, SETTINGS_KEY as SK } from './settings.js';
+import { initTutorial } from './tutorial.js';
 import { armOnGesture, clickSfx, getAudio, setMusic } from './audio.js';
 
 export const SAVE_KEY = SAVE, SETTINGS_KEY = SK;
@@ -51,8 +52,12 @@ function paintRail() {
   page.textContent = `제 ${i + 1} 면`;
 }
 
+/** 튜토리얼: 고정 시드 연습판 + 코치 마크 (src/ui/tutorial.js) */
+export const tutorial = initTutorial({ store, show: (n) => show(n), ensureLoop });
+
 /** 화면 전환 */
 export function show(name, { focus = true } = {}) {
+  tutorial.onScreen(name); // 튜토리얼 중 다른 화면으로 가면 코치를 내리고 일반 루프를 되돌린다
   store.cleanup?.();
   set({ screen: name });
   doc.dataset.screen = name; main.classList.toggle('screen--board', name === 'game');
@@ -71,4 +76,5 @@ armOnGesture(); onSettings(() => getAudio().refresh());
 document.addEventListener('click', (e) => { if (e.target.closest?.('button:not(:disabled), a[href], summary')) clickSfx(); }, true);
 show('title', { focus: false });
 ensureLoop().catch(() => {});
+if (tutorial.hasProgress()) tutorial.resume().catch((e) => console.error(e)); // 새로고침해도 튜토리얼을 이어간다
 window.__oop = { store, show };

@@ -21,7 +21,7 @@ const ASK = { influence: '영향력을 놓을 지역', removeInfluence: '영향�
 export function createPlay({ loop, data, view, repaint, submit, announce, C, A, E, R, F, fName, regionName }) {
   const me = () => loop.state.config.humanFaction;
   const btn = (label, fn, cls = '', extra = {}) => h('button', { class: `btn ${cls}`, type: 'button', onclick: fn, ...extra }, label);
-  const seen = () => { try { return localStorage.getItem(HINT_KEY); } catch { return '1'; } };
+  const seen = () => { if (loop.state?.config?.tutorial) return '1'; try { return localStorage.getItem(HINT_KEY); } catch { return '1'; } }; // 튜토리얼 판은 코치가 안내하므로 메모를 띄우지 않는다
   const setSeen = () => { try { localStorage.setItem(HINT_KEY, '1'); } catch { /* 무시 */ } };
 
   /** 손패가 바뀌면(새 라운드·다른 저장) 임시 계획을 비운다 */
