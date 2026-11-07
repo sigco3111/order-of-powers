@@ -10,6 +10,7 @@ import { openSettings } from './settings-view.js';
 import { openRules } from './rules.js';
 import { sfx } from './audio.js';
 import { effectsToKorean } from './effect-text.js';
+import { scoreLine } from './score-view.js';
 
 const PHASE = { setup: '준비', event: '사건', plan: '계획', reveal: '공개', resolve: '해결', upkeep: '정산', shop: '상점', end: '종료' };
 const RIBBON = ['event', 'plan', 'reveal', 'resolve', 'upkeep', 'shop'];
@@ -29,7 +30,7 @@ export const reportKey = (s) => `${s.seed}-${s.config.rounds}-${s.config.humanFa
 export function gameScreen({ store, show }) {
   const loop = store.loop, data = store.data, F = by(data.factions), R = by(data.regions), C = { ...by(data.cards), ...by(data.growth) }, A = by(data.assets), E = by(data.events);
   const me = () => loop.state.config.humanFaction;
-  const view = { sel: null, tab: 'f', pick: null, fast: !!store.settings.fast, plan: [] };
+  const view = { sel: null, tab: 'f', pick: null, fast: !!store.settings.fast, plan: [], bk: {} };
   const debug = new URLSearchParams(location.search).get('debug') === '1'; // 임시 자동 계획 버튼은 ?debug=1 에서만
   const root = h('div', { class: 'board' });
   const live = h('div', { class: 'sr-only', role: 'status', 'aria-live': 'polite' });
@@ -72,14 +73,16 @@ export function gameScreen({ store, show }) {
   // ── 레일: 세력 / 지역 / 기록 ──
   const pairStamp = (p) => h('span', { class: 'pair', title: `${fName(p)}와 조약` }, (() => { const d = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); d.setAttribute('viewBox', '0 0 17 11'); d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<circle cx="5.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="11.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>'; return d; })(), fShort(p));
   function factionRow(s, f) {
-    const p = s.players[f], you = f === me(), acting = loop.acting?.faction === f;
+    const p = s.players[f], you = f === me(), acting = loop.acting?.faction === f; const sc = scoreLine(s, f, data);
     return h('article', { class: `frow frow--${f}${you ? ' is-you' : ''}${acting ? ' is-acting' : ''}`, 'aria-label': `${fName(f)}${you ? ', 당신' : ''}` },
       h('img', { class: 'frow__emb', src: `assets/ui/emblem-${f}.svg`, alt: '', width: 40, height: 40 }),
       h('div', {}, h('h3', {}, fName(f), h('small', { class: 'frow__iso' }, p.iso ?? '')), h('p', { class: 'frow__arch' }, ARCHETYPE_KO[f]),
         h('div', { class: 'frow__tags' }, you ? h('span', { class: 'tag tag--you' }, '당신') : h('span', { class: 'tag', title: aiMeta[s.config.aiLevel]?.description }, 'AI ' + (aiMeta[s.config.aiLevel]?.name ?? '')),
           acting && h('span', { class: 'tag' }, '행동 중'),
           s.treaties.filter((t) => t.includes(f)).map((t) => pairStamp(t.find((x) => x !== f))))),
-      h('div', { class: 'frow__score' }, h('b', { 'aria-label': `누적 점수 ${p.regionScore}` }, String(p.regionScore)), h('span', { class: 'label' }, '점수')),
+      h('button', { class: 'frow__score', type: 'button', 'aria-expanded': String(!!view.bk[f]), 'aria-label': `합계 ${sc.total}점. ${sc.text}. 누르면 내역을 ${view.bk[f] ? '접습니다' : '펼칩니다'}`, onclick: () => { view.bk[f] = !view.bk[f]; paintRail(loop.state); } },
+        h('b', {}, String(sc.total)), h('span', { class: 'label' }, '합계')),
+      h('p', { class: `frow__bk num${view.bk[f] ? ' is-open' : ''}` }, sc.text),
       h('dl', { class: 'frow__res' }, ['capital', 'energy', 'industry', 'prestige'].map((k) =>
         h('div', { title: RES_KO[k], 'aria-label': `${RES_KO[k]} ${k === 'prestige' ? p.prestige : p.resources[k]}` }, icon(IC[k]), h('b', {}, String(k === 'prestige' ? p.prestige : p.resources[k]))))));
   }
@@ -102,7 +105,7 @@ export function gameScreen({ store, show }) {
     rail.dataset.tab = view.tab;
     rail.replaceChildren(
       h('div', { class: 'tabs', role: 'tablist' }, tab('f', '세력'), tab('r', view.sel ? R[view.sel].name.split('·')[0].slice(0, 6) : '지역'), tab('l', '기록')),
-      h('section', { class: 'sec-f', 'aria-label': '세력 현황' }, h('div', { class: 'sec-h' }, h('span', { class: 'label' }, '세력 현황'), h('span', { class: 'label' }, '점수 · 자본 · 에너지 · 산업 · 위신')), s.turnOrder.map((f) => factionRow(s, f))),
+      h('section', { class: 'sec-f', 'aria-label': '세력 현황' }, h('div', { class: 'sec-h' }, h('span', { class: 'label' }, '세력 현황'), h('span', { class: 'label' }, '합계 · 자본 · 에너지 · 산업 · 위신')), s.phase === 'end' ? null : h('p', { class: 'frow__note' }, '합계는 지역 + 위신입니다. 비밀 목표 점수는 게임이 끝나면 더해집니다 (비밀 목표 별도).'), s.turnOrder.map((f) => factionRow(s, f))),
       h('section', { class: 'sec-r', 'aria-label': '지역 정보' }, regionPanel(s)),
       h('section', { class: 'sec-l', 'aria-label': '기록' }, h('div', { class: 'sec-h' }, h('span', { class: 'label' }, '최근 기록'),
         h('button', { class: 'btn btn--sm', type: 'button', style: 'min-height:36px;padding:0 10px', onclick: () => openSheet('전체 기록', h('ol', { class: 'log' }, s.log.slice().reverse().map(logLi))) }, '전체 기록')),
