@@ -136,10 +136,12 @@ export function gameScreen({ store, show }) {
       body.push(panel('전략 자산 선택', '게임당 1회 사용', h('div', { class: 'assets', role: 'group', 'aria-label': '전략 자산 두 장' }, opts.map((id) => { const a = A[id]; return h('button', { class: `acard acard--${a.category}`, type: 'button', 'aria-pressed': String(view.pick === id), onclick: () => { view.pick = id; paint(); } },
         h('span', { class: 'tag' }, CAT_KO[a.category] || a.category), h('h4', {}, a.name), h('p', {}, plain(a.text)), h('span', { class: 'stamp stamp--ink' }, '지정')); }))));
       bar.push(status('전략 자산', '둘 중 하나를 고르십시오.'), h('div', { class: 'act__row' }, btn(view.pick ? `${A[view.pick].name} 확정` : '자산을 먼저 고르십시오', () => submit({ type: 'PICK_ASSET', faction: human, assetId: view.pick }), 'btn--primary', { disabled: !view.pick })));
+    } else if (mine && pc && play.autoChoose(s)) {
+      bar.push(status('진행 중', '계획한 지역을 적용합니다…'));
     } else if (mine && pc) {
       kind = 'choice'; cand = play.candidates(s); bar.push(...play.choice(s));
     } else if (mine && s.phase === 'plan') {
-      kind = 'tray'; bar.push(...play.tray(s));
+      kind = 'tray'; bar.push(...play.tray(s)); cand = play.planCandidates(s);
       if (debug) bar.push(h('div', { class: 'act__row' }, btn('자동 계획(디버그)', () => dispatch(loop.pick(human)))));
     } else if (mine && s.phase === 'shop') {
       kind = 'shop'; bar.push(shop.panel(s));
