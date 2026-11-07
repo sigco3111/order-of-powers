@@ -80,3 +80,14 @@ export function finalScores(state, data) {
     scores[b].total - scores[a].total || P[b].prestige - P[a].prestige || P[b].resources.capital - P[a].resources.capital);
   return { scores, ranking, unknownMetrics: [...unknown] };
 }
+
+/** 추격 보너스(M1f): 라운드 시작 때 누적 점수(지역+위신)가 가장 낮은 세력(동률 모두)은 💰 +1, 이번 라운드 첫 영향력 배치 +1. 모두 같으면 없음 */
+export function applyCatchUp(s) {
+  const tot = (f) => s.players[f].regionScore + s.players[f].prestige;
+  const vals = s.turnOrder.map(tot), min = Math.min(...vals);
+  for (const f of s.turnOrder) {
+    const on = s.round > 1 && min < Math.max(...vals) && tot(f) === min;
+    s.players[f].catchUp = on ? 1 : 0;
+    if (on) { s.players[f].resources.capital += 1; s.log.push({ round: s.round, phase: s.phase, actor: f, text: '추격 보너스: 💰 +1, 첫 영향력 배치 +1' }); }
+  }
+}
