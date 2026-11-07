@@ -172,7 +172,7 @@ test('업적: 첫 승리·10라운드 완주·목표 3개·어려움 승리·네
   r = updateMeta(st, at({ win: true, archetype: 'emerald' }), 0);
   assert.deepEqual(r.unlocked, [], '이미 얻은 업적은 다시 나오지 않는다');
   const meta = readMeta(st);
-  assert.equal(Object.keys(meta.achievements).length, ACHIEVEMENTS.length); assert.equal(meta.games, 6); assert.equal(meta.wins, 5); assert.equal(meta.goalsMet, 3);
+  assert.equal(Object.keys(meta.achievements).length, ACHIEVEMENTS.filter((a) => !a.manual).length); assert.equal(meta.games, 6); assert.equal(meta.wins, 5); assert.equal(meta.goalsMet, 3);
   const bad = mock(); bad.setItem('oop-meta-v1', '깨짐'); assert.equal(readMeta(bad).games, 0, '손상된 누적은 초기값');
 });
 
