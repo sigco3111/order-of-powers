@@ -179,7 +179,7 @@ export async function createMap({ data, onSelect }) {
   });
 
   // ── 그리기 ──
-  function update({ state, selected: s, candidates: c = [], hint = null }) {
+  function update({ state, selected: s, candidates: c = [], hint = null, fx = null }) {
     st = state; selected = s; candidates = c;
     if (state) {
       factions = state.turnOrder;
@@ -194,10 +194,13 @@ export async function createMap({ data, onSelect }) {
         p.setAttribute('aria-pressed', String(selected === r.id));
         n.el.classList.toggle('is-sel', selected === r.id);
         n.el.classList.toggle('is-cand', candidates.includes(r.id));
+        const rfx = fx?.[r.id];
+        p.classList.toggle('is-flash', !!rfx); n.el.classList.toggle('is-flash', !!rfx);
         n.el.querySelector('.node__tok').replaceChildren(...factions.map((f) => {
-          const v = rs.influence[f];
+          const v = rs.influence[f], ch = rfx?.[f]?.find((c) => c.kind === 'influence');
+          if (!v && ch) return h('span', { class: `tok tok--${f} tok--gone`, title: `${ix[f]} 영향력 ${ch.prev} → 0` }, String(ch.prev)); // 사라진 토큰: 취소선 + 흐려짐
           if (!v) return h('span', { class: `tok tok--empty tok--${f}` });
-          return h('span', { class: `tok tok--${f}${stt.factions.includes(f) ? ' tok--lead' : ''}`, title: `${ix[f]} 영향력 ${v}${rs.bases[f] ? ' · 기지' : ''}` }, String(v), rs.bases[f] ? h('i', { class: 'tok__base' }) : null);
+          return h('span', { class: `tok tok--${f}${stt.factions.includes(f) ? ' tok--lead' : ''}${ch ? (ch.dir === 'up' ? ' tok--new' : ' tok--hit') : ''}`, title: `${ix[f]} 영향력 ${v}${rs.bases[f] ? ' · 기지' : ''}` }, String(v), rs.bases[f] ? h('i', { class: 'tok__base' }) : null);
         }));
       }
     }
