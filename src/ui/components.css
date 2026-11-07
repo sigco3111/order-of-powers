@@ -1,20 +1,60 @@
 /* Order of Powers — 게임 부품: 카드 프레임, 토큰 칩, 자원 행, 모달 시트 */
 
 /* 카드 프레임: 잉크색 바깥 도형 + 종이색 안쪽 도형을 같은 모서리 깎기(clip-path)로 겹쳐 2px 테두리를 만든다.
-   그림자는 blur 0인 drop-shadow 하나(딱딱한 오프셋). 분류색은 --cat 로 지정 (.card--domestic 등) */
-.card { --n: 12px; --cat: var(--ink); width: 100%; max-width: 240px; filter: drop-shadow(4px 4px 0 rgba(27, 34, 48, .28)); }
-.card__frame { padding: 2px; background: var(--ink); }
+   그림자는 blur 0인 drop-shadow 하나(딱딱한 오프셋). 분류색은 --cat 로 지정 (.card--domestic 등).
+   크기: --hand(112×160, 데스크톱 140×200) · --detail(큰 카드) · --mini(계획 칸·공개·선택용) */
+.card { --n: 10px; --cat: var(--ink); --fz: .6875rem; position: relative; flex: none; filter: drop-shadow(3px 3px 0 rgba(27, 34, 48, .28)); color: var(--ink); text-align: left; }
+.card__frame { height: 100%; padding: 2px; background: var(--ink); }
 .card__frame, .card__in { --k: var(--n); clip-path: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k)); }
-.card__in { --k: calc(var(--n) - 1.17px); display: grid; grid-template-rows: auto 1fr auto; min-height: 280px; background: var(--paper-light); }
-.card__top { display: flex; justify-content: space-between; align-items: center; padding: var(--s2) var(--s3) var(--s2) var(--s4); background: var(--cat); color: #FDFBF4; }
-.card__cost { font: 500 1.25rem/1 var(--font-mono); font-variant-numeric: tabular-nums; }
-.card__name { font: 800 1.125rem/1.2 var(--font-display); }
-.card__art { display: grid; place-items: center; margin: var(--s2) var(--s3); border: var(--hair); background: var(--paper-dark); color: var(--cat); }
-.card__art .icon { width: 44px; height: 44px; }
-.card__text { padding: 0 var(--s4) var(--s3); font-size: var(--fs-small); line-height: 1.5; border-top: 1px dotted var(--ink-soft); margin: 0 var(--s3); padding-top: var(--s2); }
+.card__in { --k: calc(var(--n) - 1.17px); position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--paper-light); }
+.card__top { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 3px 6px 3px 10px; background: var(--cat); color: #FDFBF4; }
+.card__cat { font: 500 .625rem/1.2 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; }
+.card__cost { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 3px; background: var(--paper-light); color: var(--ink); border: 2px solid var(--ink); font: 700 .8125rem/1 var(--font-mono); font-variant-numeric: tabular-nums; box-shadow: 1px 1px 0 rgba(27, 34, 48, .45); }
+.card__name { padding: 5px 8px 0 10px; font: 800 .8125rem/1.2 var(--font-display); letter-spacing: -.01em; }
+.card__mid { display: flex; align-items: center; gap: 6px; margin: 4px 8px 0 10px; padding-bottom: 4px; border-bottom: 1px dotted var(--ink-soft); color: var(--cat); }
+.card__mid .icon { width: 18px; height: 18px; }
+.card__tags { display: flex; gap: 3px; flex-wrap: wrap; color: var(--ink); }
+.ctag { display: inline-block; padding: 0 3px; border: 1px solid var(--ink); font: 500 .5625rem/1.45 var(--font-mono); letter-spacing: .06em; white-space: nowrap; }
+.ctag--ink { background: var(--ink); color: var(--paper-light); } .ctag--stamp { border-color: var(--stamp); color: var(--stamp); }
+.card__text { flex: 1; min-height: 0; margin: 0; padding: 4px 8px 6px 10px; font-size: var(--fz); line-height: 1.38; word-break: keep-all; }
+.card__own { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; }
+.card__own img { width: 14px; height: 14px; padding: 1px; background: var(--paper-light); border-radius: 1px; }
+.card__iso { padding: 0 2px; border: 2px double #FDFBF4; font: 700 .5rem/1.35 var(--font-mono); letter-spacing: .06em; transform: rotate(-2deg); opacity: .92; }
+.card__placed { position: absolute; left: 50%; top: 52%; translate: -50% -50%; background: var(--paper-light); font-size: .6875rem; mix-blend-mode: normal; }
+.card__count { position: absolute; right: 6px; bottom: 4px; font: 700 .75rem/1 var(--font-mono); }
 .card--domestic { --cat: var(--c-domestic); } .card--diplomacy { --cat: var(--c-diplomacy); }
 .card--military { --cat: var(--c-military); } .card--economy { --cat: var(--c-economy); }
-.card[aria-pressed="true"] { transform: translate(-2px, -6px); } /* 선택된 카드는 판 위로 살짝 든다 */
+.card--event { --cat: var(--ink); }
+.card--event .card__top { background: var(--ink); } .card__evstamp { padding: 0 6px; border-width: 3px; color: #FDFBF4; background: transparent; mix-blend-mode: normal; font-size: .6875rem; }
+
+.card--hand { width: 112px; height: 160px; }
+.card--hand[data-len="l"] { --fz: .65625rem; } .card--hand[data-len="xl"] { --fz: .625rem; line-height: 1.32; }
+.card--detail { --n: 16px; --fz: .9375rem; width: min(300px, 100%); min-height: 400px; margin: 0 auto; filter: drop-shadow(5px 5px 0 rgba(27, 34, 48, .28)); }
+.card--detail .card__top { padding: 8px 10px 8px 16px; } .card--detail .card__cat { font-size: .75rem; }
+.card--detail .card__cost { min-width: 32px; height: 32px; font-size: 1.25rem; }
+.card--detail .card__name { padding: 12px 16px 0; font-size: 1.5rem; } .card--detail .card__mid { margin: 8px 16px 0; padding-bottom: 8px; }
+.card--detail .card__mid .icon { width: 32px; height: 32px; } .card--detail .ctag { font-size: .6875rem; padding: 1px 6px; }
+.card--detail .card__text { flex: none; padding: 10px 16px 6px; line-height: 1.55; }
+.card__plain { margin: 0 16px 12px; padding: 8px 0 0; list-style: none; border-top: 1px dotted var(--ink-soft); font-size: .875rem; line-height: 1.5; }
+.card__plain li { display: grid; grid-template-columns: 14px 1fr; } .card__plain li::before { content: "▪"; color: var(--cat); }
+.card--detail .card__own { gap: 6px; } .card--detail .card__own img { width: 24px; height: 24px; } .card--detail .card__iso { font-size: .75rem; padding: 0 5px; }
+
+.card--mini { --n: 6px; width: 92px; height: 52px; filter: drop-shadow(2px 2px 0 rgba(27, 34, 48, .28)); }
+.card--mini .card__in { flex-direction: row; align-items: center; gap: 4px; padding: 0 5px 0 9px; border-left: 6px solid var(--cat); }
+.card--mini .icon { width: 16px; height: 16px; color: var(--cat); flex: none; }
+.card--mini .card__name { padding: 0; font-size: .75rem; line-height: 1.15; }
+.card--mini .card__mark { position: absolute; right: 3px; top: 1px; font: 700 .625rem/1 var(--font-mono); color: var(--ink-soft); }
+.card[data-state="selected"] { transform: translateY(-10px); filter: drop-shadow(5px 6px 0 rgba(27, 34, 48, .34)); }
+.card[data-state="selected"] .card__top { background: var(--ink); }
+.card[data-state="disabled"] { filter: none; }
+.card[data-state="disabled"] .card__in { background: var(--paper-dark); } .card[data-state="disabled"] .card__top { background: var(--ink-soft); }
+.card[data-state="disabled"] .card__text, .card[data-state="disabled"] .card__name { color: var(--ink-soft); }
+@media (min-width: 900px) {
+  .card--hand { width: 140px; height: 200px; --fz: .78125rem; } .card--hand[data-len="l"], .card--hand[data-len="xl"] { --fz: .75rem; }
+  .card--hand .card__name { font-size: 1rem; padding-top: 7px; } .card--hand .card__cat { font-size: .6875rem; }
+  .card--hand .card__mid .icon { width: 22px; height: 22px; } .card--hand .ctag { font-size: .625rem; }
+  .card--mini { width: 112px; height: 56px; } .card--mini .card__name { font-size: .8125rem; }
+}
 
 /* 토큰 칩: 마분지에서 도려낸 네모 말. 세력색 면 + 안쪽 홈선 + 숫자 */
 .chip {
