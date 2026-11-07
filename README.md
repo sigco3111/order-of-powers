@@ -1,13 +1,34 @@
-<div align="center">
-
 # 🏛 Order of Powers — 권력의 질서
 
-**G20 국가 중 하나를 골라, 8라운드(6·8·10 선택) 동안 새로운 세계 질서를 겨룬다.**
+현대 지정학 보드게임에서 영감을 받은, 실제 G20 국가로 겨루는 **독자 창작 웹 전략 보드게임**. 4라운드 튜토리얼부터 10라운드 본 게임까지.
 
-![status](https://img.shields.io/badge/status-S2b%20완료:%20규칙서-green)
-![license of assets](https://img.shields.io/badge/assets-CC0-blue)
+**▶ 라이브: https://sigco3111.github.io/order-of-powers/**
 
-</div>
+현재 상태: **F1 완료: 마무리 점검** (계획 때 미리 고른 지역·대상을 저장에 포함, 지역 두 곳·대상 세력 카드도 계획 단계에서 선택, 접근성 점검, 결과는 [docs/QA_F1.md](docs/QA_F1.md)).
+
+## 특징
+- G20 국가 20개 중 하나를 골라 플레이 (실제 국가 특성 반영)
+- 6 / 8 / 10 라운드 선택
+- 컴퓨터 상대 난이도: 쉬움 / 보통 / 어려움
+- 4라운드 튜토리얼과 게임 중 열 수 있는 규칙서
+- 효과음과 배경음악
+- 자동 저장·이어하기, 전적 기록, 업적
+- 설정: 고대비, 글자 크기, 움직임 줄이기, 소리 조절
+- 모바일 화면(390px)에서도 플레이 가능
+
+## 실행과 테스트
+```bash
+python3 -m http.server 8000      # 저장소 루트에서 실행 후 http://localhost:8000/ 접속 (정적 파일만 사용, 빌드 없음)
+node --test                      # 엔진·AI·UI 모델 테스트 (Node 18+)
+node tools/validate-data.js      # 게임 데이터 검증
+node tools/simulate.js --games 200 --rounds 8 --levels hard,hard,hard,hard --seed 1   # AI끼리 시뮬레이션 (밸런스 점검)
+```
+
+## 소리 출처
+소리와 그림은 모두 CC0(퍼블릭 도메인)입니다. 효과음: [Kenney](https://kenney.nl)(Casino Audio, UI Audio, Interface Sounds, RPG Audio), OpenGameArt의 Snabisch(Win sound effect)·Felis Chaus(Game Over - Bad chest SFX). 배경음악: OpenGameArt의 mishonis(Meadow Thoughts)·Pro Sensory(Contemplation). 게임 안 설정 화면의 크레딧과 같습니다. 전체 목록은 [docs/ASSETS.md](docs/ASSETS.md).
+
+## 독자 창작물 안내
+이 작품은 영감을 준 보드게임과 **관련이 없는 독립적인 창작물**입니다. 규칙, 그림, 문구는 모두 직접 만들었고 해당 게임의 회사·제작자와 제휴하거나 승인받은 바 없습니다.
 
 ## 소개
 Order of Powers는 G20 국가 20개 중 하나를 골라 8라운드(6·8·10 선택) 동안 내정·외교·군사 카드를 모으고, 세계 8개 지역의 영향력을 겨루는 **웹 전략 보드게임**입니다. 덱 빌딩과 지역 장악을 한 판 15~40분 (라운드 수 6·8·10 선택, 기본 8라운드 약 28분)에 즐기도록 설계하고 있으며, 모바일 세로 화면에서도 할 수 있는 카드 중심 UI를 목표로 합니다.
@@ -43,6 +64,3 @@ order-of-powers/
 
 ## 크레딧과 라이선스
 `assets/`의 이미지와 소리는 모두 CC0(퍼블릭 도메인) 에셋입니다. 대부분 [Kenney](https://kenney.nl)의 팩이고, 일부는 OpenGameArt 작가들의 CC0 작품입니다. 각 팩 폴더에 원본 라이선스 파일을 그대로 두었습니다. 팩별 제작자·출처·용도는 [docs/ASSETS.md](docs/ASSETS.md)에 정리했습니다.
-
-## 독자 창작물 안내
-Order of Powers는 현대 지정학 보드게임 "월드 오더(World Order)"에서 영감을 받은 **독자적인 작품**입니다. 세력, 규칙, 카드 문구, 그림, 이름은 모두 새로 만들며 원작의 규칙 문서·카드 문구·그림·이름을 사용하지 않습니다. 이 프로젝트는 원작의 제작사와 관련이 없습니다.
