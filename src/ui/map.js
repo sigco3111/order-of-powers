@@ -10,6 +10,8 @@ export const SHORT = { // 좁은 화면용 짧은 이름 / 넓은 화면용 이�
   russiaCentralAsia: ['러·중앙아', '러시아·중앙아시아'], middleEastNorthAfrica: ['중동', '중동·북아프리카'],
   subSaharanAfrica: ['아프리카', '사하라 이남'], eastAsia: ['동아시아', '동아시아'], southAsiaOceania: ['남아·대양', '남아시아·오세아니아'],
 };
+/** 라벨 묶음 시작 위치 보정(px, T=22 기준): 북미·남미는 육지 한가운데라 라벨이 지도 그림을 덮으므로 바다 쪽으로 미리 밀어 둔다 */
+export const LABEL_NUDGE = { northAmerica: [-16, -36], southAmerica: [-34, 34], eastAsia: [10, 4] };
 const NS = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs = {}, ...kids) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); e.append(...kids); return e; };
 let svgText;
@@ -83,7 +85,8 @@ export async function createMap({ data, onSelect }) {
     const items = regions.map((r) => {
       const [ax, ay] = toWorld(r.mapAnchor), name = SHORT[r.id][compact ? 0 : 1];
       const lw = name.length * (compact ? 10.5 : 13) + 6;
-      return { id: r.id, ax, ay, w: Math.max(cw, lw), h: ch + lh + 2, lh, cy: ay - (lh + 2) / 2, cx: ax };
+      const [nx, ny] = (LABEL_NUDGE[r.id] || [0, 0]).map((v) => v * T / 22);
+      return { id: r.id, ax, ay, w: Math.max(cw, lw), h: ch + lh + 2, lh, cy: ay - (lh + 2) / 2 + ny, cx: ax + nx };
     });
     const m = 4, padY = z === 1 ? Math.max(0, (H - worldH()) / 2) : 6;
     for (let it = 0; it < 120; it++) {
@@ -95,9 +98,13 @@ export async function createMap({ data, onSelect }) {
         moved = true;
         if (ox < oy) { const s = (dx >= 0 ? 1 : -1) * ox / 2; a.cx -= s; b.cx += s; } else { const s = (dy >= 0 ? 1 : -1) * oy / 2; a.cy -= s; b.cy += s; }
       }
-      for (const a of items) { // 지도 영역 밖으로 나가지 않게
+      for (const a of items) { // 지도 영역 밖으로 나가지 않게, 확대·축소 버튼(오른쪽 위) 아래로도 안 들어가게
         a.cx = Math.min(worldW() - a.w / 2, Math.max(a.w / 2, a.cx));
         a.cy = Math.min(worldH() + padY - a.h / 2, Math.max(a.h / 2 - padY, a.cy));
+        if (z === 1) {
+          if (compact) a.cy = Math.max(a.cy, 56 - ty + a.h / 2); // 버튼은 위쪽 가로 한 줄
+          else if (a.cy - a.h / 2 < 156 - ty) a.cx = Math.min(a.cx, W - tx - 58 - a.w / 2); // 버튼은 오른쪽 세로 한 줄
+        }
       }
       if (!moved) break;
     }
@@ -122,7 +129,7 @@ export async function createMap({ data, onSelect }) {
       links.append(svgEl('circle', { cx: tx + L.ax, cy: ty + L.ay, r: 3, class: 'map__dot' }));
     }
     stage.style.touchAction = z > 1.01 ? 'none' : 'pan-y';
-    stage.dataset.zoom = z.toFixed(2);
+    stage.dataset.zoom = z.toFixed(2); stage.dataset.compact = compact ? '1' : '0';
   }
 
   function measure() {
