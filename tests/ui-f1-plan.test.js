@@ -32,7 +32,9 @@ test('대상 세력 카드는 상대 세력 단계를 가진다 (조약은 조�
   const t = structuredClone(state); t.treaties = [[F, t.turnOrder.find((x) => x !== F)]];
   assert.equal(planSteps(card('dip-06'), t, F)[0].options.length, 2);
   assert.deepEqual(planSteps(card('mil-14'), state, F), [], '기지가 있는 상대가 없으면 묻지 않는다');
-  assert.deepEqual(planSteps(card('neu-01'), state, F), []);
+  const h = structuredClone(state); h.players[F].hand = ['neu-01', 'dom-01', 'dom-02', 'dom-04'];
+  assert.deepEqual(planSteps(card('neu-01'), h, F).map((x) => x.key), ['drop'], 'M6: 버릴 카드도 계획 때 고른다');
+  assert.deepEqual(planSteps(card('neu-01'), state, F), [], '손패가 비면 묻지 않는다');
   assert.equal(missingChoices([{ card: card('dip-06') }], state, F).length, 1);
 });
 
