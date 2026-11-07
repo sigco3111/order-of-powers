@@ -66,7 +66,7 @@ function progress(s, f, c, rem) {
   if (c.anyOf) return Math.max(...c.anyOf.map((x) => progress(s, f, x, rem)));
   const v = metricValue(s, f, c.metric);
   if (v === undefined) return 0.3;
-  if (c.op === '>=') return v >= c.value ? (VOLATILE.has(c.metric) ? 0.75 : 1) : 0.9 * (v / c.value) ** 2 * Math.min(1, 0.25 + 0.18 * rem);
+  if (c.op === '>=') return v >= c.value ? (VOLATILE.has(c.metric) ? 0.75 : 1) : 0.9 * (v / c.value) ** (VOLATILE.has(c.metric) ? 2 : 1.4) * Math.min(1, 0.25 + 0.18 * rem);
   if (c.op === '==' && c.value === true) return v ? 1 : s.players[f].strategicAsset ? 0.75 : 0;
   if (c.op === '==' && c.value === 0) return v === 0 ? 0.9 ** rem : 0;
   return 0;
@@ -247,6 +247,61 @@ function chooseChoice(ctx, legal) {
   return best(vals).action;
 }
 
+// ---------- 구매: 현재 필요(덱 구성·목표·지역 압박·시기)에 맞춘 점수 ----------
+const CAT = ['domestic', 'diplomatic', 'military'];
+/** 내 비밀 목표 중 카드 구매가 도움이 되는 항목 → 카드에 줄 가산점 */
+function goalPull(ctx, c, effs, turns) {
+  const st = ctx.state, me = st.players[ctx.me], ix = ctx.ix, txt = JSON.stringify(effs);
+  const plays = Math.max(0, turns * 2.2); // 앞으로 살 수 있는 카드가 쓰일 대략의 횟수
+  let v = 0;
+  const leaf = (g, ck) => {
+    if (g.points <= 0 || progress(st, ctx.me, ck, turns + 1) >= 1) return;
+    const m = ck.metric, need = ck.value - (metricValue(st, ctx.me, m) || 0), k = 0.2 * g.points;
+    if (m.startsWith('stats.cardsPlayed.')) { if (c.category === m.slice(18) && need > 0 && need <= plays + 4) v += k * 1.6; }
+    else if (m === 'deckSize') { if (need > 0 && need <= turns * 2.5) v += k * 1.2; }
+    else if (m === 'regionsWithBase') { if (/"base"/.test(txt)) v += k * 3; else if (/"influence"/.test(txt)) v += k * 0.3; }
+    else if (m === 'stats.treatiesMade') { if (/"treaty"|"id":"dip-10"/.test(txt)) v += k * 3; }
+    else if (m === 'stats.influenceRemoved') { if (/removeInfluence|"id":"mil-12"/.test(txt)) v += k * 2.2; }
+    else if (m === 'maxInfluenceInOneRegionEver' || m === 'influenceGainedInFinalRound' || m === 'regionsWithInfluence' || m === 'regionsLed' || m === 'regionsLedAtFinalScoring') { if (/"influence"|"id":"dip-14"|"id":"mil-12"/.test(txt)) v += k * 1.2; }
+    else if (m === 'prestige') { if (/"res":"prestige"/.test(txt)) v += k * 1.2; }
+    else if (m === 'capital' || m === 'energy' || m === 'industry') { if (new RegExp(`"res":"${m}"`).test(txt)) v += k * 1.0; }
+    else if (m === 'stats.influenceLost' || m === 'stats.sanctionsReceived') { if (/"defense"/.test(txt)) v += k * 0.5; }
+  };
+  const walk = (g, ck) => { if (ck.allOf) ck.allOf.forEach((x) => walk(g, x)); else if (ck.anyOf) ck.anyOf.forEach((x) => walk(g, x)); else leaf(g, ck); };
+  for (const id of me.secretGoals) walk(ix.goals[id], ix.goals[id].check);
+  return ctx.level === 'easy' ? 0 : v * (ctx.level === 'hard' ? 1.2 : 1);
+}
+/** 지역 압박·시기·덱 구성에 따른 카드 가산점 */
+function needPull(ctx, c, effs, turns, deckCats, N) {
+  const st = ctx.state, me = ctx.me;
+  let own = 0, contested = 0, led = 0;
+  for (const rid in st.regions) {
+    const r = st.regions[rid], m = r.influence[me], o = maxOther(r, me);
+    if (m > 0) own++;
+    if (m > 0 && o >= m) contested++;
+    if (m > 0 && m > o && r.defense[me] < 2) led++;
+  }
+  const early = turns >= 4, late = turns <= 2;
+  let v = 0;
+  for (const e of effs) {
+    const a = e.amount ?? e.count ?? 1;
+    switch (e.type) {
+      case 'influence': v += a * (own < 3 ? 0.8 : own < 5 ? 0.4 : 0.1) * (late ? 1.2 : 1); break;
+      case 'removeInfluence': v += a * 0.25 * Math.min(3, contested); break;
+      case 'defense': v += 0.2 * Math.min(3, led) * a; break;
+      case 'base': v += early ? 0.6 : 0.2; break;
+      case 'draw': v += early ? 0.4 * a : 0; break;
+      case 'gain': if (e.res === 'prestige') v += a > 0 ? (late ? 0.5 * a : 0) : 0; else if (e.res === 'capital') v += a > 0 && early ? 0.25 * a : 0; else v += (own > 1 && !late ? 0.1 : 0) * a; break;
+      case 'drain': case 'discard': v += 0.3; break;
+      case 'treaty': v += 0.5; break;
+      default: break;
+    }
+  }
+  const share = (deckCats[c.category] || 0) / Math.max(1, N);
+  if (share > 0.5) v -= 0.8 * (share - 0.5) * 4; else if (share < 0.25) v += 0.5;
+  return v;
+}
+
 function chooseBuy(ctx, legal) {
   const st = ctx.state, me = ctx.me, p = st.players[me], ix = ctx.ix, end = legal.find((a) => a.type === 'END_SHOP');
   const buys = legal.filter((a) => a.type === 'BUY');
@@ -256,13 +311,22 @@ function chooseBuy(ctx, legal) {
   const coll = Object.entries(p.collection), N = sum(coll.map(([, n]) => n));
   const avg = sum(coll.map(([c, n]) => cardV(ix, c, late) * n)) / Math.max(1, N);
   const plays = (turns * 3) / (N + 1);
+  const deckCats = {};
+  for (const [c, n] of coll) { const k = ix.cards[c]?.category; deckCats[k] = (deckCats[k] || 0) + n; }
   const scored = buys.map((a) => {
     const g = ix.growth[a.cardId], c = ix.cards[a.cardId] ?? g;
     const cost = Math.max(1, c.cost + (p.modifiers['shop.costDelta'] || 0));
-    let v = g ? growthValue(g, turns) : (cardV(ix, a.cardId, late) - 0.9 * avg) * plays + (/base|treaty|leader/.test(JSON.stringify(c.effects)) ? 0.5 : 0);
-    if (!g && p.firstPurchase.includes(a.cardId)) v *= 1.1;
-    if (g && ctx.level === 'hard' && st.round <= 3) v += 3;
-    return { action: a, value: v - cost * 0.45 };
+    let v;
+    if (g) {
+      v = growthValue(g, turns) * 0.8 ** p.growth.length + (ctx.level === 'hard' && st.round <= 3 && !p.growth.length ? 3 : 0);
+    } else {
+      const dup = p.collection[a.cardId] || 0;
+      v = (cardV(ix, a.cardId, late) - 0.9 * avg) * plays + (/base|treaty|leader/.test(JSON.stringify(c.effects)) ? 0.5 : 0);
+      v += needPull(ctx, c, c.effects, turns, deckCats, N) + goalPull(ctx, c, c.effects, turns);
+      if (p.firstPurchase.includes(a.cardId)) v *= 1.1;
+      v -= dup * 0.9 * (1 + Math.abs(v) * 0.3);
+    }
+    return { action: a, value: v - cost * 0.45 + (ctx.float() - 0.5) * 1.6 };
   });
   const b = best(scored);
   return b.value > (ctx.level === 'hard' ? 0.15 : 0.3) ? b.action : end;
