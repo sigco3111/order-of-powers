@@ -1,8 +1,8 @@
 [
   {
     "id": "atlas",
-    "name": "아틀라스 연합",
-    "concept": "해양 동맹과 금융",
+    "name": "외교형",
+    "concept": "외교와 금융",
     "strengths": [
       "외교 카드 효율",
       "동맹 보너스"
@@ -44,7 +44,7 @@
   },
   {
     "id": "redDragon",
-    "name": "적룡 공화국",
+    "name": "산업형",
     "concept": "제조업과 인프라",
     "strengths": [
       "내정 카드 효율",
@@ -87,7 +87,7 @@
   },
   {
     "id": "polarStar",
-    "name": "북극성 연방",
+    "name": "군사형",
     "concept": "에너지와 군사",
     "strengths": [
       "군사 카드 효율",
@@ -134,8 +134,8 @@
   },
   {
     "id": "emerald",
-    "name": "에메랄드 연맹",
-    "concept": "규범과 연합",
+    "name": "성장형",
+    "concept": "성장과 연합",
     "strengths": [
       "영향력 방어",
       "제재와 조약"

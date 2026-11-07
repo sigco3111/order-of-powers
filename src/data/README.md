@@ -9,7 +9,8 @@
 | `strategic-assets.json` | 전략 자산 12종 |
 | `secret-goals.json` | 비밀 목표 20종 (`check`는 판정용 설명자) |
 | `growth-cards.json` | 성장 카드 10종 |
-| `factions.json` | 세력 4개 (시작 덱 12장, 고유 카드) |
+| `factions.json` | 원형 4개 — 좌석 id atlas·redDragon·polarStar·emerald = 외교형·산업형·군사형·성장형 (시작 덱 12장, 고유 카드) |
+| `countries.json` | G20 국가 20개 (원형당 5개): 본거지 지역, 특성 1개, 소개, 강조색. 설명은 [docs/COUNTRIES.md](../../docs/COUNTRIES.md) |
 | `regions.json` | 지역 8개 (이웃 관계 포함) |
 
 ## 해석 규칙 (스키마에 없는 부분)
