@@ -221,7 +221,8 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
       panel.replaceChildren(
         h('div', { class: 'tut__top' }, h('span', { class: 'tut__count num' }, `${pad2(s.id)} / ${pad2(STEPS.length)}`), h('span', { class: 'stamp stamp--ink' }, s.kind === 'action' ? '직접 하기' : '튜토리얼')),
         h('h3', { class: 'tut__title' }, s.title), h('p', { class: 'tut__text' }, s.text),
-        s.ask ? h('p', { class: 'tut__ask' }, s.ask) : null, h('div', { class: 'tut__btns' }, ...buttons(s)));
+        ...(s.ask ? [h('p', { class: 'tut__ask' }, s.ask)] : []), // replaceChildren에 null을 넘기면 글자 "null"이 찍힌다
+        h('div', { class: 'tut__btns' }, ...buttons(s)));
       live.textContent = `${s.id}단계 ${s.title}. ${s.text}${s.ask ? ' ' + s.ask : ''}`;
       if (s.kind === 'info') panel.querySelector('.btn--primary')?.focus({ preventScroll: true }); else panel.focus({ preventScroll: true });
     }
