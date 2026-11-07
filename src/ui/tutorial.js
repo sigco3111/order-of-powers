@@ -30,19 +30,19 @@ export const STEPS = [
     text: '라운드마다 이벤트 카드가 한 장 공개되어 모든 세력에 영향을 줍니다. 계획을 세우기 전에 이번 라운드의 사건을 먼저 읽으세요.' },
   { id: 5, title: '손패와 계획 칸', kind: 'info', target: '.hand', ready: planNow, dock: 'open',
     text: '손패 5장 가운데 최대 3장을 계획 칸 ① ② ③에 비공개로 놓습니다. 모두가 동시에 공개한 뒤 칸 순서대로 해결됩니다.' },
-  { id: 6, title: '카드 한 장 고르기', kind: 'action', target: '.hand__c[aria-label^="외교 서한"], .sheet .detail__btns .btn--primary', ready: planNow, dock: 'open',
-    done: planFlag('placed'), ask: "손패의 '외교 서한' 카드를 눌러 연 뒤 '계획에 넣기'를 누르세요.",
-    text: '이 카드는 영향력 1을 원하는 지역에 놓게 해 줍니다. 오늘은 지정된 카드만 쓸 수 있습니다.' },
-  { id: 7, title: '지역 선택', kind: 'action', target: '.map', ready: planNow, dock: 'closed',
-    done: planFlag('region'), ask: '지도에서 지역 하나를 눌러 보세요.',
-    text: '지역을 누르면 점수 가치, 주도 세력, 산출 자원, 세력별 영향력이 열립니다. 외교 서한은 해결할 때 어느 지역에 놓을지 묻습니다.' },
+  { id: 6, title: '카드 한 장 고르기', kind: 'action', target: '.hand__c[aria-label^="외교 서한"], .rpick', ready: planNow, dock: 'open',
+    done: planFlag('placed'), ask: "손패의 '외교 서한' 카드를 한 번 누르세요.",
+    text: '이 카드는 영향력 1을 원하는 지역에 놓게 해 줍니다. 카드를 누르면 바로 계획 칸에 들어가고, 지역이 필요한 카드는 지역을 고르는 판이 열립니다. 오늘은 지정된 카드만 쓸 수 있습니다.' },
+  { id: 7, title: '지역 선택', kind: 'action', target: '.rpick .opt, .rpick, .map', ready: planNow, dock: 'open',
+    done: planFlag('region'), ask: '지역 칩이나 지도의 점선 지역을 눌러 보세요.',
+    text: '지역을 고르면 카드가 ① 칸에 들어갑니다. 해결할 때 이 지역에 영향력이 놓입니다. 지도에서 지역을 눌러 점수 가치와 영향력 분포를 볼 수도 있습니다.' },
   { id: 8, title: '계획 확정', kind: 'action', target: '.tray__bar .btn--primary, .dock__go', ready: planNow, dock: 'open',
     done: (c) => c.s.phase !== 'plan' || !waitingFor(c.s).includes(ME), ask: "'계획 확정'을 누르세요.",
     allow: (a) => a.type === 'PLAN' && a.cards?.length === 1 && a.cards[0] === CARD && !a.assetUse,
     text: '확정하면 비공개로 제출되며 고칠 수 없습니다.' },
   { id: 9, title: '공개와 해결', kind: 'action', target: '.ovl--reveal .ovl__box, .act', ready: (c) => c.s.round === 1 && c.s.phase !== 'plan',
-    done: (c) => c.s.phase === 'shop' && !c.s.pending?.length, ask: "'해결 시작'을 누르고, 지역을 물으면 하나 골라 '확정'하세요.", allow: (a) => a.type === 'CHOOSE',
-    text: '모든 계획이 공개되고, 우선권 순서대로 카드가 해결됩니다. 외교 서한은 영향력을 놓을 지역을 묻습니다.' },
+    done: (c) => c.s.phase === 'shop' && !c.s.pending?.length, ask: "'해결 시작'을 누르세요. 계획할 때 고른 지역에 영향력이 놓입니다.", allow: (a) => a.type === 'CHOOSE',
+    text: '모든 계획이 공개되고, 우선권 순서대로 카드가 해결됩니다. 외교 서한은 계획할 때 고른 지역에 영향력을 놓습니다.' },
   { id: 10, title: '정산과 지역 점수', kind: 'info', target: '.ovl--sum .ovl__box, .frow.is-you .frow__score, .shop__head', ready: shopNow, needs: '.ovl--sum, .act--shop', click: '.ovl--sum .btn--primary',
     text: '정산: 지역마다 영향력이 가장 많은 세력이 그 지역의 점수를 얻고, 지역이 만든 자원이 수입으로 들어옵니다. 내 점수는 현황 줄에서 확인합니다.' },
   { id: 11, title: '상점에서 카드 사기', kind: 'action', target: '.sitem:not(.is-no), .sheet .detail__btns .btn--primary', ready: shopNow,
@@ -247,7 +247,7 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
     }
     function tick() {
       if (!c.alive || store.screen !== 'game') { root.hidden = true; return; }
-      c.flag('placed', !!document.querySelector('.slot--full')); c.flag('region', !!document.querySelector('.rinfo'));
+      c.flag('placed', !!document.querySelector('.slot--full, .rpick')); c.flag('region', !!document.querySelector('.slot--full'));
       if (!c.alive) return;
       const s = c.cur;
       if (!c.ready() || (s.needs && !document.querySelector(s.needs))) { root.hidden = true; return; }
