@@ -129,7 +129,7 @@ export async function createMap({ data, onSelect }) {
       links.append(svgEl('circle', { cx: tx + L.ax, cy: ty + L.ay, r: 3, class: 'map__dot' }));
     }
     stage.style.touchAction = z > 1.01 ? 'none' : 'pan-y';
-    stage.dataset.zoom = z.toFixed(2); stage.dataset.compact = compact ? '1' : '0';
+    stage.dataset.zoom = z.toFixed(2); el.dataset.compact = compact ? '1' : '0';
   }
 
   function measure() {
