@@ -1,66 +1,118 @@
-# 🏛 Order of Powers — 권력의 질서
+# 권력의 질서 (Order of Powers)
 
-현대 지정학 보드게임에서 영감을 받은, 실제 G20 국가로 겨루는 **독자 창작 웹 전략 보드게임**. 4라운드 튜토리얼부터 10라운드 본 게임까지.
+G20 국가 중 하나를 골라 세계 8개 지역의 영향력을 겨루는 웹 전략 보드게임입니다. 카드를 계획하고, 한꺼번에 공개하고, 순서대로 해결합니다. 설치나 빌드 없이 브라우저에서 한 판에 20~35분이 걸립니다.
 
-**▶ 라이브: https://sigco3111.github.io/order-of-powers/**
+**바로 플레이: <https://sigco3111.github.io/order-of-powers/>**
 
-현재 상태: **M6 완료: 선택 단계 정리와 보정** (해결 때 묻던 두 번째 질문을 계획 단계로 이동 [docs/QA_M6.md](docs/QA_M6.md), 난이도·성향 재측정은 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M6'; 어려움 보정은 M5 값 유지: 컴퓨터가 매 라운드 자본 +1)'M5'). 이전: M4 완료: 어려움 AI와 판 길이
+![표지 화면](docs/screenshots/01-title.png)
 
-## 특징
-- G20 국가 20개 중 하나를 골라 플레이 (실제 국가 특성 반영)
-- 6 / 8 / 10 라운드 선택
-- 컴퓨터 상대 난이도: 쉬움 / 보통 / 어려움
-- 4라운드 튜토리얼과 게임 중 열 수 있는 규칙서
-- 효과음과 배경음악
-- 자동 저장·이어하기, 전적 기록, 업적
-- 설정: 고대비, 글자 크기, 움직임 줄이기, 소리 조절
-- 모바일 화면(390px)에서도 플레이 가능
+## 한눈에 보기
 
-## 실행과 테스트
+| 항목 | 내용 |
+| --- | --- |
+| 참가 | 4명 (플레이어 1명 + 컴퓨터 3명) |
+| 국가 | G20 20개, 외교형·산업형·군사형·성장형 네 성향 |
+| 판 길이 | 6 / 8 / 10 라운드 중 선택 (기본 8) |
+| 컴퓨터 난이도 | 쉬움 / 보통 / 어려움 |
+| 카드 | 70장, 성장 카드 10장, 전략 자산 12종, 비밀 목표 20종, 사건 20종 |
+| 환경 | 정적 파일만 사용, 빌드 없음. 모바일(390px)에서도 플레이 가능 |
+| 부가 기능 | 자동 저장·이어하기, 전적 기록, 업적, 튜토리얼, 규칙서, 고대비·글자 크기·움직임 줄이기·소리 설정 |
+
+## 한 라운드의 흐름
+
+한 라운드는 사건 → 계획 → 공개 → 해결 → 정산 → 상점 순으로 진행됩니다. 마지막 라운드가 끝나면 지역 점수, 위신, 비밀 목표를 합산해 승자를 정합니다.
+
+| 단계 | 하는 일 |
+| --- | --- |
+| 사건 | 이번 라운드의 사건 카드가 공개되고, 전략 자산을 고릅니다. |
+| 계획 | 손패에서 카드를 칸에 넣고, 영향력을 놓을 지역을 고릅니다. |
+| 공개 | 모든 세력의 계획이 동시에 공개되고 해결 순서가 정해집니다. |
+| 해결 | 순서대로 카드 효과가 적용됩니다. |
+| 정산 | 지역 주도권에 따라 점수와 수입이 들어옵니다. |
+| 상점 | 자본으로 새 카드와 성장 카드를 사서 덱을 키웁니다. |
+
+![계획 단계: 칸에 카드를 넣고 지역을 고른다](docs/screenshots/03-board.png)
+
+![상점: 자본으로 카드를 산다](docs/screenshots/05-shop.png)
+
+| 편성 | 최종 보고서 |
+| --- | --- |
+| ![국가 편성 화면](docs/screenshots/02-setup.png) | ![최종 보고서 화면](docs/screenshots/07-result.png) |
+
+| 모바일 (계획 공개) | 튜토리얼 | 규칙서 |
+| --- | --- | --- |
+| ![모바일 보드](docs/screenshots/04-board-mobile.png) | ![튜토리얼 안내](docs/screenshots/08-tutorial.png) | ![규칙서](docs/screenshots/06-rules.png) |
+
+## 국가와 성향
+
+플레이할 국가를 고르면 나머지 세 자리는 다른 성향의 국가가 컴퓨터로 앉습니다. 국가마다 고유 특성이 하나씩 있습니다. 전체 표는 [docs/COUNTRIES.md](docs/COUNTRIES.md)에 있습니다.
+
+| 성향 | 국가 |
+| --- | --- |
+| 외교형 | 유럽연합, 프랑스, 독일, 캐나다, 영국 |
+| 산업형 | 중국, 일본, 한국, 이탈리아, 멕시코 |
+| 군사형 | 러시아, 미국, 튀르키예, 사우디아라비아, 호주 |
+| 성장형 | 인도, 인도네시아, 브라질, 남아프리카공화국, 아르헨티나 |
+
+유럽연합은 국가가 아니라 공동체이지만 G20 구성원이어서 한 자리로 넣었습니다.
+
+## 규칙 요약
+
+- 이기는 쪽은 `지역 점수 + 위신 + 비밀 목표`의 합이 가장 큰 세력입니다.
+- 지역 점수는 영향력이 가장 많은 지역에서 라운드마다 받습니다. 비밀 목표 점수는 게임이 끝나야 더해집니다.
+- 자원은 자본·에너지·산업 세 가지입니다.
+- 게임 안에서 규칙서를 언제든 열 수 있고, 4라운드 튜토리얼이 처음 한 판을 안내합니다.
+
+자세한 내용은 [규칙서 docs/RULES.md](docs/RULES.md), [기획서 docs/GAME_DESIGN.md](docs/GAME_DESIGN.md), [규칙 결정 기록 docs/RULES_DECISIONS.md](docs/RULES_DECISIONS.md)를 보십시오.
+
+## 난이도와 밸런스
+
+난이도 설정은 [src/data/difficulty.json](src/data/difficulty.json)에 있습니다. 쉬움과 보통은 보정이 없고, 어려움은 컴퓨터에 라운드마다 자본 +1을 줍니다. 컴퓨터끼리 시뮬레이션해 승률을 재며, 측정 과정은 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md)에 기록했습니다.
+
+측정값(표본 오차는 표본 수에 따라 대략 ±4~8%p)과 한계는 다음과 같습니다.
+
+- 난이도 섞은 판 300판에서 승률은 어려움 41.7%, 보통 27.2%, 쉬움 4.0%였습니다.
+- 어려움 1명 대 보통 3명은 26.7~28.0%로, 목표(30~36%)에 조금 못 미칩니다.
+- 성향별 승률(보통 4명, 8라운드)은 군사형이 33~34%로 두 번 연속 앞섰습니다. 외교형은 20~23%, 성장형은 25~28%, 산업형은 16~20%였고, 산업형의 낮은 값은 표본 오차 안일 수 있습니다. 군사형 우세는 아직 조정하지 않았습니다.
+
+## 개발
+
+저장소 루트에서 실행합니다. 빌드 도구는 필요 없습니다.
+
 ```bash
-python3 -m http.server 8000      # 저장소 루트에서 실행 후 http://localhost:8000/ 접속 (정적 파일만 사용, 빌드 없음)
+python3 -m http.server 8000      # http://localhost:8000/ 접속
 node --test                      # 엔진·AI·UI 모델 테스트 (Node 18+)
 node tools/validate-data.js      # 게임 데이터 검증
-node tools/simulate.js --games 200 --rounds 8 --levels hard,hard,hard,hard --seed 1   # AI끼리 시뮬레이션 (밸런스 점검)
+node tools/simulate.js --games 200 --rounds 8 --levels hard,hard,hard,hard --seed 1   # AI 시뮬레이션
 ```
 
-## 소리 출처
-소리와 그림은 모두 CC0(퍼블릭 도메인)입니다. 효과음: [Kenney](https://kenney.nl)(Casino Audio, UI Audio, Interface Sounds, RPG Audio), OpenGameArt의 Snabisch(Win sound effect)·Felis Chaus(Game Over - Bad chest SFX). 배경음악: OpenGameArt의 mishonis(Meadow Thoughts)·Pro Sensory(Contemplation). 게임 안 설정 화면의 크레딧과 같습니다. 전체 목록은 [docs/ASSETS.md](docs/ASSETS.md).
+`node --test`는 186개 테스트 중 185개 통과, 1개 건너뜀(실패 0)으로 확인했습니다. 전체 실행에 5분 정도 걸립니다.
 
-## 독자 창작물 안내
-이 작품은 영감을 준 보드게임과 **관련이 없는 독립적인 창작물**입니다. 규칙, 그림, 문구는 모두 직접 만들었고 해당 게임의 회사·제작자와 제휴하거나 승인받은 바 없습니다.
-
-## 소개
-Order of Powers는 G20 국가 20개 중 하나를 골라 8라운드(6·8·10 선택) 동안 내정·외교·군사 카드를 모으고, 세계 8개 지역의 영향력을 겨루는 **웹 전략 보드게임**입니다. 덱 빌딩과 지역 장악을 한 판 15~40분 (라운드 수 6·8·10 선택, 기본 8라운드 약 28분)에 즐기도록 설계하고 있으며, 모바일 세로 화면에서도 할 수 있는 카드 중심 UI를 목표로 합니다.
-
-현재 상태: **Q2 완료: 조작과 모바일 정리** (카드 한 번 누르기·지역 칩 격자·점수 합계 표시·지도 라벨·AI 연출 단축·지역 미정 시 확정 차단, 결과는 [docs/QA_Q2.md](docs/QA_Q2.md)). 직전 **Q1 완료: 실플레이 점검** (라이브 8라운드 완주·구매 안내 조사 수정, 결과는 [docs/QA_Q1.md](docs/QA_Q1.md)). 직전 **M3 완료: 라운드별 균형** (6·8·10라운드별 보정표 `src/data/round-modes.json`, 결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M3'). 직전 **M2 완료: AI와 밸런스** (구매 다양화·어려움 AI 강화·비밀 목표 달성 가능화, 결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M2'; 남은 문제도 거기에 적음). 직전 **S2b 완료: 규칙서** (전체 화면 규칙서 — 표지·편성·보드 머리띠·결과 화면에서 열기, 코드는 src/ui/rules.js·rules.css, 문서는 [docs/RULES.md](docs/RULES.md); 오디오 mp3 대체 형식, 저장 삭제 뒤 재저장 방지, 계획 칸 '지역 선택 필요' 표시 수정, 자세한 내용은 [docs/s2b_status.md](docs/s2b_status.md)). 직전 S2a 완료: 튜토리얼 (표지의 '튜토리얼' 버튼 — 고정 시드 4라운드 연습판 위에 14단계 코치 마크, 코드는 src/ui/tutorial.js·tutorial.css, 진행은 oop-tutorial-v1에 저장돼 새로고침해도 이어짐, 수료 업적 '튜토리얼 수료'). 직전 **S1 완료: 소리와 설정** (효과음·음악·설정 화면·크레딧, [docs/ASSETS.md](docs/ASSETS.md)). 직전 M1f: 점수 쏠림·영향력 소멸 밸런스 (결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 7장, 진단은 `node tools/diagnose.js`). 직전 U3b 완료: 상점과 결과 화면 (상점 구매 화면·최종 보고서·기록/업적·모바일 접이식 독, 자세한 내용은 [docs/u3b_status.md](docs/u3b_status.md)). 직전 U3a: 카드 플레이 화면 (손패 트레이·계획 슬롯·카드 상세·전략 자산·선택 패널·공개/해결 연출·이벤트 카드·정산 시트·첫 판 안내). 직전 T1: G20 국가 선택 (국가 20개를 네 유형 — 외교형·산업형·군사형·성장형 — 으로 나눠 고르는 편성 화면, 국가별 특성 1개, 목록은 [docs/COUNTRIES.md](docs/COUNTRIES.md)). 직전 U2: 보드 화면 (지도·세력 패널·라운드 진행·AI 루프·저장/이어하기; 손패/상점 화면은 U3) — 라이브: https://sigco3111.github.io/order-of-powers/ (아트 디렉션은 [docs/UI_DIRECTION.md](docs/UI_DIRECTION.md)). 직전 단계 M1e-1: 데이터 밸런스 1차 (결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md)). M1d까지 구현: RNG·상태 생성·점수·시장·효과 실행·단계 리듀서·`legalActions`·`autoPlay`·`src/ai/ai.js`(쉬움/보통/어려움)·`node tools/simulate.js`, `node --test`. 기획서와 CC0 에셋, 규칙 결정은 [docs/RULES_DECISIONS.md](docs/RULES_DECISIONS.md).
-
-- 🖥 [UI 아트 디렉션 (docs/UI_DIRECTION.md)](docs/UI_DIRECTION.md) · 앱 진입점 `index.html` → `src/ui/app.js` (브라우저 데이터 로더: `src/engine/browser-data.js`) · 라이브: https://sigco3111.github.io/order-of-powers/
-- 🌐 [G20 국가 20개와 유형·특성 (docs/COUNTRIES.md)](docs/COUNTRIES.md) · 스크린샷: [편성](docs/screens/t1-setup-desktop.png) · [보드](docs/screens/t1-board.png) · [모바일](docs/screens/t1-setup-mobile.png)
-- 📄 [게임 기획서 (docs/GAME_DESIGN.md)](docs/GAME_DESIGN.md)
-- 🃏 카드 초안: [docs/CARDS.md](docs/CARDS.md)
-- 🃏 카드 확장(세력 시작 덱·전략 자산·비밀 목표·성장): [docs/CARDS_EXPANSION.md](docs/CARDS_EXPANSION.md)
-- ⚙️ [규칙 엔진 설계 (docs/ENGINE_DESIGN.md)](docs/ENGINE_DESIGN.md)
-- 🗂 [게임 데이터 JSON (src/data)](src/data) — 카드·이벤트·세력·지역 등 (검증: `node tools/validate-data.js`)
-- 🗺 지도 미리보기: https://sigco3111.github.io/order-of-powers/map/
-- 🗺 [지도 문서 (docs/map-preview.md)](docs/map-preview.md) · 이전 추상 초안은 assets/map/regions.svg
-- 🎨 [에셋 목록과 라이선스 (docs/ASSETS.md)](docs/ASSETS.md)
-
-## 폴더 구조
 ```
 order-of-powers/
-├─ README.md
-├─ docs/
-│  ├─ GAME_DESIGN.md      # 게임 기획서
-│  └─ ASSETS.md           # 에셋 목록, 라이선스, 부족한 에셋
-└─ assets/
-   ├─ ui/                 # 버튼, 패널, 카드 뒷면, 칩, 주사위 (Kenney)
-   ├─ icons/              # 자원·카드·지도 마커·배지·방패·동전 아이콘
-   └─ audio/
-      ├─ sfx/             # 카드, 칩, 버튼, 성공/실패 효과음
-      └─ music/           # 잔잔한 배경음악
+├─ index.html          # 진입점 (src/ui/app.js)
+├─ src/
+│  ├─ engine/          # 규칙 엔진
+│  ├─ ai/              # 컴퓨터 상대
+│  ├─ data/            # 카드·국가·사건 등 JSON
+│  └─ ui/              # 화면
+├─ assets/             # 그림·소리 (CC0)
+├─ map/                # 지도 미리보기
+├─ tests/              # 테스트
+├─ tools/              # 데이터 검증, 시뮬레이션
+└─ docs/               # 기획, 규칙, 밸런스, QA 기록
 ```
-`src/data`(카드·이벤트·세력·지역 JSON)와 `tools/validate-data.js`(데이터 검증)는 추가되었고, 앞으로 `src/engine`(규칙), `src/ai`, `src/ui`가 추가될 예정입니다. 자세한 구조는 [docs/ENGINE_DESIGN.md](docs/ENGINE_DESIGN.md)를 참고하세요.
 
-## 크레딧과 라이선스
-`assets/`의 이미지와 소리는 모두 CC0(퍼블릭 도메인) 에셋입니다. 대부분 [Kenney](https://kenney.nl)의 팩이고, 일부는 OpenGameArt 작가들의 CC0 작품입니다. 각 팩 폴더에 원본 라이선스 파일을 그대로 두었습니다. 팩별 제작자·출처·용도는 [docs/ASSETS.md](docs/ASSETS.md)에 정리했습니다.
+설계 문서: [ENGINE_DESIGN.md](docs/ENGINE_DESIGN.md), [UI_DIRECTION.md](docs/UI_DIRECTION.md), [CARDS.md](docs/CARDS.md), [CARDS_EXPANSION.md](docs/CARDS_EXPANSION.md), [map-preview.md](docs/map-preview.md).
+
+## 크레딧과 저작권
+
+- 그림, 소리, 지도는 CC0 또는 퍼블릭 도메인 자료입니다. 원본 라이선스 파일은 각 에셋 폴더에 있고, 전체 목록은 [docs/ASSETS.md](docs/ASSETS.md)에 있습니다. 게임 안 설정 화면의 크레딧과 같습니다.
+- 효과음: [Kenney](https://kenney.nl) (Casino Audio, UI Audio, Interface Sounds, RPG Audio), OpenGameArt의 Snabisch (Win sound effect), Felis Chaus (Game Over - Bad chest SFX).
+- 배경음악: OpenGameArt의 mishonis (Meadow Thoughts), Pro Sensory (Contemplation).
+- 이 작품은 영감을 준 보드게임과 관련 없는 독립적인 창작물입니다. 규칙, 그림, 문구는 직접 만들었고 해당 게임의 회사나 제작자와 제휴하거나 승인받은 바 없습니다.
+- 저장소에는 별도의 라이선스 파일이 없습니다. 코드의 사용 조건은 정해져 있지 않으니, 재사용하려면 저작권자에게 먼저 문의하십시오.
+
+## 개발 이력
+
+마일스톤별 기록은 `docs/`에 있습니다: [QA_Q1](docs/QA_Q1.md), [QA_Q2](docs/QA_Q2.md), [QA_M6](docs/QA_M6.md), [QA_F1](docs/QA_F1.md), [BALANCE_REPORT](docs/BALANCE_REPORT.md), [s2b_status](docs/s2b_status.md), [u3a_status](docs/u3a_status.md), [u3b_status](docs/u3b_status.md).
