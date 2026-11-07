@@ -6,6 +6,8 @@ import { aiMeta } from '../ai/ai.js';
 import { createPlay } from './play.js';
 import { createShop } from './shop.js';
 import { createPresenter } from './presenter.js';
+import { openSettings } from './settings-view.js';
+import { sfx } from './audio.js';
 import { effectsToKorean } from './effect-text.js';
 
 const PHASE = { setup: '준비', event: '사건', plan: '계획', reveal: '공개', resolve: '해결', upkeep: '정산', shop: '상점', end: '종료' };
@@ -26,7 +28,7 @@ export const reportKey = (s) => `${s.seed}-${s.config.rounds}-${s.config.humanFa
 export function gameScreen({ store, show }) {
   const loop = store.loop, data = store.data, F = by(data.factions), R = by(data.regions), C = { ...by(data.cards), ...by(data.growth) }, A = by(data.assets), E = by(data.events);
   const me = () => loop.state.config.humanFaction;
-  const view = { sel: null, tab: 'f', pick: null, fast: false, plan: [] };
+  const view = { sel: null, tab: 'f', pick: null, fast: !!store.settings.fast, plan: [] };
   const debug = new URLSearchParams(location.search).get('debug') === '1'; // 임시 자동 계획 버튼은 ?debug=1 에서만
   const root = h('div', { class: 'board' });
   const live = h('div', { class: 'sr-only', role: 'status', 'aria-live': 'polite' });
@@ -41,7 +43,7 @@ export function gameScreen({ store, show }) {
   const run = (o = {}) => loop.run({ pace: 0, ...o });
   const dispatch = (a) => { const r = loop.dispatch(a); if (!r.ok) console.warn(r.reason); else run(); return r; };
   /** 사람의 행동: 합법 수인지 검사하고 적용한 뒤 AI 진행을 이어간다 */
-  const submit = (a) => { const r = loop.submit(a); if (!r.ok) console.warn(r.reason); else run(); return r; };
+  const submit = (a) => { const r = loop.submit(a); if (!r.ok) { console.warn(r.reason); sfx('error'); } else run(); return r; };
   const announce = (t) => { live.textContent = ''; setTimeout(() => { live.textContent = t; }, 30); };
   const regionName = (id) => R[id]?.name ?? id;
   const modLine = (m, key, v, scope) => effectsToKorean([{ type: 'modifier', key, value: Number(String(v).replace('−', '-')), scope: scope === '게임' ? 'game' : 'round' }], null)[0] ?? m;
@@ -109,6 +111,7 @@ export function gameScreen({ store, show }) {
   const btn = (label, fn, cls = '', extra = {}) => h('button', { class: `btn ${cls}`, type: 'button', onclick: fn, ...extra }, label);
   const tools = () => h('div', { class: 'act__tools' },
     h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: view.fast, onchange: (e) => { view.fast = e.target.checked; paint(); } }), '빠른 진행'),
+    btn('설정', () => openSettings({ show, store }), 'btn--sm', { 'aria-haspopup': 'dialog' }),
     debug ? (loop.running ? btn('멈춤', () => { loop.stop(); paint(); }, 'btn--sm') : btn('다음 라운드까지(디버그)', () => run({ auto: true, untilRound: loop.state.round + 1, pace: 120 }), 'btn--sm')) : null);
   /** 반환: 지도에서 강조할 후보 지역 */
   function paintAct(s) {
@@ -148,8 +151,15 @@ export function gameScreen({ store, show }) {
   // ── 전체 ──
   let cands = [], kind0 = '';
   const actKind = () => (act.className.match(/act--(\w+)/) || [])[1] || '';
+  let seenRound = null, seenPhase = null;
   function paint() {
     const s = shown();
+    if (!P.active) { // 연출이 끝난 뒤에만 라운드·단계 소리를 낸다 (처음 그릴 때는 조용히)
+      const ls = loop.state;
+      if (seenRound != null && ls.round !== seenRound && ls.phase !== 'end') sfx('round');
+      else if (seenPhase != null && ls.phase !== seenPhase && ['plan', 'shop'].includes(ls.phase)) sfx('phase');
+      seenRound = ls.round; seenPhase = ls.phase;
+    }
     paintHead(s); paintRail(s); cands = paintAct(loop.state); maybeReport();
     const k = actKind();
     map?.update({ state: s, selected: k === 'choice' && view.choice != null ? view.choice : view.sel, candidates: P.active ? [] : cands, fx: P.fx });
@@ -163,7 +173,7 @@ export function gameScreen({ store, show }) {
     setTimeout(() => { if (root.isConnected && loop.state.phase === 'end') show('result'); }, 1200);
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (root.isConnected) paint(); }); };
-  function select(id) { if (play.pickRegion(id)) return; view.sel = id; view.tab = 'r'; paint(); }
+  function select(id) { sfx('region'); if (play.pickRegion(id)) return; view.sel = id; view.tab = 'r'; paint(); }
 
   const off = loop.subscribe(schedule);
   store.cleanup = () => { off(); P.destroy(); loop.stop(); loop.present = null; loop.hold = null; cancelAnimationFrame(raf); map?.destroy(); store.cleanup = null; };

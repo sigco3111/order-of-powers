@@ -1,5 +1,6 @@
 import { h, icon, openSheet } from './dom.js';
-import { applySettings, ensureLoop } from './app.js';
+import { ensureLoop } from './app.js';
+import { openSettings } from './settings-view.js';
 import { openRecords } from './records-view.js';
 import { readRecords } from './records.js';
 
@@ -28,9 +29,7 @@ export function titleScreen({ store, show, saved }) {
     b.querySelector('.hint').textContent = '저장이 손상됨'; };
   const row = (n, t, hint, extra = {}) => h('button', { class: 'btn btn--block', ...extra }, h('span', { class: 'num' }, n), t, h('span', { class: 'hint' }, hint));
   const rules = () => openSheet('규칙 요약', h('ol', { style: 'padding-left:1.4em;margin:0' }, LOOP.map((l) => h('li', { style: 'margin-bottom:8px' }, l))));
-  const settings = () => openSheet('설정', h('div', {},
-    ...[['reduceMotion', '모션 줄이기'], ['sound', '효과음']].map(([k, label]) => h('label', { class: 'check' },
-      h('input', { type: 'checkbox', checked: store.settings[k], onchange: (e) => { store.settings[k] = e.target.checked; applySettings(); } }), label))));
+  const settings = () => openSettings({ show, store });
   return h('section', { class: 'title' }, map,
     h('div', { class: 'title__main' },
       h('p', { class: 'label' }, '정세 브리핑 · 제 1 호 · 균열 이후'),

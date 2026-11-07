@@ -6,15 +6,16 @@ import { setupScreen } from './screen-setup.js';
 import { gameScreen } from './screen-game.js';
 import { resultScreen } from './screen-result.js';
 import { createLoop, readSave, SAVE_KEY as SAVE } from './loop.js';
+import { current, init as initSettings, onSettings, SETTINGS_KEY as SK } from './settings.js';
+import { armOnGesture, clickSfx, getAudio, setMusic } from './audio.js';
 
-export const SAVE_KEY = SAVE, SETTINGS_KEY = 'oop-settings-v1';
-const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+export const SAVE_KEY = SAVE, SETTINGS_KEY = SK;
 
 /** 화면들이 공유하는 상태. 바꿀 때는 set()으로 */
 export const store = {
   screen: 'title', data: null, dataError: null, game: null,
   ui: { faction: 'atlas', country: 'eu', tab: 'atlas', query: '', opp: {}, rounds: 8, level: 'normal', seed: 1 + Math.floor(Math.random() * 999999) },
-  settings: { reduceMotion: false, sound: true, ...read(SETTINGS_KEY) },
+  settings: current, // 설정은 settings.js의 current 하나를 함께 쓴다
   engine: '불러오는 중', loop: null, cleanup: null,
 };
 export const set = (patch) => Object.assign(store, patch);
@@ -24,10 +25,6 @@ let ready;
 export const ensureLoop = () => (ready ??= loadData().then((data) => {
   set({ data, engine: `카드 ${data.cards.length}장` }); store.loop = createLoop({ data }); paintRail(); return store.loop;
 }).catch((e) => { ready = null; set({ dataError: e.message, engine: '오류' }); paintRail(); console.error(e); throw e; }));
-export const applySettings = () => {
-  document.documentElement.dataset.motion = store.settings.reduceMotion ? 'reduce' : 'auto';
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(store.settings));
-};
 
 const SCREENS = { title: titleScreen, setup: setupScreen, game: gameScreen, result: resultScreen };
 const STEPS = [['title', '01', '표지'], ['setup', '02', '편성'], ['game', '03', '작전']];
@@ -61,13 +58,17 @@ export function show(name, { focus = true } = {}) {
   doc.dataset.screen = name; main.classList.toggle('screen--board', name === 'game');
   document.body.classList.toggle('is-game', name === 'game');
   main.replaceChildren(SCREENS[name]({ store, set, show, saved }));
+  setMusic(name === 'game' || name === 'result' ? 'game' : 'menu');
   paintRail();
   window.scrollTo(0, 0);
   if (focus) main.focus({ preventScroll: true });
 }
 
 shell();
-applySettings();
+initSettings();
+armOnGesture(); onSettings(() => getAudio().refresh());
+// 단추를 누르면 기본 클릭음 (더 알맞은 소리가 같은 순간에 나면 취소된다)
+document.addEventListener('click', (e) => { if (e.target.closest?.('button:not(:disabled), a[href], summary')) clickSfx(); }, true);
 show('title', { focus: false });
 ensureLoop().catch(() => {});
 window.__oop = { store, show };
