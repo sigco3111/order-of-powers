@@ -2,7 +2,7 @@
 .act--tray, .act--choice, .act--strip { max-height: 70vh; padding-top: var(--s2); }
 .tray__head { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); }
 .tray__t { margin: 0; font-size: var(--fs-small); } .tray__t strong { font: 800 1.0625rem var(--font-display); }
-.tray__asset { max-width: 62%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-height: 44px; }
+.tray__asset { max-width: 62%; min-height: 44px; white-space: normal; line-height: 1.25; text-align: center; } /* 큰 글자(130%)에서 잘리지 않게 줄바꿈 */
 
 /* 계획 칸 */
 .slots { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; grid-template-columns: repeat(var(--slots, 3), minmax(0, 1fr)); gap: var(--s2); }
