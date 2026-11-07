@@ -1,0 +1,73 @@
+/* U3b — 최종 보고서(결과 화면)와 기록 모달. 인쇄된 보고서: 종이색, 잉크 괘선, 모노 숫자, 각진 모서리 */
+.rep { max-width: 880px; padding-bottom: var(--s6); }
+.rep__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); margin: var(--s2) 0 var(--s4); padding: var(--s3) 0 var(--s3) var(--s3); border-top: 3px double var(--ink); border-bottom: 3px double var(--ink); border-left: 10px solid var(--fc, var(--ink)); }
+.rep__title { font-size: clamp(1.75rem, 8vw, 3rem); line-height: 1.1; }
+.rep__sub { margin: var(--s2) 0 0; font-size: var(--fs-small); color: var(--ink-soft); }
+.rep__stamps { display: grid; gap: var(--s2); justify-items: end; padding-right: var(--s2); flex: none; }
+.rep__win { font: 800 1.375rem/1.2 var(--font-display); padding: 4px 14px; letter-spacing: .12em; border-width: 5px; }
+.rep__iso-s { font-size: .8125rem; letter-spacing: .14em; }
+
+.rep__tbl { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: var(--s3); }
+.rep__tbl th, .rep__tbl td { padding: 8px 4px; border-bottom: 1px dotted var(--ink-soft); }
+.rep__tbl thead th { vertical-align: bottom; border-bottom: var(--line); text-align: right; font-weight: 700; }
+.rep__tbl thead td { width: 21%; border-bottom: var(--line); }
+.rep__tbl tbody th { text-align: left; font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .04em; color: var(--ink-soft); padding-right: 4px; }
+.rep__tbl td { text-align: right; font: 500 1.0625rem/1.3 var(--font-mono); font-variant-numeric: tabular-nums; }
+.rep__cn { display: block; font: 800 .9375rem/1.2 var(--font-display); word-break: keep-all; }
+.rep__iso, .rep__rk { display: block; font: 500 .6875rem/1.35 var(--font-mono); letter-spacing: .06em; color: var(--ink-soft); }
+.rep__rk { color: var(--ink); }
+.rep__you { margin-top: 2px; padding: 0 4px; font-size: .625rem; background: var(--ink); color: var(--paper-light); } .rep__you::before { display: none; }
+.rep__tbl thead th { box-shadow: inset 0 -5px 0 var(--fc); padding-bottom: 10px; }
+.rep__tbl .is-win { background: var(--paper-light); border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); }
+.rep__tbl thead th.is-win { border-top: 6px solid var(--brass); }
+.rep__tbl tr:last-child td.is-win { border-bottom: 2px solid var(--ink); }
+.rep__sum th, .rep__sum td { border-top: var(--line); border-bottom: 3px double var(--ink); padding-top: 10px; }
+.rep__sum td { font-size: 1.5rem; font-weight: 700; } .rep__sum th { color: var(--ink); font-weight: 700; }
+.rep__tie, .rep__ach { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: var(--s3) 0; font-size: var(--fs-small); }
+.rep__tie .tag::before { display: none; }
+.rep__ach .stamp { font-size: .8125rem; }
+
+.rep__sec { margin-top: var(--s5); }
+.rep__sec > h3 { margin-bottom: var(--s2); padding-bottom: 3px; border-bottom: var(--line); font-size: 1.125rem; }
+.rep__sec .leader { padding: 4px 0; font-size: var(--fs-small); }
+.rep__hv small { font: 400 .8125rem var(--font-body); color: var(--ink-soft); }
+.goals { list-style: none; margin: 0; padding: 0; }
+.goals li { display: grid; grid-template-columns: 28px 1fr auto; gap: var(--s3); align-items: start; padding: var(--s2) 0; border-bottom: 1px dotted var(--ink-soft); }
+.goals b { font: 800 1rem var(--font-display); } .goals p { margin: 0; font-size: .8125rem; color: var(--ink-soft); }
+.goals__pt { font-size: 1.125rem; font-weight: 700; } .goals .is-no .goals__pt { color: var(--ink-soft); font-weight: 400; }
+.rmark { width: 26px; height: 26px; fill: none; stroke: var(--ink); stroke-width: 3.4; stroke-linecap: square; stroke-linejoin: miter; overflow: visible; }
+.rmark--no { stroke: var(--stamp); stroke-width: 2.6; opacity: .85; }
+
+.rchart { width: 100%; max-width: 560px; height: auto; margin-top: var(--s2); overflow: visible; }
+.rchart__grid { stroke: var(--ink); stroke-opacity: .2; stroke-width: 1; stroke-dasharray: 2 3; }
+.rchart__axis { stroke: var(--ink); stroke-width: 1.5; }
+.rchart__y, .rchart__x { font: 500 9px var(--font-mono); fill: var(--ink-soft); text-anchor: end; } .rchart__x { text-anchor: middle; }
+.rchart__line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: .9; }
+.rchart__line.is-you { stroke-width: 3.5; opacity: 1; }
+.rchart__sw { stroke: var(--ink); stroke-width: 1; }
+.rchart__name { font: 700 10.5px var(--font-body); fill: var(--ink); } .rchart__name.is-you { font-weight: 800; }
+
+.rep__btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); margin-top: var(--s5); }
+.rep__btns .btn { padding: 0 var(--s3); }
+.rep__btns .btn--primary { grid-column: 1 / -1; min-height: 56px; font-size: var(--fs-lead); }
+.rep__btns .btn--sm { min-height: 48px; font-size: var(--fs-body); }
+.rep__status { min-height: 1.4em; margin: var(--s3) 0 0; font-size: var(--fs-small); color: var(--ink-soft); }
+.rep__ta { width: 100%; padding: var(--s3); border: var(--line); border-radius: 2px; background: var(--paper-light); font: 400 .8125rem/1.5 var(--font-mono); resize: vertical; }
+
+/* 기록 모달 */
+.recs .leader { padding: 3px 0; font-size: var(--fs-small); }
+.recs__tbl { width: 100%; margin-top: var(--s3); border-collapse: collapse; font-size: var(--fs-small); }
+.recs__tbl th { padding: 4px; border-bottom: var(--line); text-align: left; font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .06em; color: var(--ink-soft); }
+.recs__tbl td { padding: 6px 4px; border-bottom: 1px dotted var(--ink-soft); } .recs__tbl td.num { text-align: right; } .recs__tbl .is-win td { font-weight: 700; }
+.recs__h { margin: var(--s5) 0 var(--s2); padding-bottom: 3px; border-bottom: var(--line); font-size: 1.0625rem; }
+.ach { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.ach li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.ach .stamp { font-size: .75rem; } .ach li:not(.is-got) .stamp { border-style: dashed; opacity: .55; }
+.ach__d { font-size: .8125rem; color: var(--ink-soft); }
+
+@media (min-width: 900px) {
+  .rep__tbl td { font-size: 1.25rem; } .rep__cn { font-size: 1.0625rem; }
+  .rep__btns { grid-template-columns: auto repeat(4, auto); justify-content: start; }
+  .rep__btns .btn--primary { grid-column: auto; padding: 0 var(--s7); }
+  .rep__btns .btn, .rep__btns .btn--sm { padding: 0 var(--s5); }
+}
