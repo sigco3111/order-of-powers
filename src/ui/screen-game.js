@@ -1,6 +1,6 @@
 import { h, icon, openSheet } from './dom.js';
 import { createMap } from './map.js';
-import { legalActions } from '../engine/index.js';
+import { legalActions, seatName, ARCHETYPE_KO } from '../engine/index.js';
 import { regionLeaders } from '../engine/score.js';
 import { aiMeta } from '../ai/ai.js';
 
@@ -28,7 +28,7 @@ export function gameScreen({ store, show }) {
   const bodyEl = h('div', { class: 'pbody-host' });
   root.append(head, bodyEl, mapHost, rail, act);
 
-  const fName = (f) => F[f]?.name ?? f, fShort = (f) => fName(f).split(' ')[0];
+  const fName = (f) => seatName(loop.state, f, data), fShort = fName; // 좌석 이름 = 국가 이름
   const run = (o = {}) => loop.run({ pace: view.fast ? 350 : 0, auto: view.fast, ...o });
   const dispatch = (a) => { const r = loop.dispatch(a); if (!r.ok) console.warn(r.reason); else run(); return r; };
 
@@ -51,7 +51,7 @@ export function gameScreen({ store, show }) {
     const p = s.players[f], you = f === me(), acting = loop.acting?.faction === f;
     return h('article', { class: `frow frow--${f}${you ? ' is-you' : ''}${acting ? ' is-acting' : ''}`, 'aria-label': `${fName(f)}${you ? ', 당신' : ''}` },
       h('img', { class: 'frow__emb', src: `assets/ui/emblem-${f}.svg`, alt: '', width: 40, height: 40 }),
-      h('div', {}, h('h3', {}, fName(f)),
+      h('div', {}, h('h3', {}, fName(f), h('small', { class: 'frow__iso' }, p.iso ?? '')), h('p', { class: 'frow__arch' }, ARCHETYPE_KO[f]),
         h('div', { class: 'frow__tags' }, you ? h('span', { class: 'tag tag--you' }, '당신') : h('span', { class: 'tag', title: aiMeta[s.config.aiLevel]?.description }, 'AI ' + (aiMeta[s.config.aiLevel]?.name ?? '')),
           acting && h('span', { class: 'tag' }, '행동 중'),
           s.treaties.filter((t) => t.includes(f)).map((t) => pairStamp(t.find((x) => x !== f))))),
@@ -106,7 +106,7 @@ export function gameScreen({ store, show }) {
         h('span', { class: 'tag' }, CAT_KO[a.category] || a.category), h('h4', {}, a.name), h('p', {}, plain(a.text)), h('span', { class: 'stamp stamp--ink' }, '지정')); }))));
       bar.push(status('전략 자산', '둘 중 하나를 고르십시오.'), h('div', { class: 'act__row' }, btn(view.pick ? `${A[view.pick].name} 확정` : '자산을 먼저 고르십시오', () => dispatch({ type: 'PICK_ASSET', faction: human, assetId: view.pick }), 'btn--primary', { disabled: !view.pick })));
     } else if (mine && pc) {
-      const acts = legalActions(s, human, data), label = (c) => (typeof c === 'boolean' ? (c ? '지불한다' : '지불하지 않는다') : Array.isArray(c) ? c.map((x) => R[x]?.name ?? x).join(' + ') : R[c]?.name ?? F[c]?.name ?? C[c]?.name ?? String(c));
+      const acts = legalActions(s, human, data), label = (c) => (typeof c === 'boolean' ? (c ? '지불한다' : '지불하지 않는다') : Array.isArray(c) ? c.map((x) => R[x]?.name ?? x).join(' + ') : R[c]?.name ?? (F[c] ? fName(c) : null) ?? C[c]?.name ?? String(c));
       if (pc.kind === 'region' || pc.kind === 'regionPair') cand = pc.options;
       body.push(panel('선택 필요', PROMPT[pc.effect?.type] || '효과의 대상', h('div', { class: 'opts' }, acts.map((a) => btn(label(a.choice), () => dispatch(a))))));
       bar.push(status('선택 필요', `${PROMPT[pc.effect?.type] || '효과의 대상'}을 고르십시오.`), h('div', { class: 'act__row' }, btn('자동 선택(임시)', () => dispatch(loop.pick(human)), 'btn--primary')));

@@ -70,6 +70,8 @@
 .frow.is-acting .frow__emb { background: var(--paper-light); }
 .frow__emb { width: 40px; height: 40px; padding: 3px; border: var(--hair); background: var(--paper); }
 .frow h3 { font-size: 1.0625rem; line-height: 1.2; }
+.frow__iso { margin-left: 6px; font: 500 .6875rem/1 var(--font-mono); letter-spacing: .04em; opacity: .75; }
+.frow__arch { margin: 1px 0 0; font: 400 .6875rem/1.2 var(--font-mono); letter-spacing: .04em; opacity: .75; }
 .frow__tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 .frow__tags .tag { padding: 0 6px; font-size: .6875rem; }
 .frow__tags .tag::before { display: none; }

@@ -3,6 +3,7 @@ import { createGame, reduce, waitingFor, setData } from '../engine/index.js';
 import { chooseAction, describeIntent } from '../ai/ai.js';
 
 export const SAVE_KEY = 'oop-save-v1';
+const humanCountry = (cfg) => cfg.countries?.[cfg.humanFaction];
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 const now = () => globalThis.performance?.now?.() ?? Date.now();
 
@@ -40,7 +41,7 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
 
     start(cfg) {
       loop.stop(); loop.feed = [];
-      ui = { faction: cfg.humanFaction, rounds: cfg.rounds, level: cfg.aiLevel, seed: cfg.seed };
+      ui = { faction: cfg.humanFaction, country: humanCountry(cfg), rounds: cfg.rounds, level: cfg.aiLevel, seed: cfg.seed };
       state = createGame({ data, ...cfg });
       loop.persist(); loop._emit('start');
       return state;

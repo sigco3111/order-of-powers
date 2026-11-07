@@ -12,7 +12,7 @@ const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch 
 /** 화면들이 공유하는 상태. 바꿀 때는 set()으로 */
 export const store = {
   screen: 'title', data: null, dataError: null, game: null,
-  ui: { faction: 'atlas', rounds: 8, level: 'normal', seed: 1 + Math.floor(Math.random() * 999999) },
+  ui: { faction: 'atlas', country: 'eu', tab: 'atlas', query: '', opp: {}, rounds: 8, level: 'normal', seed: 1 + Math.floor(Math.random() * 999999) },
   settings: { reduceMotion: false, sound: true, ...read(SETTINGS_KEY) },
   engine: '불러오는 중', loop: null, cleanup: null,
 };
