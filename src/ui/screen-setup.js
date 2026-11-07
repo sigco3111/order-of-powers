@@ -1,3 +1,4 @@
+import { sfx } from './audio.js';
 import { h } from './dom.js';
 import { aiMeta } from '../ai/ai.js';
 import { ensureLoop } from './app.js';
@@ -98,7 +99,7 @@ export function setupScreen({ store, show }) {
       try {
         const loop = await ensureLoop();
         loop.start({ rounds: ui.rounds, factions: ARCHETYPES, humanFaction: cur().archetype, seed: ui.seed, aiLevel: ui.level, countries: lineup() });
-        show('game');
+        sfx('stamp'); show('game');
       } catch (x) { err.textContent = '작전을 시작하지 못했습니다: ' + x.message; err.hidden = false; btn.disabled = false; console.error(x); }
     };
 

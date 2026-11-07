@@ -4,6 +4,7 @@ import { renderCard, CAT_KO } from './card.js';
 import { effectsToKorean, previewChips, plainText } from './effect-text.js';
 import { planSlotsOf } from '../engine/state.js';
 import { josa } from '../engine/countries.js';
+import { sfx } from './audio.js';
 
 const NUM = ['①', '②', '③', '④', '⑤', '⑥'];
 const HINT_KEY = 'oop-seen-hints';
@@ -37,7 +38,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     const card = C[hand[idx]];
     const move = (d) => { const a = view.plan; [a[i], a[i + d]] = [a[i + d], a[i]]; announce(`${card.name}을 ${i + d + 1}번 칸으로 옮겼습니다`); repaint(); };
     return h('li', { class: 'slot slot--full' },
-      h('button', { class: 'slot__main', type: 'button', 'aria-label': `${i + 1}번 칸 ${card.name}. 누르면 손패로 되돌립니다`, onclick: () => { view.plan.splice(i, 1); announce(`${card.name}을 손패로 되돌렸습니다`); repaint(); } },
+      h('button', { class: 'slot__main', type: 'button', 'aria-label': `${i + 1}번 칸 ${card.name}. 누르면 손패로 되돌립니다`, onclick: () => { sfx('cardReturn'); view.plan.splice(i, 1); announce(`${card.name}을 손패로 되돌렸습니다`); repaint(); } },
         h('span', { class: 'slot__no num' }, NUM[i]), renderCard(card, { size: 'mini' })),
       chips(card),
       h('div', { class: 'slot__ord' }, h('button', { class: 'ord', type: 'button', 'aria-label': `${card.name} 앞으로`, disabled: i === 0, onclick: () => move(-1) }, '◀'),
@@ -47,12 +48,12 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   // ── 카드 상세 시트 ──
   function detail(idx) {
     const s = loop.state, p = s.players[me()], card = C[p.hand[idx]], slots = planSlotsOf(s, me()), at = view.plan.indexOf(idx);
-    view.focus = idx; repaint();
+    view.focus = idx; sfx('cardPick'); repaint();
     let close;
     const body = h('div', { class: 'detail' }, renderCard(card, { size: 'detail', iso: p.iso }),
       h('div', { class: 'detail__btns' },
-        at >= 0 ? btn('계획에서 빼기', () => { view.plan.splice(at, 1); announce(`${card.name}을 손패로 되돌렸습니다`); close(); repaint(); }, 'btn--primary')
-          : btn(view.plan.length >= slots ? '계획 칸이 가득 참' : '계획에 넣기', () => { view.plan.push(idx); view.focus = null; announce(`${card.name}을 ${view.plan.length}번 칸에 넣었습니다`); close(); repaint(); }, 'btn--primary', { disabled: view.plan.length >= slots }),
+        at >= 0 ? btn('계획에서 빼기', () => { sfx('cardReturn'); view.plan.splice(at, 1); announce(`${card.name}을 손패로 되돌렸습니다`); close(); repaint(); }, 'btn--primary')
+          : btn(view.plan.length >= slots ? '계획 칸이 가득 참' : '계획에 넣기', () => { sfx('cardPlace'); view.plan.push(idx); view.focus = null; announce(`${card.name}을 ${view.plan.length}번 칸에 넣었습니다`); close(); repaint(); }, 'btn--primary', { disabled: view.plan.length >= slots }),
         btn('닫기', () => close())));
     close = openSheet(card.name, body);
   }
@@ -62,7 +63,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     let close;
     const body = h('div', { class: 'detail' }, h('p', { class: 'label' }, `전략 자산 · ${CAT_KO[a.category === 'diplomatic' ? 'diplomatic' : a.category] ?? ''} · 게임당 1회`), h('h3', {}, a.name), h('p', {}, plainText(a.text)),
       h('ul', { class: 'card__plain', style: 'margin:0 0 var(--s4)' }, effectsToKorean(a.effects, a).map((t) => h('li', {}, t))),
-      h('div', { class: 'detail__btns' }, btn('지금 사용', () => { close(); const r = submit({ type: 'USE_ASSET', faction: me() }); if (!r.ok) announce(r.reason); else announce(`전략 자산 ${a.name}을 사용했습니다`); }, 'btn--primary'), btn('닫기', () => close())));
+      h('div', { class: 'detail__btns' }, btn('지금 사용', () => { close(); const r = submit({ type: 'USE_ASSET', faction: me() }); if (!r.ok) announce(r.reason); else { sfx('confirm'); announce(`전략 자산 ${a.name}을 사용했습니다`); } }, 'btn--primary'), btn('닫기', () => close())));
     close = openSheet('전략 자산 사용', body);
   }
 
@@ -76,7 +77,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     const cards = view.plan.map((i) => hand[i]);
     const r = submit({ type: 'PLAN', faction: me(), cards });
     if (!r.ok) return announce(r.reason);
-    view.plan = []; view.stamped = true;
+    sfx('stamp'); view.plan = []; view.stamped = true;
     announce(`계획을 제출했습니다: ${cards.map((c) => C[c].name).join(', ')}`);
   }
 
@@ -147,9 +148,9 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   }
   function choice(s) {
     const pc = s.pending[0];
-    if (view.choiceFor !== pc.id) { view.choiceFor = pc.id; view.choice = null; }
+    if (view.choiceFor !== pc.id) { view.choiceFor = pc.id; view.choice = null; sfx('alert'); }
     const src = source(pc), c = view.choice, ready = pc.kind === 'regionPair' ? Array.isArray(c) && c.length === 2 : c != null;
-    const go = (v) => { const r = submit({ type: 'CHOOSE', faction: me(), pendingId: pc.id, choice: v }); if (!r.ok) announce(r.reason); else { view.choice = null; announce('선택을 확정했습니다'); } };
+    const go = (v) => { const r = submit({ type: 'CHOOSE', faction: me(), pendingId: pc.id, choice: v }); if (!r.ok) announce(r.reason); else { sfx('confirm'); view.choice = null; announce('선택을 확정했습니다'); } };
     const ask = ASK[pc.effect?.type] ?? { region: '지역', regionPair: '지역 두 곳', faction: '세력', card: '카드', confirm: '확인' }[pc.kind];
     let list;
     if (pc.kind === 'region' || pc.kind === 'regionPair') {

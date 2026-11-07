@@ -1,5 +1,6 @@
 // 결과/엔딩 화면: "최종 보고서" 문서. 순위표 · 비밀 목표 · 점수 추이 · 하이라이트 · 설정. 기록과 업적을 저장한다.
 import { h } from './dom.js';
+import { sfx } from './audio.js';
 import { buildReport, recordOf, shareText } from './report.js';
 import { addRecord, updateMeta } from './records.js';
 import { randomCountries } from '../engine/index.js';
@@ -75,6 +76,7 @@ export function resultScreen({ store, show }) {
   };
   const sheetRecords = () => openRecords();
 
+  setTimeout(() => sfx(rep.humanWon ? 'win' : 'lose'), 250);
   const dateStr = new Date(rec.date).toLocaleDateString('ko-KR');
   return h('section', { class: 'rep', 'aria-labelledby': 'rep-title' },
     h('p', { class: 'label' }, `최종 보고서 · FINAL REPORT · ${dateStr}`),

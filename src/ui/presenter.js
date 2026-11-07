@@ -4,6 +4,7 @@ import { h, icon } from './dom.js';
 import { renderCard, renderEventCard } from './card.js';
 import { stepsOf, revealOf, summaryOf } from './timeline.js';
 import { plainText } from './effect-text.js';
+import { sfx } from './audio.js';
 
 const ORD = ['1st', '2nd', '3rd', '4th'];
 const RES = { capital: 'assets/icons/kenney-game-icons/coin.png', energy: 'assets/icons/kenney-board-game-icons/fire.png', industry: 'assets/icons/kenney-board-game-icons/resource_iron.png', prestige: 'assets/icons/kenney-game-icons/star.png' };
@@ -34,13 +35,24 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
     });
   }
 
+  /** 해결 단계 하나의 소리: 영향력 늘면 칩 놓기, 줄면 칩 부딪힘, 기지·방어는 도장 */
+  function stepSfx(st) {
+    const ch = Object.values(st.fx || {}).flatMap((byF) => Object.values(byF).flat());
+    const up = ch.some((c) => c.dir === 'up'), down = ch.some((c) => c.dir === 'down'), built = ch.some((c) => c.dir === 'up' && c.kind !== 'influence');
+    if (!ch.length) return sfx('cardPlace');
+    if (up) sfx(built ? 'stamp' : 'tokenAdd');
+    if (down) { if (up) setTimeout(() => sfx('tokenRemove'), 180); else sfx('tokenRemove'); }
+  }
+
   async function eventCard(id) {
     const e = E[id]; if (!e || P.dead) return;
+    sfx('event');
     await dialog({ title: '이번 라운드 사건', stamp: '사건', cls: 'ovl--event', body: h('div', { class: 'ovl__card', onclick: () => P.modal?.end(0) }, renderEventCard(e)), buttons: [{ label: '확인 — 계획으로', primary: true }], auto: isFast() ? 1200 : 0 });
   }
 
   async function reveal(rows) {
     if (P.skipping || !rows.length) return;
+    sfx('cardFlip');
     const body = h('ol', { class: 'rev' }, rows.map((r) => h('li', { class: `rev__row${r.faction === me() ? ' is-you' : ''}` },
       h('span', { class: 'stamp stamp--ink rev__ord' }, ORD[r.rank - 1]), h('div', { class: 'rev__who' }, emblem(r.faction), h('b', {}, fName(r.faction)), r.faction === me() ? h('span', { class: 'tag' }, '당신') : null),
       h('div', { class: 'rev__cards' }, r.cards.length ? r.cards.map((c) => renderCard(C[c], { size: 'mini', mark: '' })) : h('span', { class: 'rev__none' }, '계획 없음')))));
@@ -49,6 +61,7 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
 
   async function summary(rows, batch) {
     const last = batch.after.phase === 'end';
+    sfx('summary');
     const head = h('tr', {}, ['국가', '이번 점수', '수입', '누계'].map((t) => h('th', {}, t)));
     const body = h('div', { class: 'sum' }, h('table', {}, h('thead', {}, head), h('tbody', {}, rows.map((r) => h('tr', { class: r.faction === me() ? 'is-you' : '' },
       h('td', {}, h('div', { class: 'sum__f' }, emblem(r.faction), h('span', {}, fName(r.faction)))), h('td', { class: 'num' }, (r.delta >= 0 ? '+' : '−') + Math.abs(r.delta)),
@@ -65,7 +78,7 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
       if (P.skipping || P.dead) break;
       const players = Object.fromEntries(Object.entries(after.players).map(([f, p]) => [f, { ...p, ...st.snap.players[f] }]));
       P.display = { ...after, round: batch.before.round, phase: ph, regions: st.snap.regions, players, pending: [] };
-      P.step = { ...st, i, n: steps.length }; P.fx = st.fx; onChange();
+      P.step = { ...st, i, n: steps.length }; P.fx = st.fx; stepSfx(st); onChange();
       await wait(stepMs());
     }
     P.step = null; P.fx = null; P.display = null; onChange();
