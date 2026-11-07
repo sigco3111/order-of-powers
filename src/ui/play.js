@@ -154,7 +154,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     const ask = ASK[pc.effect?.type] ?? { region: '지역', regionPair: '지역 두 곳', faction: '세력', card: '카드', confirm: '확인' }[pc.kind];
     let list;
     if (pc.kind === 'region' || pc.kind === 'regionPair') {
-      list = h('div', { class: 'copts copts--row', role: 'group', 'aria-label': '선택할 수 있는 지역' }, pc.options.map((id) => { const on = pc.kind === 'region' ? c === id : c?.includes?.(id); return h('button', { class: 'opt', type: 'button', 'aria-pressed': String(!!on), onclick: () => pickRegion(id) }, regionName(id)); }));
+      list = h('div', { class: 'copts copts--grid', role: 'group', 'aria-label': '선택할 수 있는 지역' }, pc.options.map((id) => { const on = pc.kind === 'region' ? c === id : c?.includes?.(id); return h('button', { class: 'opt', type: 'button', 'aria-pressed': String(!!on), onclick: () => pickRegion(id) }, regionName(id)); }));
     } else if (pc.kind === 'faction') {
       const rid = pc.ctx?.region;
       list = h('div', { class: 'copts', role: 'group', 'aria-label': '선택할 수 있는 세력' }, pc.options.map((f) => h('button', { class: 'opt opt--f', type: 'button', 'aria-pressed': String(c === f), onclick: () => { view.choice = f; repaint(); } },
