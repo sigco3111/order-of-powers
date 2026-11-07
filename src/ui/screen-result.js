@@ -6,6 +6,8 @@ import { addRecord, updateMeta } from './records.js';
 import { randomCountries } from '../engine/index.js';
 import { reportKey } from './screen-game.js';
 import { openRecords } from './records-view.js';
+import { openRules } from './rules.js';
+import { openSettings } from './settings-view.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const svg = (tag, attrs = {}, ...kids) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); e.append(...kids.filter((x) => x != null)); return e; };
@@ -99,7 +101,9 @@ export function resultScreen({ store, show }) {
       h('button', { class: 'btn', type: 'button', onclick: () => show('setup') }, '설정으로'),
       h('button', { class: 'btn', type: 'button', onclick: share }, '기록 공유'),
       h('button', { class: 'btn', type: 'button', onclick: sheetRecords }, '기록 보기'),
-      h('button', { class: 'btn', type: 'button', onclick: () => show('game') }, '보드 보기')),
+      h('button', { class: 'btn', type: 'button', onclick: () => show('game') }, '보드 보기'),
+      h('button', { class: 'btn', type: 'button', onclick: () => openRules({ data }) }, '규칙'),
+      h('button', { class: 'btn', type: 'button', onclick: () => openSettings({ show, store }), 'aria-haspopup': 'dialog' }, '설정')),
     status, ta);
 }
 

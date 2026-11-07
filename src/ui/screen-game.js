@@ -7,6 +7,7 @@ import { createPlay } from './play.js';
 import { createShop } from './shop.js';
 import { createPresenter } from './presenter.js';
 import { openSettings } from './settings-view.js';
+import { openRules } from './rules.js';
 import { sfx } from './audio.js';
 import { effectsToKorean } from './effect-text.js';
 
@@ -61,6 +62,7 @@ export function gameScreen({ store, show }) {
       h('div', { class: 'bhead__phase' }, h('span', { class: 'label' }, '현재 단계'),
         h('span', { class: 'stamp stamp--press stamp--ink' }, PHASE[s.phase]),
         h('ol', { class: 'ribbon', 'aria-hidden': 'true' }, RIBBON.map((p, j) => h('li', { 'aria-current': j === i ? 'step' : null }, PHASE[p])))),
+      h('button', { class: 'btn btn--sm bhead__rules', type: 'button', onclick: () => openRules({ data }) }, '규칙'),
       e ? h('div', { class: 'evt', style: `border-left-color:var(--${type === '위기' ? 'stamp' : 'brass'})` }, h('span', { class: 'label' }, `이벤트 카드 · ${e.id.toUpperCase()}`), h('div', { class: 'evt__name' }, e.name),
         h('p', { class: 'evt__text' }, plain(e.text)), h('span', { class: `stamp ${type === '위기' ? '' : type === '기회' ? 'stamp--brass' : 'stamp--ink'}` }, type))
         : h('div', { class: 'evt evt--empty' }, h('span', { class: 'label' }, '이벤트 카드'), h('div', { class: 'evt__text' }, s.phase === 'end' ? '게임이 끝났습니다.' : '라운드가 시작되면 사건이 공개됩니다.')),

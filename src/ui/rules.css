@@ -1,0 +1,66 @@
+/* 규칙서: 인쇄된 매뉴얼. 전체 화면, 각진 모서리, 딱딱한 그림자, 명조 제목 + 모노 숫자 */
+body.has-rules { overflow: hidden; }
+.rules { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: var(--paper) var(--grain); color: var(--ink); }
+.rules__bar { flex: none; display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: 8px var(--s4); background: var(--paper-dark); border-bottom: var(--line); }
+.rules__bar .label { color: var(--ink); }
+.rules__scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; outline: none; scroll-padding-top: var(--s4); }
+.rules__wrap { display: block; max-width: 1080px; margin: 0 auto; padding: var(--s5) var(--s4) var(--s7); }
+.rules__side { display: none; }
+.rules__doc { min-width: 0; }
+.rules__title { border-bottom: 3px double var(--ink); padding-bottom: var(--s4); margin-bottom: var(--s5); }
+.rules__title h1 { margin: var(--s2) 0; }
+.rules__lead { margin: 0 0 var(--s4); color: var(--ink-soft); }
+.rules__toc ol, .rules__mtoc ol { list-style: none; margin: 0; padding: 0; }
+.rules__toc a, .rules__mtoc a { display: flex; gap: var(--s3); align-items: baseline; padding: 8px var(--s2); min-height: 44px; border-bottom: 1px dotted var(--ink-soft); text-decoration: none; }
+.rules__toc a .num, .rules__mtoc a .num { color: var(--ink-soft); font-size: var(--fs-small); }
+.rules__toc a:hover, .rules__mtoc a:hover { background: var(--paper-dark); }
+.rules__toc a[aria-current], .rules__mtoc a[aria-current] { background: var(--ink); color: var(--paper); }
+.rules__toc a[aria-current] .num, .rules__mtoc a[aria-current] .num { color: var(--paper); }
+.rules__mtoc { border: var(--line); background: var(--paper-light); box-shadow: var(--shadow); }
+.rules__mtoc summary { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); min-height: 48px; padding: 0 var(--s3); cursor: pointer; list-style: none; }
+.rules__mtoc summary::-webkit-details-marker { display: none; }
+.rules__mtoc summary::after { content: '+'; font: 700 1.25rem var(--font-mono); }
+.rules__mtoc[open] summary::after { content: '−'; }
+.rules__cur { flex: 1; text-align: right; font-weight: 700; }
+.rules__mtoc[open] summary { border-bottom: var(--line); }
+.rules__ch { padding: var(--s5) 0 var(--s4); border-top: var(--line); }
+.rules__ch h2 { display: flex; gap: var(--s3); align-items: baseline; margin-bottom: var(--s4); }
+.rules__ch h2 .num { font-size: var(--fs-lead); font-weight: 500; color: var(--brass-text); }
+.rules__h3 { margin: var(--s5) 0 var(--s2); display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); align-items: baseline; }
+.rules__h3 small { font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .08em; color: var(--ink-soft); }
+.rules__ul { margin: 0 0 var(--s4); padding-left: 1.3em; }
+.rules__ul li { margin-bottom: var(--s2); padding-left: var(--s1); }
+.rules__ul li::marker { content: '■  '; font-size: .6em; color: var(--ink-soft); }
+.rules__dl { margin: 0 0 var(--s4); border-top: var(--hair); }
+.rules__dl > div { display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--s3); padding: var(--s2) 0; border-bottom: var(--hair); }
+.rules__dl dt { font-weight: 700; } .rules__dl dd { margin: 0; }
+.rules__tw { margin: 0 0 var(--s4); overflow-x: auto; max-width: 100%; border: var(--line); background: var(--paper-light); box-shadow: var(--shadow); }
+.rules__table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+.rules__table th, .rules__table td { padding: 8px var(--s3); text-align: left; vertical-align: top; border-bottom: var(--hair); }
+.rules__table thead th { background: var(--paper-dark); border-bottom: var(--line); font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .08em; }
+.rules__table tbody th { font-weight: 700; white-space: nowrap; }
+.rules__table tr:last-child > * { border-bottom: 0; }
+.rules__fig { margin: 0 0 var(--s4); padding: var(--s3); border: var(--line); background: var(--paper-light); box-shadow: var(--shadow); }
+.rules__fig figcaption { margin-top: var(--s2); border-top: var(--hair); padding-top: var(--s2); }
+.rules__svg { width: 100%; max-width: 520px; height: auto; }
+.rf__t { font: 400 11px var(--font-body); fill: var(--ink); }
+.rf__t.b { font: 700 15px var(--font-display); } .rf__t.l { font: 700 12px var(--font-body); }
+.rf__t.num { font: 500 13px var(--font-mono); } .rf__t.m { font: 500 10.5px var(--font-mono); fill: var(--ink-soft); }
+.rf__t.inv { fill: var(--paper); }
+.rf__box, .rf__empty { fill: var(--paper); stroke: var(--ink); stroke-width: 2; }
+.rf__box.is-dash { stroke-dasharray: 5 3; }
+.rf__empty { fill: none; stroke-width: 1; }
+.rf__fill { fill: var(--ink); stroke: var(--ink); stroke-width: 2; }
+.rf__hatch { fill: var(--brass); stroke: var(--ink); stroke-width: 2; }
+.rf__ln { fill: none; stroke: var(--ink); stroke-width: 2; }
+.rf__ln.is-dot { stroke-width: 1.5; stroke-dasharray: 2 3; stroke: var(--ink-soft); }
+.rules__end { margin-top: var(--s5); text-align: left; }
+.bhead { position: relative; }
+.bhead__rules { position: absolute; top: 0; right: 0; z-index: 2; min-height: 36px; }
+.screen-head__btns { display: flex; gap: var(--s2); }
+@media (min-width: 900px) {
+  .rules__wrap { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s6); padding: var(--s6) var(--s5) var(--s8); }
+  .rules__side { display: block; position: sticky; top: var(--s5); align-self: start; max-height: calc(100vh - 140px); overflow-y: auto; border: var(--line); background: var(--paper-light); box-shadow: var(--shadow); padding: var(--s3); }
+  .rules__mtoc { display: none; }
+  .rules__dl > div { grid-template-columns: 9rem 1fr; }
+}

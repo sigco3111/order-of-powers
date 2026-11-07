@@ -1,5 +1,6 @@
 import { sfx } from './audio.js';
 import { h } from './dom.js';
+import { openRules } from './rules.js';
 import { aiMeta } from '../ai/ai.js';
 import { ensureLoop } from './app.js';
 import { randomCountries, ARCHETYPES, ARCHETYPE_KO } from '../engine/index.js';
@@ -119,7 +120,7 @@ export function setupScreen({ store, show }) {
 
     refresh(); paintPicker();
     root.replaceChildren(
-      h('header', { class: 'screen-head' }, h('div', { class: 'screen-head__row' }, h('p', { class: 'label' }, '제 2 면 · 편성'), h('button', { class: 'btn btn--sm', onclick: () => show('title') }, '← 표지')), h('h2', {}, '국가 지정'),
+      h('header', { class: 'screen-head' }, h('div', { class: 'screen-head__row' }, h('p', { class: 'label' }, '제 2 면 · 편성'), h('span', { class: 'screen-head__btns' }, h('button', { class: 'btn btn--sm', type: 'button', onclick: () => openRules({ data: store.data }) }, '규칙'), h('button', { class: 'btn btn--sm', onclick: () => show('title') }, '← 표지'))), h('h2', {}, '국가 지정'),
         h('p', {}, 'G20 국가 가운데 하나를 골라 지휘하십시오. 나머지 세 자리는 다른 유형의 국가가 컴퓨터로 앉습니다.')),
       err,
       h('div', { class: 'setup__grid' },
