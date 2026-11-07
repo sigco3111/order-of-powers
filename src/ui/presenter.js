@@ -6,6 +6,12 @@ import { stepsOf, revealOf, summaryOf } from './timeline.js';
 import { plainText } from './effect-text.js';
 import { sfx } from './audio.js';
 
+export const AI_STEP_MS = 250, AI_ROUND_MS = 4000;
+/** AI 행동 한 칸의 대기(ms): 기본 250, 보드가 안 바뀌는 행동은 절반으로 묶고, 한 라운드 AI 몫은 약 4초(빠른 진행 2초)를 넘기지 않는다 */
+export function aiStepMs({ fast = false, aiCount = 1, changes = true } = {}) {
+  const base = fast ? 120 : AI_STEP_MS, cap = (fast ? AI_ROUND_MS / 2 : AI_ROUND_MS) / Math.max(1, aiCount);
+  return Math.round(Math.max(40, Math.min(changes ? base : base / 2, cap)));
+}
 const ORD = ['1st', '2nd', '3rd', '4th'];
 const RES = { capital: 'assets/icons/kenney-game-icons/coin.png', energy: 'assets/icons/kenney-board-game-icons/fire.png', industry: 'assets/icons/kenney-board-game-icons/resource_iron.png', prestige: 'assets/icons/kenney-game-icons/star.png' };
 const RES_KO = { capital: '자본', energy: '에너지', industry: '산업', prestige: '위신' };
@@ -13,7 +19,8 @@ const RES_KO = { capital: '자본', energy: '에너지', industry: '산업', pre
 export function createPresenter({ loop, data, C, E, fName, regionName, isFast, onChange }) {
   const P = { active: false, display: null, fx: null, step: null, skipping: false, dead: false, tail: Promise.resolve(), modal: null };
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduce';
-  const stepMs = () => (isFast() || reduced() ? 350 : 700);
+  const stepMs = () => (isFast() || reduced() ? 350 : 700); // 내 행동은 읽을 수 있게 길게
+  const stepDelay = (st, aiCount) => (st.faction === me() ? stepMs() : aiStepMs({ fast: isFast() || reduced(), aiCount, changes: Object.keys(st.fx || {}).length > 0 }));
   let wake = null;
   const wait = (ms) => new Promise((res) => { const t = setTimeout(done, ms); function done() { clearTimeout(t); wake = null; res(); } wake = done; });
   const emblem = (f) => h('img', { class: 'pe', src: new URL(`../../assets/ui/emblem-${f}.svg`, import.meta.url).href, alt: '', width: 28, height: 28 });
@@ -74,12 +81,13 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
     const after = batch.after;
     const ph = batch.before.phase === 'resolve' || batch.before.phase === 'plan' ? batch.before.phase : 'resolve';
     P.display = { ...batch.before, phase: ph, log: after.log }; onChange();
+    const aiCount = steps.filter((x) => x.faction !== me()).length;
     for (const [i, st] of steps.entries()) {
       if (P.skipping || P.dead) break;
       const players = Object.fromEntries(Object.entries(after.players).map(([f, p]) => [f, { ...p, ...st.snap.players[f] }]));
       P.display = { ...after, round: batch.before.round, phase: ph, regions: st.snap.regions, players, pending: [] };
       P.step = { ...st, i, n: steps.length }; P.fx = st.fx; stepSfx(st); onChange();
-      await wait(stepMs());
+      await wait(stepDelay(st, aiCount));
     }
     P.step = null; P.fx = null; P.display = null; onChange();
   }
