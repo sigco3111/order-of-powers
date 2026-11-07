@@ -186,14 +186,15 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
     const dims = [0, 1, 2, 3].map(() => h('div', { class: 'tut__dim' })), frame = h('div', { class: 'tut__frame' });
     const root = h('div', { class: 'tut', hidden: true }, ...dims, frame, panel, live);
     document.body.append(root);
-    let key = '', last = '', skipAsk = false, tgt = null;
+    let key = '', last = '', skipAsk = false, tgt = null, lost = 0;
 
     const visible = (el) => { const r = el.getBoundingClientRect(); return r.width > 1 && r.height > 1 ? r : null; };
     function find(sel) {
       root.hidden = true; // 덮개가 눈에 띄지 않게 하고 실제 화면을 잰다
       try {
         for (const el of document.querySelectorAll(sel)) {
-          const r = visible(el); if (!r) continue;
+          let r = visible(el); if (!r) continue;
+          if ((r.top < 0 || r.bottom > innerHeight) && r.height < innerHeight * .8 && !el.closest('.sheet-backdrop, .ovl')) { el.scrollIntoView({ block: 'center', inline: 'nearest' }); r = visible(el) || r; } // 화면 밖이면 먼저 가운데로
           const x = Math.min(innerWidth - 1, Math.max(0, (Math.max(r.left, 0) + Math.min(r.right, innerWidth)) / 2)), y = Math.min(innerHeight - 1, Math.max(0, (Math.max(r.top, 0) + Math.min(r.bottom, innerHeight)) / 2));
           const top = document.elementFromPoint(x, y);
           if (top && (el.contains(top) || top.contains(el))) return el;
@@ -235,10 +236,10 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
       }
       panel.style.cssText = `left:${Math.round(left)}px;top:${Math.round(Math.max(m, top))}px`;
     }
-    function cut(r, over) { // 네 장의 덮개로 사각형 구멍을 낸다
+    function cut(r, over) { // 네 장의 덮개로 사각형 구멍을 낸다. r이 없으면 덮개 없이 패널만
       const vw = innerWidth, vh = innerHeight, P = 6;
-      if (!r || over) { dims.forEach((d, i) => { d.style.cssText = i === 0 && !over ? `left:0;top:0;width:${vw}px;height:${vh}px` : 'display:none'; }); frame.style.cssText = r ? '' : 'display:none'; }
-      if (!r) return;
+      if (!r) { dims.forEach((d) => { d.style.cssText = 'display:none'; }); frame.style.cssText = 'display:none'; return; }
+      if (over) { dims.forEach((d, i) => { d.style.cssText = i === 0 && !over ? `left:0;top:0;width:${vw}px;height:${vh}px` : 'display:none'; }); frame.style.cssText = r ? '' : 'display:none'; }
       const L = Math.max(0, r.left - P), T = Math.max(0, r.top - P), R = Math.min(vw, r.right + P), B = Math.min(vh, r.bottom + P);
       if (!over) [[0, 0, vw, T], [0, B, vw, vh - B], [0, T, L, B - T], [R, T, vw - R, B - T]].forEach(([x, y, w, hh], i) => { dims[i].style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${hh}px`; });
       frame.style.cssText = `left:${L}px;top:${T}px;width:${R - L}px;height:${B - T}px`;
@@ -252,11 +253,13 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
       if (!c.ready()) { root.hidden = true; return; }
       dock(s.dock);
       const el = find(s.target);
-      if (!el) { root.hidden = true; return; }
+      if (!el && ++lost < 6) { root.hidden = true; return; } // 잠깐 안 보이는 것은 기다리고, 계속 못 찾으면 스포트라이트 없이 패널만 (막히지 않게)
+      if (el) lost = 0;
       root.hidden = false;
-      const over = !!el.closest('.sheet-backdrop, .ovl'), k = `${s.id}|${over}|${skipAsk}|${c.canPrev()}|${c.stuck()}`;
+      const over = !!el?.closest('.sheet-backdrop, .ovl'), k = `${s.id}|${over}|${!el}|${skipAsk}|${c.canPrev()}|${c.stuck()}`;
       if (k !== key) { key = k; render(); }
-      if (el !== tgt) { tgt = el; if (!over) el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+      if (!el) { if (last !== 'none') { last = 'none'; cut(null); place(null); } return; }
+      tgt = el;
       const r = el.getBoundingClientRect(), sig = [r.left, r.top, r.width, r.height, innerWidth, innerHeight, panel.offsetHeight].map(Math.round).join();
       if (sig !== last) { last = sig; cut(r, over); place(r); }
     }
