@@ -2,6 +2,7 @@
 import { h, icon, openSheet } from './dom.js';
 import { renderCard } from './card.js';
 import { sfx } from './audio.js';
+import { josa } from '../engine/countries.js';
 import { shopView, deckSummary, rivalBuys, KIND_LABEL } from './shop-model.js';
 
 const COIN = 'assets/icons/kenney-game-icons/coin.png';
@@ -30,7 +31,7 @@ export function createShop({ loop, data, view, repaint, submit, announce, fName 
       const r = submit({ type: 'BUY', faction: f, cardId: id });
       if (!r.ok) return announce(r.reason);
       sfx('coin');
-      announce(`${it.card.name}을(를) 구매했습니다. 자본 ${loop.state.players[f].resources.capital}`);
+      announce(`${josa(it.card.name, '을', '를')} 구매했습니다. 자본 ${loop.state.players[f].resources.capital}`);
       body.replaceChildren(h('div', { class: 'detail' }, renderCard(priced(it), { size: 'detail', iso: loop.state.players[f].iso }),
         h('div', { class: 'sbought' }, h('span', { class: 'stamp stamp--press stamp--brass' }, '구매 완료'),
           h('p', { class: 'num' }, `남은 자본 ${loop.state.players[f].resources.capital}`))));
