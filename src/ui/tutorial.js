@@ -43,17 +43,17 @@ export const STEPS = [
   { id: 9, title: '공개와 해결', kind: 'action', target: '.ovl--reveal .ovl__box, .act', ready: (c) => c.s.round === 1 && c.s.phase !== 'plan',
     done: (c) => c.s.phase === 'shop' && !c.s.pending?.length, ask: "'해결 시작'을 누르고, 지역을 물으면 하나 골라 '확정'하세요.", allow: (a) => a.type === 'CHOOSE',
     text: '모든 계획이 공개되고, 우선권 순서대로 카드가 해결됩니다. 외교 서한은 영향력을 놓을 지역을 묻습니다.' },
-  { id: 10, title: '정산과 지역 점수', kind: 'info', target: '.ovl--sum .ovl__box, .frow.is-you .frow__score, .shop__head', ready: shopNow, click: '.ovl--sum .btn--primary',
+  { id: 10, title: '정산과 지역 점수', kind: 'info', target: '.ovl--sum .ovl__box, .frow.is-you .frow__score, .shop__head', ready: shopNow, needs: '.ovl--sum, .act--shop', click: '.ovl--sum .btn--primary',
     text: '정산: 지역마다 영향력이 가장 많은 세력이 그 지역의 점수를 얻고, 지역이 만든 자원이 수입으로 들어옵니다. 내 점수는 현황 줄에서 확인합니다.' },
   { id: 11, title: '상점에서 카드 사기', kind: 'action', target: '.sitem:not(.is-no), .sheet .detail__btns .btn--primary', ready: shopNow,
-    done: (c) => c.s.players[ME].purchases >= 1, ask: '살 수 있는 카드를 눌러 연 뒤 구매하세요.', allow: (a) => a.type === 'BUY',
+    needs: '.act--shop', done: (c) => c.s.players[ME].purchases >= 1, ask: '살 수 있는 카드를 눌러 연 뒤 구매하세요.', allow: (a) => a.type === 'BUY',
     stuck: (c, data) => { const v = shopView(c.s, data, ME); return ![...v.market, ...v.first, ...v.growth].some((x) => x.afford); },
     text: '라운드 끝마다 자본으로 카드를 한 장 이상 살 수 있습니다. 산 카드는 덱에 들어가 이후 손패로 돌아옵니다.' },
-  { id: 12, title: '방어·영향력 제거·조약', kind: 'info', target: '.shop__body', ready: shopNow,
+  { id: 12, title: '방어·영향력 제거·조약', kind: 'info', target: '.shop__body', ready: shopNow, needs: '.act--shop',
     text: '방어 칩은 상대의 영향력 제거를 막아 주고, 영향력 제거 카드는 상대 칩을 줄입니다. 조약을 맺은 세력은 이름 옆에 겹친 두 고리로 표시됩니다. 연습판에서는 나오지 않지만 정식 게임의 핵심입니다.' },
-  { id: 13, title: '비밀 목표·전략 자산·따라잡기', kind: 'info', target: '.shop__deck', ready: shopNow,
+  { id: 13, title: '비밀 목표·전략 자산·따라잡기', kind: 'info', target: '.shop__deck', ready: shopNow, needs: '.act--shop',
     text: '비밀 목표 2장은 게임이 끝날 때 공개되어 점수가 됩니다. 전략 자산은 한 판에 한 번 쓰는 특별 카드입니다. 라운드 시작 때 점수가 가장 낮은 세력은 자본 +1과 첫 영향력 +1을 받습니다(따라잡기).' },
-  { id: 14, title: '끝', kind: 'info', target: '.shop__foot', ready: shopNow, last: true,
+  { id: 14, title: '끝', kind: 'info', target: '.shop__foot', ready: shopNow, needs: '.act--shop', last: true,
     text: '튜토리얼을 마쳤습니다. 연습판은 4라운드였고, 정식 게임은 8라운드(약 28분)입니다. 이제 직접 세력을 골라 겨뤄 보세요.' },
 ];
 
@@ -250,7 +250,7 @@ export function initTutorial({ store, show, ensureLoop, storage = globalThis.loc
       c.flag('placed', !!document.querySelector('.slot--full')); c.flag('region', !!document.querySelector('.rinfo'));
       if (!c.alive) return;
       const s = c.cur;
-      if (!c.ready()) { root.hidden = true; return; }
+      if (!c.ready() || (s.needs && !document.querySelector(s.needs))) { root.hidden = true; return; }
       dock(s.dock);
       const el = find(s.target);
       if (!el && ++lost < 6) { root.hidden = true; return; } // 잠깐 안 보이는 것은 기다리고, 계속 못 찾으면 스포트라이트 없이 패널만 (막히지 않게)
