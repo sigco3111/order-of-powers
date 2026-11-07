@@ -54,7 +54,7 @@ export function gameScreen({ store, show }) {
   // ── 머리띠: 라운드, 단계 도장, 이벤트 카드 ──
   function paintHead(s) {
     const e = E[s.currentEvent], type = e ? EVT_TYPE[e.id.slice(4)] || '정세' : null, i = RIBBON.indexOf(s.phase);
-    head.replaceChildren(
+    head.replaceChildren(...[
       h('div', { class: 'bhead__round' }, h('div', {}, h('p', { class: 'label', style: 'margin:0' }, '라운드'), h('span', { class: 'numeral', 'aria-label': `${s.round}라운드, 전체 ${s.config.rounds}` }, PAD(s.round))), h('small', { 'aria-hidden': 'true' }, '/' + PAD(s.config.rounds))),
       h('div', { class: 'bhead__phase' }, h('span', { class: 'label' }, '현재 단계'),
         h('span', { class: 'stamp stamp--press stamp--ink' }, PHASE[s.phase]),
@@ -62,7 +62,7 @@ export function gameScreen({ store, show }) {
       e ? h('div', { class: 'evt', style: `border-left-color:var(--${type === '위기' ? 'stamp' : 'brass'})` }, h('span', { class: 'label' }, `이벤트 카드 · ${e.id.toUpperCase()}`), h('div', { class: 'evt__name' }, e.name),
         h('p', { class: 'evt__text' }, plain(e.text)), h('span', { class: `stamp ${type === '위기' ? '' : type === '기회' ? 'stamp--brass' : 'stamp--ink'}` }, type))
         : h('div', { class: 'evt evt--empty' }, h('span', { class: 'label' }, '이벤트 카드'), h('div', { class: 'evt__text' }, s.phase === 'end' ? '게임이 끝났습니다.' : '라운드가 시작되면 사건이 공개됩니다.')),
-      s.phase === 'end' ? null : tools());
+      s.phase === 'end' ? null : tools()].filter(Boolean));
   }
 
   // ── 레일: 세력 / 지역 / 기록 ──
