@@ -4,6 +4,7 @@ import { loadData } from '../engine/browser-data.js';
 import { titleScreen } from './screen-title.js';
 import { setupScreen } from './screen-setup.js';
 import { gameScreen } from './screen-game.js';
+import { resultScreen } from './screen-result.js';
 import { createLoop, readSave, SAVE_KEY as SAVE } from './loop.js';
 
 export const SAVE_KEY = SAVE, SETTINGS_KEY = 'oop-settings-v1';
@@ -28,7 +29,7 @@ export const applySettings = () => {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(store.settings));
 };
 
-const SCREENS = { title: titleScreen, setup: setupScreen, game: gameScreen };
+const SCREENS = { title: titleScreen, setup: setupScreen, game: gameScreen, result: resultScreen };
 const STEPS = [['title', '01', '표지'], ['setup', '02', '편성'], ['game', '03', '작전']];
 let main, rail, page, doc;
 
@@ -43,7 +44,7 @@ function shell() {
 }
 
 function paintRail() {
-  const i = STEPS.findIndex(([k]) => k === store.screen);
+  const i = STEPS.findIndex(([k]) => k === (store.screen === 'result' ? 'game' : store.screen));
   rail.replaceChildren(
     h('ol', { class: 'steps' }, STEPS.map(([k, n, t], j) => h('li', { 'aria-current': j === i ? 'step' : null }, h('span', {}, n), h('span', {}, t)))),
     h('div', { class: 'rail__extra' },
@@ -58,6 +59,7 @@ export function show(name, { focus = true } = {}) {
   store.cleanup?.();
   set({ screen: name });
   doc.dataset.screen = name; main.classList.toggle('screen--board', name === 'game');
+  document.body.classList.toggle('is-game', name === 'game');
   main.replaceChildren(SCREENS[name]({ store, set, show, saved }));
   paintRail();
   window.scrollTo(0, 0);
