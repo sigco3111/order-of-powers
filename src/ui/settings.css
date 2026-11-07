@@ -31,3 +31,12 @@ html[data-contrast="high"] {
 }
 /* 움직임 줄이기: 도장 확대 없음 */
 html[data-motion="reduce"] .stamp--press, html[data-motion="reduce"] .is-stamped .card { animation: none !important; }
+
+/* 큰 글자(115~130%)에서 좁은 화면이 넘치지 않게 */
+.doc-head > .num { flex: none; white-space: nowrap; }
+@media (max-width: 899px) {
+  .bhead { grid-template-columns: minmax(0, auto) minmax(0, 1fr); }
+  .bhead__phase, .bhead .evt, .bhead .act__tools { min-width: 0; max-width: 100%; }
+  .ribbon { flex-wrap: wrap; }
+  .act__tools { flex-wrap: wrap; }
+}
