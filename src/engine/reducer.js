@@ -3,7 +3,7 @@
 import { deepClone, indexData, snapState } from './util.js';
 import { createGame, drawToHandSize, resolveOrder, planSlotsOf, pickAsset, validateInvariants } from './state.js';
 import { applyEvent, playCard, runEffects, resolveChoice, clearRoundEffects, isDeferredEvent } from './effects.js';
-import { scoreRound, finalScores } from './score.js';
+import { scoreRound, finalScores, applyCatchUp } from './score.js';
 import { refill, buy } from './market.js';
 import { payIncome } from './income.js';
 import { waitingFor, phaseOf, legalActions } from './legal.js';
@@ -61,6 +61,7 @@ export function advance(state, data = getData()) {
     } else if (s.phase === 'event') {
       if (!f.drawn) { f.drawn = true; s = drawEvent(s, data, ev); continue; }
       enter(s, 'plan', ev);
+      applyCatchUp(s);
       for (const x of s.turnOrder) s = drawToHandSize(s, x);
       s.flow.submitted = {};
       s.turnOrder.forEach((x) => { s.players[x].plan = []; });
