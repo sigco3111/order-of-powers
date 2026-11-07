@@ -20,6 +20,9 @@ const LV = {
   normal: { goal: 0.5, hand: 0.1, a: 0.15, b: 0.25, c: 0, N: 10, S: 1 },
   hard: { goal: 1, hand: 0.1, a: 0.15, b: 0.25, c: 0.2, N: 24, S: 4 },
 };
+// 조정값: 실험 도구가 바꿀 수 있다. choiceCost 선택(CHOOSE)당 감점, lastShopMin 마지막 상점 구매 문턱(어려움), lateRounds 종반 판단 라운드 수,
+// extraBuy 같은 상점에서 이미 산 카드 1장당 구매 문턱 가산, denyBonus 선두 견제 가산(지역 영향력 제거 선택), assetSlack 종반 전략 자산 사용 허용 손실
+export const tune = { choiceCost: 0.8, lastShopMin: 0.4, lateRounds: 2, denyBonus: 0.3, assetSlack: 0.1, leadPen: 0.2, extraBuy: 1.5, hardGoal: 1, hardBuyMin: 1.3 };
 const VOLATILE = new Set(['capital', 'energy', 'industry', 'prestige', 'regionsLed', 'regionsLedAtFinalScoring', 'regionsWithBase', 'regionsWithInfluence']);
 const PRE_UPKEEP = new Set(['setup', 'event', 'plan', 'reveal', 'resolve']);
 const sum = (a) => a.reduce((x, y) => x + y, 0);
@@ -28,13 +31,13 @@ const sum = (a) => a.reduce((x, y) => x + y, 0);
 function effValue(e, late) {
   const a = e.amount ?? e.count ?? e.value ?? 1;
   switch (e.type) {
-    case 'gain': return e.res === 'prestige' ? a : e.res === 'capital' ? a * (late ? 0.05 : 0.3) : a * 0.06;
+    case 'gain': return e.res === 'prestige' ? a : e.res === 'capital' ? a * (late ? 0.05 : 0.3) : a * (late ? 0 : 0.06);
     case 'influence': return a * (e.filter === 'owned' ? 1.1 : 1.25);
     case 'removeInfluence': return a * (e.from === 'leader' ? 1.2 : 0.95);
     case 'defense': return e.scope === 'allOwned' ? 1.2 * a : 0.5 * a;
     case 'base': return 2.2 * a;
     case 'destroyBase': return 1.2;
-    case 'draw': return 0.5 * a;
+    case 'draw': return (late ? 0.1 : 0.5) * a;
     case 'discard': return e.who === 'target' ? 0.4 * a : -0.4 * a;
     case 'treaty': return a;
     case 'drain': return 0.2 * a;
@@ -74,7 +77,7 @@ function progress(s, f, c, rem) {
 
 /** 세력 f 관점의 상태 평가 (높을수록 좋음). opt: {level, data} */
 export function evaluate(state, faction, opt = {}) {
-  const data = opt.data ?? getData(), ix = indexData(data), W = LV[opt.level ?? 'normal'];
+  const data = opt.data ?? getData(), ix = indexData(data), W = opt.level === 'hard' ? { ...LV.hard, c: tune.leadPen, goal: tune.hardGoal } : LV[opt.level ?? 'normal'];
   const R = state.config.rounds, ids = state.turnOrder, opps = ids.filter((f) => f !== faction);
   const pen = (raws, tops) => sum(opps.map((o) => raws[o] * (W.a + (o === tops.max ? W.b : 0) + (o === tops.lead ? W.c : 0))));
   if (state.phase === 'end') {
@@ -108,7 +111,7 @@ export function evaluate(state, faction, opt = {}) {
 
 // ---------- 시뮬레이션 도구 ----------
 const make = (state, faction, level, rngSeed, data) => {
-  const ctx = { state, me: faction, level, W: LV[level], data, ix: indexData(data), seed: `${rngSeed}|${faction}|${hashState(state)}` };
+  const ctx = { state, me: faction, level, W: level === 'hard' ? { ...LV.hard, c: tune.leadPen, goal: tune.hardGoal } : LV[level], data, ix: indexData(data), seed: `${rngSeed}|${faction}|${hashState(state)}` };
   ctx.rng = seedToState(ctx.seed);
   ctx.rand = (n) => { const r = nextInt(ctx.rng, n); ctx.rng = r.rng; return r.value; };
   ctx.float = () => { const r = nextFloat(ctx.rng); ctx.rng = r.rng; return r.value; };
@@ -118,6 +121,7 @@ const optionsOf = (pc) => {
   if (pc.kind !== 'regionPair') return pc.options;
   return pc.options.flatMap((x, i) => pc.options.slice(i + 1).map((y) => [x, y]));
 };
+const leaderOf = (s, me) => s.turnOrder.filter((f) => f !== me).reduce((a, o) => (s.players[o].regionScore + s.players[o].prestige > s.players[a].regionScore + s.players[a].prestige ? o : a));
 /** 대기 선택지 하나의 빠른 점수 (시뮬레이션 없이) */
 function quickScore(ctx, s, pc, choice) {
   const me = pc.faction, ix = ctx.ix, rem = Math.max(1, remOf(s)), R = discount(rem, false);
@@ -125,7 +129,15 @@ function quickScore(ctx, s, pc, choice) {
     const r = s.regions[rid], m = r.influence[me], o = maxOther(r, me), sv = r.scoreValue + r.scoreBonus;
     switch (kind) {
       case 'influence': return regVal(m + amt, o, sv, R) - regVal(m, o, sv, R) + 0.12 * amt;
-      case 'removeInfluence': return o ? regVal(m, Math.max(0, o - amt), sv, R) - regVal(m, o, sv, R) + 0.2 * sv * Math.min(amt, o) / 4 : -1;
+      case 'removeInfluence': {
+        if (!o) return -1;
+        let v = regVal(m, Math.max(0, o - amt), sv, R) - regVal(m, o, sv, R) + 0.2 * sv * Math.min(amt, o) / 4;
+        if (ctx.level === 'hard') { // 점수 선두 견제: 그 지역 최강 상대가 선두면 가산
+          const top = Object.keys(r.influence).filter((g) => g !== me).sort((x, y) => r.influence[y] - r.influence[x])[0], lead = leaderOf(s, me);
+          if (top === lead && r.influence[top] > 0) v += tune.denyBonus * sv / 4 * Math.min(amt, o);
+        }
+        return v;
+      }
       case 'defense': return m ? sv * 0.15 * Math.min(m, 3) * (m >= o ? 1 : 0.5) : -1;
       case 'base': return regVal(m + 1, o, sv, R) - regVal(m, o, sv, R) + 0.6;
       default: return m ? sv : 0;
@@ -169,8 +181,7 @@ function simulate(ctx, st, action, prep, seed) {
   return settle(ctx, r.state, (n) => { const x = nextInt(rr, n); rr = x.rng; return x.value; });
 }
 // 선택(CHOOSE)이 많은 계획은 판을 늘리므로 아주 조금 감점 (같은 이득이면 선택이 적은 쪽)
-const CHOICE_COST = 0.1;
-const valueOf = (ctx, st) => evaluate(st, ctx.me, { level: ctx.level, data: ctx.data }) - CHOICE_COST * (ctx.cc || 0);
+const valueOf = (ctx, st) => evaluate(st, ctx.me, { level: ctx.level, data: ctx.data }) - tune.choiceCost * (ctx.cc || 0);
 
 /** 상대 계획 표본: 컬렉션에서 카드 가치로 가중해 슬롯 수만큼 (손패 크기 이내) */
 function sampleOppPlans(ctx, st, k) {
@@ -216,7 +227,7 @@ const staticPlan = (ctx, cards, late) => sum(cards.map((c, i) => cardV(ctx.ix, c
 function shortlist(ctx, plans, N) {
   let pool = plans;
   if (pool.length > 60) { pool = pool.slice(); for (let i = pool.length - 1; i > 0; i--) { const j = ctx.rand(i + 1); [pool[i], pool[j]] = [pool[j], pool[i]]; } pool = pool.slice(0, 60); }
-  const late = remOf(ctx.state) <= 1, sorted = pool.slice().sort((a, b) => staticPlan(ctx, b.cards, late) - staticPlan(ctx, a.cards, late));
+  const late = remOf(ctx.state) <= (ctx.level === 'hard' ? tune.lateRounds : 1), sorted = pool.slice().sort((a, b) => staticPlan(ctx, b.cards, late) - staticPlan(ctx, a.cards, late));
   const top = sorted.slice(0, Math.ceil(N * 0.6)), rest = sorted.slice(top.length);
   while (top.length < N && rest.length) top.push(rest.splice(ctx.rand(rest.length), 1)[0]);
   const empty = pool.find((a) => !a.cards.length);
@@ -255,7 +266,7 @@ function choosePlan(ctx, legal) {
     if (after && after.phase === 'plan' && !after.pending?.length) {
       const pl = legalActions(after, ctx.me, ctx.data).filter((a) => a.type === 'PLAN');
       const c2 = ctx.data && shortlist(ctx, pl, 6), v2 = best(scorePlans(ctx, after, c2, scns));
-      if (v2.value - b.value > 0.6 * Math.max(0, remOf(st) - 2)) return asset;
+      if (v2.value - b.value > (ctx.level === 'hard' && remOf(st) <= tune.lateRounds ? -tune.assetSlack : 0.6 * Math.max(0, remOf(st) - 2))) return asset;
     }
   }
   return b.action;
@@ -325,7 +336,7 @@ function needPull(ctx, c, effs, turns, deckCats, N) {
   return v;
 }
 
-const BUY_MIN = { normal: 0.9, hard: 1.3 }; // 어려움은 더 가려서 산다 (실험: 0.7은 승률 27%, 1.3은 34%)
+const BUY_MIN = { normal: 0.9 }; // 어려움 문턱은 tune.hardBuyMin
 function chooseBuy(ctx, legal) {
   const st = ctx.state, me = ctx.me, p = st.players[me], ix = ctx.ix, end = legal.find((a) => a.type === 'END_SHOP');
   const buys = legal.filter((a) => a.type === 'BUY');
@@ -353,7 +364,9 @@ function chooseBuy(ctx, legal) {
     return { action: a, value: v - cost * 0.45 + (ctx.float() - 0.5) * 1.6 };
   });
   const b = best(scored);
-  return b.value > (ctx.level === 'hard' ? BUY_MIN.hard : BUY_MIN.normal) ? b.action : end;
+  const bought = st.log.filter((l) => l.round === st.round && l.phase === 'shop' && l.actor === me && l.text.startsWith('구매')).length;
+  const min = ctx.level === 'hard' ? (late ? tune.lastShopMin : tune.hardBuyMin) : BUY_MIN.normal;
+  return b.value > min + tune.extraBuy * bought ? b.action : end; // 한 상점에서 이미 산 만큼 문턱을 올려 구매 횟수를 줄인다
 }
 
 function pickAsset(ctx, legal) {
