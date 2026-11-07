@@ -1,5 +1,6 @@
 // 게임 루프: 엔진 reduce를 감싸 저장하고, 사람이 아닌 세력의 차례를 브라우저를 막지 않고 진행한다. DOM 없음 (node 테스트 가능).
-import { createGame, reduce, waitingFor, setData } from '../engine/index.js';
+import { createGame, reduce, waitingFor, legalActions, setData } from '../engine/index.js';
+import { planSlotsOf } from '../engine/state.js';
 import { chooseAction, describeIntent } from '../ai/ai.js';
 
 export const SAVE_KEY = 'oop-save-v1';
@@ -24,6 +25,32 @@ export function readSave(storage = globalThis.localStorage) {
   return null;
 }
 
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+/** 사람이 UI에서 낸 행동 검사. 합법이 아니면 한국어 이유, 괜찮으면 null (legalActions 기준; PLAN은 표본이 아니라 규칙으로 검사) */
+export function checkAction(state, a, data) {
+  if (!state || !a?.type || !a.faction) return '행동 형식이 올바르지 않습니다';
+  if (state.phase === 'end') return '이미 끝난 게임입니다';
+  if (!waitingFor(state).includes(a.faction)) return '지금은 이 세력이 입력할 차례가 아닙니다';
+  const legal = legalActions(state, a.faction, data), has = (type) => legal.some((x) => x.type === type);
+  switch (a.type) {
+    case 'PLAN': case 'SKIP_PLAN': {
+      if (!has('PLAN')) return '지금은 계획을 낼 수 없습니다';
+      const cards = a.type === 'SKIP_PLAN' ? [] : a.cards ?? [], left = state.players[a.faction].hand.slice();
+      if (cards.length > planSlotsOf(state, a.faction)) return '계획 슬롯보다 많은 카드를 냈습니다';
+      for (const c of cards) { const i = left.indexOf(c); if (i < 0) return '손패에 없는 카드입니다'; left.splice(i, 1); }
+      if (a.assetUse && !has('USE_ASSET')) return '전략 자산을 쓸 수 없습니다';
+      return null;
+    }
+    case 'CHOOSE': {
+      const pc = state.pending?.[0];
+      let c = a.choice;
+      if (pc?.kind === 'regionPair' && Array.isArray(c)) c = c.slice().sort((x, y) => pc.options.indexOf(x) - pc.options.indexOf(y));
+      return legal.some((x) => x.pendingId === a.pendingId && same(x.choice, c)) ? null : '고를 수 없는 선택입니다';
+    }
+    default: return legal.some((x) => x.type === a.type && same({ ...x, faction: 0 }, { ...a, faction: 0 })) ? null : '지금은 할 수 없는 행동입니다';
+  }
+}
+
 /**
  * createLoop({ data, storage, humanLevel })
  * start/load → state, dispatch(action), run({ pace, auto }) — 사람이 할 차례에서 멈춘다 (auto면 사람 몫도 AI가 임시로 대신한다).
@@ -33,7 +60,7 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
   let state = null, ui = {}, runId = 0;
   const subs = new Set();
   const loop = {
-    feed: [], acting: null, saveError: null, stats: { steps: 0, maxStepMs: 0 },
+    feed: [], acting: null, present: null, hold: null, saveError: null, stats: { steps: 0, maxStepMs: 0 },
     get state() { return state; }, get ui() { return ui; },
     get running() { return runId > 0 && loop._busy === true; }, _busy: false,
     subscribe(fn) { subs.add(fn); return () => subs.delete(fn); },
@@ -62,9 +89,18 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
     dispatch(action) {
       const r = reduce(state, action, data);
       if (!r.ok) return r;
+      const batch = { events: r.events, before: state, after: r.state, action };
       state = r.state;
-      loop.persist(); loop._emit('state');
+      loop.persist();
+      const p = loop.present?.(batch); // 연출기가 있으면 연출이 끝날 때까지 AI 진행을 붙잡는다 (hold)
+      if (p) loop.hold = p;
+      loop._emit('state');
       return r;
+    },
+    /** UI에서 사람이 낸 행동: 합법 수인지 검사한 뒤 적용 */
+    submit(action) {
+      const why = checkAction(state, action, data);
+      return why ? { ok: false, reason: why, events: [] } : loop.dispatch(action);
     },
     waiting: () => (state ? waitingFor(state) : []),
     humanWaiting: () => !!state && state.phase !== 'end' && waitingFor(state).includes(state.config.humanFaction),
@@ -96,6 +132,7 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
       const my = ++runId; loop._busy = true;
       try {
         for (let n = 0; n < (opts.maxSteps ?? 20000); n++) {
+          if (loop.hold) await loop.hold;
           if (my !== runId) return 'stopped';
           if (!state || state.phase === 'end') return 'end';
           if (opts.untilRound && state.round >= opts.untilRound) return 'limit';
