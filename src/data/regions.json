@@ -3,7 +3,7 @@
     "id": "northAmerica",
     "name": "북아메리카",
     "influenceSlots": 6,
-    "scoreValue": 4,
+    "scoreValue": 2,
     "produces": {
       "resource": "capital"
     },
@@ -21,7 +21,7 @@
     "id": "southAmerica",
     "name": "남아메리카",
     "influenceSlots": 6,
-    "scoreValue": 3,
+    "scoreValue": 1,
     "produces": {
       "resource": "energy"
     },
@@ -38,7 +38,7 @@
     "id": "europe",
     "name": "유럽",
     "influenceSlots": 6,
-    "scoreValue": 4,
+    "scoreValue": 2,
     "produces": {
       "resource": "capital"
     },
@@ -56,7 +56,7 @@
     "id": "russiaCentralAsia",
     "name": "러시아·중앙아시아",
     "influenceSlots": 6,
-    "scoreValue": 4,
+    "scoreValue": 2,
     "produces": {
       "resource": "energy"
     },
@@ -74,7 +74,7 @@
     "id": "middleEastNorthAfrica",
     "name": "중동·북아프리카",
     "influenceSlots": 6,
-    "scoreValue": 5,
+    "scoreValue": 3,
     "produces": {
       "resource": "energy"
     },
@@ -93,7 +93,7 @@
     "id": "subSaharanAfrica",
     "name": "사하라 이남 아프리카",
     "influenceSlots": 6,
-    "scoreValue": 3,
+    "scoreValue": 1,
     "produces": {
       "resource": null
     },
@@ -111,7 +111,7 @@
     "id": "eastAsia",
     "name": "동아시아",
     "influenceSlots": 6,
-    "scoreValue": 5,
+    "scoreValue": 3,
     "produces": {
       "resource": "industry"
     },
@@ -129,7 +129,7 @@
     "id": "southAsiaOceania",
     "name": "남아시아·동남아·오세아니아",
     "influenceSlots": 6,
-    "scoreValue": 4,
+    "scoreValue": 2,
     "produces": {
       "resource": "industry"
     },
