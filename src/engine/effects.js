@@ -34,6 +34,7 @@ export function gainRes(s, f, res, n) {
 export function addInfluence(s, f, rid, n) {
   const r = s.regions[rid], st = s.players[f].stats, cur = r.influence[f], now = Math.min(RULES.maxInfluence, cur + n);
   r.influence[f] = now;
+  globalThis.__diag?.('add', s.round, now - cur, n - (now - cur));
   st.maxInfluenceEver = Math.max(st.maxInfluenceEver, now);
   st.influenceGainedByRound[s.round] = (st.influenceGainedByRound[s.round] || 0) + now - cur;
   return now - cur;
@@ -48,6 +49,7 @@ export function loseInfluence(s, victim, rid, n, { by = null, event = false } = 
   const out = Math.min(n - blocked, r.influence[victim]);
   r.influence[victim] -= out;
   s.players[victim].stats.influenceLost += out;
+  globalThis.__diag?.(event ? 'event' : by ? 'card' : 'other', s.round, out, blocked);
   if (by && by !== victim) s.players[by].stats.influenceRemoved += out;
   if (event && out) (s.eventLosses ||= []).push({ f: victim, region: rid, amount: out });
   return { out, blocked };
@@ -118,6 +120,7 @@ const H = {
     delete X.ctx.influenceBonus;
     const pf = s.players[f], tr = pf.trait; // 국가 특성: 매 라운드 본거지(또는 지정 이웃 지역)에 처음 놓는 영향력 +n
     if (tr?.type === 'regionFirstInfluence' && rid === (tr.region === 'home' ? pf.home : tr.region) && !pf.roundHomeUsed) { pf.roundHomeUsed = true; n += tr.amount; }
+    if (pf.catchUp) { pf.catchUp = 0; n += 1; } // 추격 보너스: 이번 라운드 첫 영향력 배치 +1
     const got = addInfluence(s, f, rid, n);
     log(s, f, `${rid} 영향력 +${got}${got < n ? ` (상한, ${n - got} 소실)` : ''}`);
   },
@@ -234,6 +237,7 @@ const H = {
     const v = it.choice;
     if (negated(X, f, v)) return;
     gainRes(s, v, e.res, -e.amount);
+    globalThis.__diag?.('drain', s.round, e.amount, 0);
     s.players[v].stats.sanctionsReceived += 1;
     log(s, f, `${v} ${KO[e.res]} −${e.amount}`);
   },
