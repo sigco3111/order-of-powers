@@ -18,7 +18,7 @@ export const aiMeta = {
 const LV = {
   easy: { goal: 0, hand: 0.05, a: 0.1, b: 0.1, c: 0, N: 0, S: 0 },
   normal: { goal: 0.5, hand: 0.1, a: 0.15, b: 0.25, c: 0, N: 10, S: 1 },
-  hard: { goal: 1, hand: 0.1, a: 0.15, b: 0.25, c: 0.2, N: 20, S: 3 },
+  hard: { goal: 1, hand: 0.1, a: 0.15, b: 0.25, c: 0.2, N: 24, S: 4 },
 };
 const VOLATILE = new Set(['capital', 'energy', 'industry', 'prestige', 'regionsLed', 'regionsLedAtFinalScoring', 'regionsWithBase', 'regionsWithInfluence']);
 const PRE_UPKEEP = new Set(['setup', 'event', 'plan', 'reveal', 'resolve']);
@@ -81,7 +81,7 @@ export function evaluate(state, faction, opt = {}) {
     const fs = finalScores(state, data).scores, raws = Object.fromEntries(opps.map((o) => [o, fs[o].total]));
     return fs[faction].total - pen(raws, { max: opps.reduce((a, o) => (raws[o] > raws[a] ? o : a)) });
   }
-  const rem = remOf(state), eg = opt.level === 'hard' && state.round >= R - 1, Rd = discount(rem, eg);
+  const rem = remOf(state), eg = opt.level === 'hard' && W.eg !== 0 && state.round >= R - 1, Rd = discount(rem, eg);
   const leaders = regionLeaders(state), shops = R - state.round, cv = 0.3 * Math.min(1, shops / 3);
   const raw = (f) => {
     const p = state.players[f];
@@ -147,7 +147,9 @@ const quickPick = (ctx, s, pc) => {
 };
 /** 대기 선택을 모두 해결: 나는 빠른 휴리스틱, 상대는 시뮬레이션 RNG의 무작위 */
 function settle(ctx, st, rand) {
+  ctx.cc = 0;
   for (let g = 0; g < 40 && st.pending?.length; g++) {
+    ctx.cc++;
     const pc = st.pending[0], opts = optionsOf(pc);
     const choice = pc.faction === ctx.me ? quickPick(ctx, st, pc) : opts[rand(opts.length)];
     const r = reduce(st, { type: 'CHOOSE', faction: pc.faction, pendingId: pc.id, choice }, ctx.data);
@@ -166,7 +168,9 @@ function simulate(ctx, st, action, prep, seed) {
   let rr = seedToState(seed + '|c');
   return settle(ctx, r.state, (n) => { const x = nextInt(rr, n); rr = x.rng; return x.value; });
 }
-const valueOf = (ctx, st) => evaluate(st, ctx.me, { level: ctx.level, data: ctx.data });
+// 선택(CHOOSE)이 많은 계획은 판을 늘리므로 아주 조금 감점 (같은 이득이면 선택이 적은 쪽)
+const CHOICE_COST = 0.1;
+const valueOf = (ctx, st) => evaluate(st, ctx.me, { level: ctx.level, data: ctx.data }) - CHOICE_COST * (ctx.cc || 0);
 
 /** 상대 계획 표본: 컬렉션에서 카드 가치로 가중해 슬롯 수만큼 (손패 크기 이내) */
 function sampleOppPlans(ctx, st, k) {
@@ -187,6 +191,16 @@ function sampleOppPlans(ctx, st, k) {
     out.push({ plans, seed: `${ctx.seed}|scn${i}` });
   }
   return out;
+}
+/** 상대가 컬렉션에서 가장 좋은 카드를 낸다고 가정한 최악 대응 표본 */
+function greedyOppPlan(ctx, st) {
+  const plans = {};
+  for (const o of st.turnOrder) {
+    if (o === ctx.me) continue;
+    const p = st.players[o], pool = Object.entries(p.collection).flatMap(([c, n]) => Array(n).fill(c));
+    plans[o] = pool.sort((a, b) => cardV(ctx.ix, b, false) - cardV(ctx.ix, a, false) || (a < b ? -1 : 1)).slice(0, Math.min(planSlotsOf(st, o), p.hand.length));
+  }
+  return { plans, seed: `${ctx.seed}|greedy` };
 }
 const prepFor = (ctx, scn) => (s) => {
   for (const o of s.turnOrder) {
@@ -213,7 +227,16 @@ function shortlist(ctx, plans, N) {
 function scorePlans(ctx, st, cands, scns) {
   return cands.map((a) => {
     const vs = scns.map((sc) => { const s = simulate(ctx, st, a, prepFor(ctx, sc), sc.seed); return s ? valueOf(ctx, s) : -Infinity; });
-    return { action: a, value: sum(vs) / vs.length };
+    return { action: a, vs, value: sum(vs) / vs.length };
+  });
+}
+/** 어려움: 상위 3개 후보를 더 많은 표본과 최악 대응 표본으로 다시 평가 (평균 75% + 최악 25%) */
+function refineTop(ctx, st, scored, scns) {
+  const top = scored.slice().sort((a, b) => b.value - a.value).slice(0, 3);
+  const extra = [greedyOppPlan(ctx, st), ...sampleOppPlans(ctx, st, 3).map((x, i) => ({ ...x, seed: x.seed + 'r' + i }))];
+  return top.map((t) => {
+    const more = scorePlans(ctx, st, [t.action], extra)[0].vs, all = t.vs.concat(more);
+    return { action: t.action, value: 0.75 * (sum(all) / all.length) + 0.25 * Math.min(...all) };
   });
 }
 const best = (list) => list.reduce((a, b) => (b.value > a.value ? b : a));
@@ -226,7 +249,7 @@ function choosePlan(ctx, legal) {
     return plans[ctx.rand(plans.length)];
   }
   const scns = sampleOppPlans(ctx, st, ctx.W.S), top = scorePlans(ctx, st, shortlist(ctx, plans, ctx.W.N), scns);
-  const b = best(top);
+  const b = best(ctx.level === 'hard' && ctx.W.refine !== 0 && top.length > 1 ? refineTop(ctx, st, top, scns) : top);
   if (asset) {
     const after = simulate(ctx, st, asset, null, ctx.seed + '|asset');
     if (after && after.phase === 'plan' && !after.pending?.length) {
@@ -269,7 +292,7 @@ function goalPull(ctx, c, effs, turns) {
   };
   const walk = (g, ck) => { if (ck.allOf) ck.allOf.forEach((x) => walk(g, x)); else if (ck.anyOf) ck.anyOf.forEach((x) => walk(g, x)); else leaf(g, ck); };
   for (const id of me.secretGoals) walk(ix.goals[id], ix.goals[id].check);
-  return ctx.level === 'easy' ? 0 : v * (ctx.level === 'hard' ? 1.2 : 1);
+  return ctx.level === 'easy' ? 0 : v * (ctx.level === 'hard' ? 1 : 1);
 }
 /** 지역 압박·시기·덱 구성에 따른 카드 가산점 */
 function needPull(ctx, c, effs, turns, deckCats, N) {
@@ -302,6 +325,7 @@ function needPull(ctx, c, effs, turns, deckCats, N) {
   return v;
 }
 
+const BUY_MIN = { normal: 0.9, hard: 1.3 }; // 어려움은 더 가려서 산다 (실험: 0.7은 승률 27%, 1.3은 34%)
 function chooseBuy(ctx, legal) {
   const st = ctx.state, me = ctx.me, p = st.players[me], ix = ctx.ix, end = legal.find((a) => a.type === 'END_SHOP');
   const buys = legal.filter((a) => a.type === 'BUY');
@@ -318,7 +342,7 @@ function chooseBuy(ctx, legal) {
     const cost = Math.max(1, c.cost + (p.modifiers['shop.costDelta'] || 0));
     let v;
     if (g) {
-      v = growthValue(g, turns) * 0.8 ** p.growth.length + (ctx.level === 'hard' && st.round <= 3 && !p.growth.length ? 3 : 0);
+      v = growthValue(g, turns) * 0.8 ** p.growth.length * (0.65 + 0.7 * ctx.float()); // 성장 카드도 한 장에 쏠리지 않게 값에 ±35% 잡음
     } else {
       const dup = p.collection[a.cardId] || 0;
       v = (cardV(ix, a.cardId, late) - 0.9 * avg) * plays + (/base|treaty|leader/.test(JSON.stringify(c.effects)) ? 0.5 : 0);
@@ -329,7 +353,7 @@ function chooseBuy(ctx, legal) {
     return { action: a, value: v - cost * 0.45 + (ctx.float() - 0.5) * 1.6 };
   });
   const b = best(scored);
-  return b.value > (ctx.level === 'hard' ? 0.15 : 0.3) ? b.action : end;
+  return b.value > (ctx.level === 'hard' ? BUY_MIN.hard : BUY_MIN.normal) ? b.action : end;
 }
 
 function pickAsset(ctx, legal) {
