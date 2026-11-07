@@ -4,7 +4,7 @@
 
 **▶ 라이브: https://sigco3111.github.io/order-of-powers/**
 
-현재 상태: **M5 완료: 난이도 보정** (어려움 컴퓨터가 매 라운드 자본 +1, `src/data/difficulty.json`에 공개, 결과는 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M5'). 이전: M4 완료: 어려움 AI와 판 길이
+현재 상태: **M6 완료: 선택 단계 정리와 보정** (해결 때 묻던 두 번째 질문을 계획 단계로 이동 [docs/QA_M6.md](docs/QA_M6.md), 난이도·성향 재측정은 [docs/BALANCE_REPORT.md](docs/BALANCE_REPORT.md) 'M6'; 어려움 보정은 M5 값 유지: 컴퓨터가 매 라운드 자본 +1)'M5'). 이전: M4 완료: 어려움 AI와 판 길이
 
 ## 특징
 - G20 국가 20개 중 하나를 골라 플레이 (실제 국가 특성 반영)
