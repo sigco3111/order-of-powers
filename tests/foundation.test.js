@@ -122,12 +122,12 @@ test('라운드 점수 누적 (scoreValue + scoreBonus), 공동 주도는 각자
   set(s, 'southAmerica', 'atlas', 1); set(s, 'southAmerica', 'polarStar', 1);
   s.regions.europe.scoreBonus = 1;
   s = scoreRound(s);
-  assert.equal(s.players.atlas.regionScore, 5 + 5);
-  assert.equal(s.players.redDragon.regionScore, 5);
-  assert.equal(s.players.emerald.regionScore, 5);
+  assert.equal(s.players.atlas.regionScore, 3 + 3);     // 유럽 2+1, 동아시아 3 (M1f: 지역 점수 가치 절반)
+  assert.equal(s.players.redDragon.regionScore, 3);
+  assert.equal(s.players.emerald.regionScore, 3);
   assert.equal(s.players.polarStar.regionScore, 0);
   s = scoreRound(s);
-  assert.equal(s.players.atlas.regionScore, 20);
+  assert.equal(s.players.atlas.regionScore, 12);
 });
 
 test('최종 점수: 목표 점수, 동점 처리, 모든 지표가 알려진 것', () => {
