@@ -108,3 +108,4 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 @media (forced-colors: active) { .btn, .panel { border: 2px solid ButtonText; } }
+접근성: 도장 붉은색을 어둡게 해 어두운 종이 위에서도 글자 대비 4.5:1 이상 확보접근성: 도장 붉은색을 어둡게 해 어두운 종이 위에서도 글자 대비 4.5:1 이상 확보
