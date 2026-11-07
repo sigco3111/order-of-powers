@@ -1,7 +1,6 @@
 import { h } from './dom.js';
-import { createGame, autoPlay } from '../engine/index.js';
 import { aiMeta } from '../ai/ai.js';
-import { loadData } from '../engine/browser-data.js';
+import { ensureLoop } from './app.js';
 
 // 한 줄 성향·강점·약점. 강점은 docs/GAME_DESIGN.md §4, 약점은 기획서에 없어 다른 세력의 강점에서 역으로 도출(밸런스 확정 시 갱신).
 export const DOSSIER = {
@@ -21,7 +20,7 @@ function seg(name, options, value, onPick) {
     h('span', { class: ko ? 'seg__big seg__big--ko' : 'seg__big' }, big), sub && h('span', { class: 'seg__sub' }, sub))));
 }
 
-export function setupScreen({ store, set, show, saveGame }) {
+export function setupScreen({ store, show }) {
   const ui = store.ui, ids = ORDER.map(([id]) => id), name = (id) => ORDER.find(([i]) => i === id)[1];
   const sum = h('span', { class: 'launch__sum' }), minutes = h('b', {}), note = h('p', { class: 'field__note', 'aria-live': 'polite' });
   const err = h('p', { class: 'alert', role: 'alert', hidden: true });
@@ -50,12 +49,9 @@ export function setupScreen({ store, set, show, saveGame }) {
   const launch = async (e) => {
     const btn = e.currentTarget; btn.disabled = true; err.hidden = true;
     try {
-      const data = store.data || await loadData();
-      set({ data });
-      let s = createGame({ data, rounds: ui.rounds, factions: ids, humanFaction: ui.faction, seed: ui.seed, aiLevel: ui.level });
-      // U1 자리표시: 전략 자산을 각 세력의 첫 후보로 자동 선택해 1라운드 손패까지 진행 (실제 선택 UI는 U2)
-      s = autoPlay(s, (st, f, legal) => (st.phase === 'setup' && legal.length ? legal[0] : null), { data }).state;
-      set({ game: s }); saveGame(); show('game');
+      const loop = await ensureLoop();
+      loop.start({ rounds: ui.rounds, factions: ids, humanFaction: ui.faction, seed: ui.seed, aiLevel: ui.level });
+      show('game');
     } catch (x) { err.textContent = '작전을 시작하지 못했습니다: ' + x.message; err.hidden = false; btn.disabled = false; console.error(x); }
   };
 

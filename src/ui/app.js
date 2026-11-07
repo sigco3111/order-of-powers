@@ -4,8 +4,9 @@ import { loadData } from '../engine/browser-data.js';
 import { titleScreen } from './screen-title.js';
 import { setupScreen } from './screen-setup.js';
 import { gameScreen } from './screen-game.js';
+import { createLoop, readSave, SAVE_KEY as SAVE } from './loop.js';
 
-export const SAVE_KEY = 'oop-save-v1', SETTINGS_KEY = 'oop-settings-v1';
+export const SAVE_KEY = SAVE, SETTINGS_KEY = 'oop-settings-v1';
 const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
 
 /** 화면들이 공유하는 상태. 바꿀 때는 set()으로 */
@@ -13,11 +14,15 @@ export const store = {
   screen: 'title', data: null, dataError: null, game: null,
   ui: { faction: 'atlas', rounds: 8, level: 'normal', seed: 1 + Math.floor(Math.random() * 999999) },
   settings: { reduceMotion: false, sound: true, ...read(SETTINGS_KEY) },
-  engine: '불러오는 중',
+  engine: '불러오는 중', loop: null, cleanup: null,
 };
 export const set = (patch) => Object.assign(store, patch);
-export const saved = () => read(SAVE_KEY);
-export const saveGame = () => localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), ui: store.ui, state: store.game }));
+export const saved = () => readSave(); // 손상된 저장은 null
+let ready;
+/** 데이터를 읽고 게임 루프를 만든다 (한 번만) */
+export const ensureLoop = () => (ready ??= loadData().then((data) => {
+  set({ data, engine: `카드 ${data.cards.length}장` }); store.loop = createLoop({ data }); paintRail(); return store.loop;
+}).catch((e) => { ready = null; set({ dataError: e.message, engine: '오류' }); paintRail(); console.error(e); throw e; }));
 export const applySettings = () => {
   document.documentElement.dataset.motion = store.settings.reduceMotion ? 'reduce' : 'auto';
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(store.settings));
@@ -25,14 +30,14 @@ export const applySettings = () => {
 
 const SCREENS = { title: titleScreen, setup: setupScreen, game: gameScreen };
 const STEPS = [['title', '01', '표지'], ['setup', '02', '편성'], ['game', '03', '작전']];
-let main, rail, page;
+let main, rail, page, doc;
 
 function shell() {
   const app = document.getElementById('app');
   rail = h('aside', { class: 'rail', 'aria-label': '사건 철' });
   main = h('main', { id: 'main', class: 'screen', tabIndex: -1 });
   page = h('span', { class: 'label num' });
-  app.replaceChildren(h('div', { class: 'doc' },
+  app.replaceChildren(doc = h('div', { class: 'doc' },
     h('header', { class: 'doc-head' }, h('span', { class: 'label' }, '문서 번호 OP-0001 · 대외비'), page),
     h('div', { class: 'doc-body' }, rail, main)));
 }
@@ -50,8 +55,10 @@ function paintRail() {
 
 /** 화면 전환 */
 export function show(name, { focus = true } = {}) {
+  store.cleanup?.();
   set({ screen: name });
-  main.replaceChildren(SCREENS[name]({ store, set, show, saved, saveGame }));
+  doc.dataset.screen = name; main.classList.toggle('screen--board', name === 'game');
+  main.replaceChildren(SCREENS[name]({ store, set, show, saved }));
   paintRail();
   window.scrollTo(0, 0);
   if (focus) main.focus({ preventScroll: true });
@@ -60,8 +67,5 @@ export function show(name, { focus = true } = {}) {
 shell();
 applySettings();
 show('title', { focus: false });
-loadData().then((data) => {
-  set({ data, engine: `카드 ${data.cards.length}장` });
-  paintRail();
-}).catch((e) => { set({ dataError: e.message, engine: '오류' }); paintRail(); console.error(e); });
+ensureLoop().catch(() => {});
 window.__oop = { store, show };
