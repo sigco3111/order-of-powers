@@ -188,7 +188,7 @@ export async function openRules({ data, at = null } = {}) {
     if (b.t === 'fig') return h('figure', { class: 'rules__fig' }, figure(h, b.id, data), h('figcaption', { class: 'label' }, b.caption));
     return null;
   };
-  const close = () => { root.remove(); document.removeEventListener('keydown', onKey); document.body.classList.remove('has-rules'); openClose = null; io?.disconnect(); if (from?.isConnected) from.focus?.(); };
+  const close = () => { root.remove(); document.removeEventListener('keydown', onKey); document.body.classList.remove('has-rules'); openClose = null; if (from?.isConnected) from.focus?.(); };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   const root = h('div', { class: 'rules', role: 'dialog', 'aria-modal': 'true', 'aria-label': '규칙서' },
     h('header', { class: 'rules__bar' }, h('span', { class: 'label' }, '규칙서 · RULES MANUAL'), h('button', { class: 'btn btn--sm', type: 'button', onclick: close }, '닫기')),
@@ -200,11 +200,14 @@ export async function openRules({ data, at = null } = {}) {
       h('p', { class: 'label rules__end' }, '끝 · 규칙서'))));
   document.body.append(root); document.body.classList.add('has-rules');
   document.addEventListener('keydown', onKey);
-  let io = null;
-  try { // 읽는 위치를 차례에 표시
-    io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) { const id = e.target.id.slice(6); root.querySelectorAll('[data-ch]').forEach((a) => a.toggleAttribute('aria-current', a.dataset.ch === id)); mdet.querySelector('.rules__cur').textContent = doc.find((c) => c.id === id)?.title ?? ''; } }, { root: scroller, rootMargin: '0px 0px -70% 0px' });
-    root.querySelectorAll('.rules__ch').forEach((s) => io.observe(s));
-  } catch { /* 지원하지 않으면 표시만 생략 */ }
+  // 읽는 위치를 차례에 표시: 위쪽에서 가장 가까이 지나간 장
+  const spy = () => {
+    const top = scroller.getBoundingClientRect().top + 90, secs = [...root.querySelectorAll('.rules__ch')];
+    const cur = secs.filter((e) => e.getBoundingClientRect().top <= top).pop() ?? secs[0], id = cur.id.slice(6);
+    root.querySelectorAll('[data-ch]').forEach((a) => a.toggleAttribute('aria-current', a.dataset.ch === id));
+    mdet.querySelector('.rules__cur').textContent = doc.find((c) => c.id === id)?.title ?? '';
+  };
+  scroller.addEventListener('scroll', spy, { passive: true }); spy();
   openClose = close;
   if (at) jump(at); else scroller.focus({ preventScroll: true });
   return close;

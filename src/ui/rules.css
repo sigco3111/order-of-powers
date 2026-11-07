@@ -55,8 +55,8 @@ body.has-rules { overflow: hidden; }
 .rf__ln { fill: none; stroke: var(--ink); stroke-width: 2; }
 .rf__ln.is-dot { stroke-width: 1.5; stroke-dasharray: 2 3; stroke: var(--ink-soft); }
 .rules__end { margin-top: var(--s5); text-align: left; }
-.bhead { position: relative; }
-.bhead__rules { position: absolute; top: 0; right: 0; z-index: 2; min-height: 36px; }
+.bhead__rules { grid-column: 1 / -1; justify-self: end; order: -1; min-height: 36px; }
+@media (min-width: 900px) { .bhead { grid-template-columns: auto auto 1fr auto; } .bhead__rules { grid-column: 4; grid-row: 1; order: 0; justify-self: end; align-self: start; } }
 .screen-head__btns { display: flex; gap: var(--s2); }
 @media (min-width: 900px) {
   .rules__wrap { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s6); padding: var(--s6) var(--s5) var(--s8); }
