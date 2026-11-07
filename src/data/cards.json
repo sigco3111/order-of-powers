@@ -53,14 +53,14 @@
     "category": "diplomatic",
     "cost": 0,
     "deck": "starter",
-    "text": "이미 내 영향력이 있는 지역에 영향력 +1",
+    "text": "지역 하나에 영향력 +1",
     "tutorialCount": 2,
     "effects": [
       {
         "type": "influence",
         "amount": 1,
         "target": "regionChoice",
-        "filter": "owned"
+        "filter": "any"
       }
     ]
   },
@@ -879,7 +879,7 @@
     "id": "fac-atlas-1",
     "name": "해양 동맹",
     "category": "diplomatic",
-    "cost": 4,
+    "cost": 3,
     "deck": "faction",
     "faction": "atlas",
     "text": "지역 하나에 영향력 +1. 이번 라운드 조약을 맺었다면 +1 추가",
@@ -926,7 +926,7 @@
     "id": "fac-redDragon-1",
     "name": "일대 인프라",
     "category": "domestic",
-    "cost": 3,
+    "cost": 5,
     "deck": "faction",
     "faction": "redDragon",
     "text": "🏭 +3, 지역 하나에 영향력 +1",
@@ -1006,7 +1006,7 @@
     "id": "fac-emerald-1",
     "name": "공동 규범",
     "category": "diplomatic",
-    "cost": 3,
+    "cost": 2,
     "deck": "faction",
     "faction": "emerald",
     "text": "이번 라운드 모든 영향력 −효과가 1 줄어든다. 지역 하나에 영향력 +1",
