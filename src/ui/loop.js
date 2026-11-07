@@ -55,19 +55,24 @@ export function checkAction(state, a, data) {
  * createLoop({ data, storage, humanLevel })
  * start/load → state, dispatch(action), run({ pace, auto }) — 사람이 할 차례에서 멈춘다 (auto면 사람 몫도 AI가 임시로 대신한다).
  */
+/** 같은 저장소를 쓰는 살아 있는 루프들 (저장 삭제 뒤 다시 저장하지 않게 알리는 용도) */
+const LOOPS = new Set();
+/** 저장을 지운 뒤 호출: 새로 시작하거나 이어하기 전까지 그 저장소에 다시 쓰지 않는다 */
+export function suppressSave(storage = globalThis.localStorage) { for (const l of LOOPS) if (l.storage === storage) l.saveOff = true; }
+
 export function createLoop({ data, storage = globalThis.localStorage, humanLevel = 'normal' } = {}) {
   setData(data);
   let state = null, ui = {}, runId = 0;
   const subs = new Set();
   const loop = {
-    feed: [], acting: null, present: null, hold: null, saveError: null, stats: { steps: 0, maxStepMs: 0 },
+    storage, saveOff: false, feed: [], acting: null, present: null, hold: null, saveError: null, stats: { steps: 0, maxStepMs: 0 },
     get state() { return state; }, get ui() { return ui; },
     get running() { return runId > 0 && loop._busy === true; }, _busy: false,
     subscribe(fn) { subs.add(fn); return () => subs.delete(fn); },
     _emit(kind) { for (const fn of subs) fn(state, kind); },
 
     start(cfg) {
-      loop.stop(); loop.feed = [];
+      loop.stop(); loop.feed = []; loop.saveOff = false;
       ui = { faction: cfg.humanFaction, country: humanCountry(cfg), rounds: cfg.rounds, level: cfg.aiLevel, seed: cfg.seed };
       state = createGame({ data, ...cfg });
       loop.persist(); loop._emit('start');
@@ -76,12 +81,13 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
     load() {
       const o = readSave(storage);
       if (!o) return null;
-      loop.stop(); loop.feed = [];
+      loop.stop(); loop.feed = []; loop.saveOff = false;
       state = o.state; ui = o.ui || {};
       loop._emit('load');
       return state;
     },
     persist() {
+      if (loop.saveOff) return; // 저장을 지운 뒤에는 새 판/이어하기 전까지 쓰지 않는다
       try { storage.setItem(SAVE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), ui, state })); loop.saveError = null; }
       catch (e) { loop.saveError = e.message; }
     },
@@ -147,5 +153,6 @@ export function createLoop({ data, storage = globalThis.localStorage, humanLevel
       } finally { if (my === runId) { loop._busy = false; loop.acting = null; loop._emit('idle'); } }
     },
   };
+  LOOPS.add(loop);
   return loop;
 }

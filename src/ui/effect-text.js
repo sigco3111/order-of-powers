@@ -57,13 +57,21 @@ export function effectsToKorean(effects, card = null) {
 }
 
 /** 손패 카드 위에 붙일 예상 결과 칩 (최대 4개). 예: ['영향력 +2', '지역 선택 필요'] */
-export function previewChips(card) {
+export function previewChips(card, state = null, faction = null) {
+  // 상태를 주면 지역을 고를 수 있는 곳이 하나라도 있을 때만 '지역 선택 필요'를 붙인다 (없으면 칩을 숨긴다)
+  const regs = state ? Object.values(state.regions) : null, foes = state && faction ? Object.keys(state.players).filter((o) => o !== faction) : [];
+  const hasRegion = (e) => {
+    if (!regs) return true;
+    if (e.type === 'influence' && e.filter === 'owned') return regs.some((r) => r.influence[faction] > 0);
+    if (e.type === 'removeInfluence') return regs.some((r) => (e.from === 'leader' ? Object.values(r.influence).some((v) => v > 0) : foes.some((o) => r.influence[o] > 0)));
+    return true;
+  };
   const sum = {}, add = (k, n) => { sum[k] = (sum[k] || 0) + n; }, need = new Set();
   const walk = (e) => {
     switch (e.type) {
       case 'gain': add(RES[e.res], e.amount); break;
-      case 'influence': add('영향력', e.amount); need.add('지역'); break;
-      case 'removeInfluence': add('제거', -e.amount); need.add('지역'); break;
+      case 'influence': add('영향력', e.amount); hasRegion(e) && need.add('지역'); break;
+      case 'removeInfluence': add('제거', -e.amount); hasRegion(e) && need.add('지역'); break;
       case 'defense': add('방어', e.amount); if (e.scope !== 'allOwned') need.add('지역'); break;
       case 'base': add('기지', 1); need.add('지역'); break;
       case 'destroyBase': add('기지 파괴', 1); need.add('세력'); break;

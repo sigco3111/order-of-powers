@@ -31,7 +31,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
   }
 
   // ── 계획 칸 ──
-  const chips = (card) => h('span', { class: 'pchips' }, previewChips(card).map((c) => h('span', { class: `pchip pchip--${c.kind}` }, c.text)));
+  const chips = (card) => h('span', { class: 'pchips' }, previewChips(card, loop.state, me()).map((c) => h('span', { class: `pchip pchip--${c.kind}` }, c.text)));
   function slot(s, i, hand) {
     const idx = view.plan[i], n = view.plan.length;
     if (idx == null) return h('li', { class: 'slot slot--empty', 'aria-label': `${i + 1}번 칸, 비어 있음` }, h('span', { class: 'slot__no num' }, NUM[i]), h('span', { class: 'slot__ph' }, '빈 칸'));

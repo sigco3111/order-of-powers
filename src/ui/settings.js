@@ -1,5 +1,5 @@
 // 설정 저장소 'oop-settings-v1': 기본값, 검증(손상된 값은 기본값), 옛 형식 이전, 내보내기/가져오기. DOM은 apply()에서만 만진다.
-import { validSave, SAVE_KEY } from './loop.js';
+import { validSave, SAVE_KEY, suppressSave } from './loop.js';
 import { RECORDS_KEY, META_KEY } from './records.js';
 
 export const SETTINGS_KEY = 'oop-settings-v1', VERSION = '1.0.0-s1', REPO = 'https://github.com/sigco3111/order-of-powers';
@@ -65,5 +65,5 @@ export function importData(text, storage = globalThis.localStorage) {
   try { for (const k of found) storage.setItem(k, JSON.stringify(o.data[k])); } catch { return { ok: false, error: '저장 공간에 쓰지 못했습니다.', imported: [] }; }
   return { ok: true, imported: found };
 }
-export const clearSave = (storage = globalThis.localStorage) => { try { storage.removeItem(SAVE_KEY); return true; } catch { return false; } };
+export const clearSave = (storage = globalThis.localStorage) => { try { storage.removeItem(SAVE_KEY); suppressSave(storage); return true; } catch { return false; } };
 export const clearRecords = (storage = globalThis.localStorage) => { try { storage.removeItem(RECORDS_KEY); storage.removeItem(META_KEY); return true; } catch { return false; } };
