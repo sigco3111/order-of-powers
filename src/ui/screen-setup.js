@@ -48,9 +48,11 @@ export function setupScreen({ store, show }) {
     const fixedOf = () => ({ ...Object.fromEntries(Object.entries(ui.opp).filter(([, v]) => v)), [cur().archetype]: ui.country });
     const lineup = () => randomCountries(data, ui.seed, fixedOf());
 
+    const modeLine = h('p', { class: 'label', style: 'margin:6px 0 0' });
     const refresh = () => {
       ui.faction = cur().archetype;
       minutes.textContent = `약 ${MINUTES[ui.rounds]}분`;
+      modeLine.textContent = data.roundModes?.[ui.rounds]?.line || '';
       note.textContent = aiMeta[ui.level].description;
       const lu = lineup();
       sum.replaceChildren(h('b', {}, `${cur().nameKo} · ${ARCHETYPE_KO[cur().archetype]}`), `${ui.rounds}라운드 · ${LEVEL_KO[ui.level]}`);
@@ -110,7 +112,7 @@ export function setupScreen({ store, show }) {
         h('div', { class: 'field' }, opps),
         h('div', { class: 'field', role: 'group', 'aria-label': '라운드 수' }, h('p', { class: 'label field__label' }, '라운드 수'),
           seg('rounds', [[6, '6', '짧게'], [8, '8', '기본'], [10, '10', '길게']], ui.rounds, (v) => { ui.rounds = Number(v); refresh(); }),
-          h('div', { class: 'leader' }, h('span', {}, '예상 소요'), h('i'), minutes)),
+          h('div', { class: 'leader' }, h('span', {}, '예상 소요'), h('i'), minutes), modeLine),
         h('div', { class: 'field', role: 'group', 'aria-label': 'AI 난이도' }, h('p', { class: 'label field__label' }, 'AI 난이도'),
           seg('level', Object.keys(aiMeta).map((k) => [k, aiMeta[k].name, '', true]), ui.level, (v) => { ui.level = v; refresh(); }), note),
         h('div', { class: 'field' }, h('details', { class: 'adv' }, h('summary', {}, '고급 설정'),
