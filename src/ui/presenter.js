@@ -51,7 +51,7 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
     const last = batch.after.phase === 'end';
     const head = h('tr', {}, ['국가', '이번 점수', '수입', '누계'].map((t) => h('th', {}, t)));
     const body = h('div', { class: 'sum' }, h('table', {}, h('thead', {}, head), h('tbody', {}, rows.map((r) => h('tr', { class: r.faction === me() ? 'is-you' : '' },
-      h('td', {}, emblem(r.faction), h('span', {}, fName(r.faction))), h('td', { class: 'num' }, (r.delta >= 0 ? '+' : '−') + Math.abs(r.delta)),
+      h('td', {}, h('div', { class: 'sum__f' }, emblem(r.faction), h('span', {}, fName(r.faction)))), h('td', { class: 'num' }, (r.delta >= 0 ? '+' : '−') + Math.abs(r.delta)),
       h('td', { class: 'sum__inc' }, Object.entries(r.income).filter(([, n]) => n).map(([k, n]) => h('span', { class: 'sum__i num', title: RES_KO[k] }, icon(RES[k]), (n > 0 ? '+' : '−') + Math.abs(n))), Object.values(r.income).every((n) => !n) ? '—' : null),
       h('td', { class: 'num sum__tot' }, String(r.total)))))));
     await dialog({ title: `${batch.before.round}라운드 정비 요약`, stamp: '정산', cls: 'ovl--sum', body, buttons: [{ label: last ? '최종 결과 보기' : '다음 — 상점으로', primary: true }], auto: isFast() ? 1400 : 0 });
@@ -59,11 +59,12 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
 
   async function runSteps(batch, steps) {
     const after = batch.after;
-    P.display = { ...batch.before, phase: 'resolve', log: after.log }; onChange();
+    const ph = batch.before.phase === 'resolve' || batch.before.phase === 'plan' ? batch.before.phase : 'resolve';
+    P.display = { ...batch.before, phase: ph, log: after.log }; onChange();
     for (const [i, st] of steps.entries()) {
       if (P.skipping || P.dead) break;
       const players = Object.fromEntries(Object.entries(after.players).map(([f, p]) => [f, { ...p, ...st.snap.players[f] }]));
-      P.display = { ...after, round: batch.before.round, phase: 'resolve', regions: st.snap.regions, players, pending: [] };
+      P.display = { ...after, round: batch.before.round, phase: ph, regions: st.snap.regions, players, pending: [] };
       P.step = { ...st, i, n: steps.length }; P.fx = st.fx; onChange();
       await wait(stepMs());
     }
@@ -99,12 +100,13 @@ export function createPresenter({ loop, data, C, E, fName, regionName, isFast, o
       const st = P.step;
       if (!st) return h('p', { class: 'strip__idle' }, '연출 중입니다…');
       const card = st.cardId ? C[st.cardId] : null, evt = st.eventId ? E[st.eventId] : null;
-      const who = st.faction ?? loop.state.pending?.[0]?.faction;
+      const asset = !card && !evt && st.source === 'asset' ? data.assets.find((a) => a.id === loop.state.players[st.faction]?.strategicAsset) : null;
+      const title = evt ? `사건 · ${evt.name}` : asset ? `${fName(st.faction)} · 전략 자산 ${asset.name}` : `${st.faction ? fName(st.faction) : ''} · ${card?.name ?? '선택'}`;
       return h('div', { class: 'strip', 'aria-label': '현재 행동' },
         h('div', { class: 'strip__head' }, h('span', { class: 'label' }, `현재 행동 · ${st.i + 1}/${st.n}`), h('button', { class: 'btn btn--sm', type: 'button', onclick: () => P.skip() }, '연출 건너뛰기')),
         h('div', { class: 'strip__body' }, card ? h('div', { class: 'strip__card is-stamped' }, renderCard(card, { size: 'mini' })) : null,
-          h('div', { class: 'strip__txt' }, h('p', { class: 'strip__who' }, evt ? `사건 · ${evt.name}` : `${st.faction ? fName(st.faction) : ''} · ${card?.name ?? ''}`),
-            h('p', { class: 'strip__desc' }, plainText((card ?? evt)?.text ?? '')),
+          h('div', { class: 'strip__txt' }, h('p', { class: 'strip__who' }, title),
+            h('p', { class: 'strip__desc' }, plainText((card ?? evt ?? asset)?.text ?? '')),
             h('ul', { class: 'strip__out' }, st.lines.slice(0, 4).map((l) => h('li', {}, l))))));
     },
   });

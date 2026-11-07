@@ -46,7 +46,7 @@ export function effectToKorean(e) {
     default: return null;
   }
 }
-const clean = (t = '') => t.replace(/\u{1F4B0}/gu, '자본').replace(/\u{1F6E2}\uFE0F?/gu, '에너지').replace(/\u{1F3ED}/gu, '산업').replace(/\u2B50\uFE0F?/gu, '위신').replace(/[\u{1F300}-\u{1FAFF}\uFE0F]/gu, '');
+const clean = (t = '') => t.replace(/\u{1F4B0}/gu, '자본').replace(/\u{1F6E2}\uFE0F?/gu, '에너지').replace(/\u{1F3ED}/gu, '산업').replace(/\u2B50\uFE0F?/gu, '위신').replace(/[\u{1F300}-\u{1FAFF}\uFE0F]/gu, '').replace(/(자본|에너지|산업|위신) \1/g, '$1');
 export const plainText = clean;
 
 /** 카드(또는 이벤트·자산·성장 카드)의 효과 → 쉬운 한국어 문장 목록. 풀지 못하면 카드 문구로 대신한다 */

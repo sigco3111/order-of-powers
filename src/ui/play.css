@@ -92,18 +92,24 @@
 .rev__cards { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; padding: 2px 0 4px 2px; } .rev__none { font: 500 var(--fs-small) var(--font-mono); color: var(--ink-soft); }
 .sum table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
 .sum th { font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .06em; text-align: right; padding: 4px; border-bottom: var(--line); color: var(--ink-soft); } .sum th:first-child, .sum td:first-child { text-align: left; }
-.sum td { padding: 8px 4px; text-align: right; border-bottom: 1px dotted var(--ink-soft); vertical-align: middle; } .sum td:first-child { display: flex; align-items: center; gap: var(--s2); font-weight: 700; }
+.sum td { padding: 8px 4px; text-align: right; border-bottom: 1px dotted var(--ink-soft); vertical-align: middle; } .sum td:first-child { font-weight: 700; } .sum__f { display: flex; align-items: center; gap: var(--s2); }
 .sum tr.is-you td { background: var(--paper-light); } .sum__tot { font-size: 1.25rem; font-weight: 700; } .sum__inc { text-align: right; }
 .sum__i { display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; font-size: .8125rem; } .sum__i .icon { width: 14px; height: 14px; }
 @media (min-width: 900px) {
-  .act--tray, .act--choice, .act--strip { max-height: none; }
+  .act--tray, .act--choice, .act--strip { max-height: none; position: static; }
   .board.is-tray { grid-template-areas: "head head" "rail map" "act act" "body body"; }
   .hand { margin: var(--s2) 0 0; padding: 18px var(--s1) 12px; }
-  .act--tray { grid-area: act; position: sticky; bottom: 0; z-index: 6; grid-column: 1 / -1; }
+  .act--tray { grid-area: act; grid-column: 1 / -1; }
   .slots { grid-template-columns: repeat(var(--slots, 3), minmax(0, 220px)); }
   .slot { flex-direction: row; flex-wrap: wrap; min-height: 56px; padding: 4px 6px; }
   .slot--full { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main ord" "chips ord"; align-items: center; gap: 2px 6px; }
   .slot__main { grid-area: main; } .pchips { grid-area: chips; justify-content: flex-start; } .slot__ord { grid-area: ord; }
   .pchips .pchip:nth-child(n+3) { display: inline-block; }
   .slot--empty { flex-direction: row; gap: var(--s2); }
+}
+
+/* 머리띠 도구 줄: 넓은 화면에서는 한 줄 오른쪽 끝으로 */
+@media (min-width: 900px) {
+  .bhead { grid-template-columns: auto auto 1fr auto; }
+  .bhead .act__tools { grid-column: auto; border: 0; padding: 0; align-self: start; }
 }

@@ -49,6 +49,7 @@ export function renderCard(card, { size = 'hand', state = 'normal', iso = null, 
 }
 
 const EVT_TYPE = { '01': '경제', '02': '경제', '03': '경제', '04': '경제', '16': '경제', '17': '경제', '05': '위기', '06': '위기', '09': '위기', '10': '위기', '12': '위기', '13': '위기', '18': '위기', '07': '정세', '08': '정세', '14': '정세', '15': '정세', '11': '기회', '19': '기회', '20': '기회' };
+const same = (text, lines) => lines.length === 1 && lines[0].replace(/\s/g, '') === text.replace(/\s/g, '');
 export const eventType = (e) => EVT_TYPE[e.id.slice(4)] || '정세';
 /** 사건 카드: 큰 카드 + '사건' 도장 + 유형 도장 */
 export function renderEventCard(evt, { size = 'detail' } = {}) {
@@ -59,5 +60,5 @@ export function renderEventCard(evt, { size = 'detail' } = {}) {
       h('div', { class: 'card__name' }, evt.name),
       h('div', { class: 'card__mid' }, icon(B + (danger ? 'exploding.png' : type === '기회' ? 'award.png' : type === '경제' ? 'dollar.png' : 'flag_square.png')), h('span', { class: 'card__tags' }, tag(type, danger ? 'ctag--stamp' : 'ctag--ink'))),
       h('p', { class: 'card__text' }, plainText(evt.text)),
-      h('ul', { class: 'card__plain', 'aria-label': '쉬운 말로' }, effectsToKorean(evt.effects, evt).map((t) => h('li', {}, t))))));
+      same(plainText(evt.text), effectsToKorean(evt.effects, evt)) ? null : h('ul', { class: 'card__plain', 'aria-label': '쉬운 말로' }, effectsToKorean(evt.effects, evt).map((t) => h('li', {}, t))))));
 }

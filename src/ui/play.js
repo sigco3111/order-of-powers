@@ -3,6 +3,7 @@ import { h, icon, openSheet } from './dom.js';
 import { renderCard, CAT_KO } from './card.js';
 import { effectsToKorean, previewChips, plainText } from './effect-text.js';
 import { planSlotsOf } from '../engine/state.js';
+import { josa } from '../engine/countries.js';
 
 const NUM = ['①', '②', '③', '④', '⑤', '⑥'];
 const HINT_KEY = 'oop-seen-hints';
@@ -157,7 +158,7 @@ export function createPlay({ loop, data, view, repaint, submit, announce, C, A, 
     return [
       h('div', { class: 'chead' }, h('p', { class: 'label' }, `선택 필요 · ${src.label}`),
         h('div', { class: 'csrc' }, src.card ? renderCard(src.card, { size: 'mini' }) : null, h('div', {}, h('b', {}, src.name), h('p', { class: 'cdesc' }, plainText(src.text)))),
-        h('p', { class: 'cq' }, `${ask}을(를) 고르십시오${pc.kind === 'regionPair' ? ' (서로 다른 두 곳)' : ''}. ${pc.kind.startsWith('region') ? '지도의 점선 지역을 눌러도 됩니다.' : ''}`)),
+        h('p', { class: 'cq' }, `${josa(ask, '을', '를')} 고르십시오${pc.kind === 'regionPair' ? ' (서로 다른 두 곳)' : ''}. ${pc.kind.startsWith('region') ? '지도의 점선 지역을 눌러도 됩니다.' : ''}`)),
       list,
       h('div', { class: 'cbar' }, h('p', { class: 'cbar__t', 'aria-live': 'polite' }, ready ? sentence(pc, c) : '아직 고르지 않았습니다'), h('div', { class: 'cbar__b' }, btn('확정', () => go(c), 'btn--primary', { disabled: !ready }), btn('취소', () => { view.choice = null; repaint(); }, '', { disabled: c == null }))),
     ];

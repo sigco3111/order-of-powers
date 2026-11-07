@@ -191,8 +191,9 @@ export async function createMap({ data, onSelect }) {
         p.style.fill = fill; p.dataset.status = stt.kind;
         const inf = factions.filter((f) => rs.influence[f] > 0).map((f) => `${ix[f]} ${rs.influence[f]}`).join(', ') || '영향력 없음';
         p.setAttribute('aria-label', `${byId[r.id].name}, ${stt.kind === 'lead' ? '주도 ' + ix[stt.factions[0]] : stt.kind === 'shared' ? '공동 주도' : stt.kind === 'contested' ? '경합' : '주도 없음'}, ${inf}`);
-        p.setAttribute('aria-pressed', String(selected === r.id));
-        n.el.classList.toggle('is-sel', selected === r.id);
+        const on = Array.isArray(selected) ? selected.includes(r.id) : selected === r.id;
+        p.setAttribute('aria-pressed', String(on));
+        n.el.classList.toggle('is-sel', on);
         n.el.classList.toggle('is-cand', candidates.includes(r.id));
         const rfx = fx?.[r.id];
         p.classList.toggle('is-flash', !!rfx); n.el.classList.toggle('is-flash', !!rfx);
@@ -204,7 +205,7 @@ export async function createMap({ data, onSelect }) {
         }));
       }
     }
-    const d = selected ? paths[selected]?.getAttribute('d') : null;
+    const d = (Array.isArray(selected) ? selected : [selected]).map((id) => id && paths[id]?.getAttribute('d')).filter(Boolean).join(' ') || null;
     sel.setAttribute('d', d || ''); sel.style.display = d ? '' : 'none';
     for (const [id, p] of Object.entries(paths)) p.classList.toggle('is-cand', candidates.includes(id));
     cand.replaceChildren();
