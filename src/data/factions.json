@@ -53,7 +53,7 @@
     "startingDeck": [
       {
         "cardId": "st-common-1",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "st-common-2",
@@ -61,15 +61,15 @@
       },
       {
         "cardId": "st-common-3",
-        "count": 2
-      },
-      {
-        "cardId": "st-common-4",
         "count": 3
       },
       {
+        "cardId": "st-common-4",
+        "count": 2
+      },
+      {
         "cardId": "st-common-5",
-        "count": 1
+        "count": 2
       },
       {
         "cardId": "st-redDragon-1",
@@ -96,7 +96,7 @@
     "startingDeck": [
       {
         "cardId": "st-common-1",
-        "count": 2
+        "count": 3
       },
       {
         "cardId": "st-common-2",
@@ -104,15 +104,15 @@
       },
       {
         "cardId": "st-common-3",
-        "count": 2
-      },
-      {
-        "cardId": "st-common-4",
         "count": 1
       },
       {
-        "cardId": "st-common-5",
+        "cardId": "st-common-4",
         "count": 2
+      },
+      {
+        "cardId": "st-common-5",
+        "count": 1
       },
       {
         "cardId": "st-polarStar-1",
@@ -147,15 +147,11 @@
       },
       {
         "cardId": "st-common-2",
-        "count": 1
+        "count": 2
       },
       {
         "cardId": "st-common-4",
-        "count": 4
-      },
-      {
-        "cardId": "st-common-5",
-        "count": 1
+        "count": 3
       },
       {
         "cardId": "st-emerald-1",
@@ -167,6 +163,10 @@
       },
       {
         "cardId": "st-emerald-3",
+        "count": 1
+      },
+      {
+        "cardId": "st-common-3",
         "count": 1
       }
     ],
