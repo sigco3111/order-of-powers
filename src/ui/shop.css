@@ -1,0 +1,56 @@
+/* U3b — 상점 화면. 모바일: 전체 높이 시트 / 데스크톱: 오른쪽 패널. docs/UI_DIRECTION.md 토큰만 사용 */
+.act--shop { position: fixed; inset: 0; z-index: 40; margin: 0; max-height: none; padding: 0; overflow: hidden; border: 0; box-shadow: none; background: var(--paper); }
+.shop { display: flex; flex-direction: column; height: 100%; }
+.shop__head { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--paper-dark); border-bottom: var(--line); }
+.shop__head h2 { font-size: 1.375rem; }
+.shop__cap { display: flex; align-items: center; gap: 6px; }
+.shop__cap .icon { width: 22px; height: 22px; }
+.shop__cap b { font: 500 1.75rem/1 var(--font-mono); letter-spacing: -.03em; min-width: 2ch; text-align: right; }
+.shop__body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--s3) var(--s4) var(--s5); overscroll-behavior: contain; }
+.shop__foot { padding: var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom)); border-top: var(--line); background: var(--paper); }
+.shop__deck { display: grid; grid-template-columns: 1fr auto; gap: var(--s2) var(--s3); align-items: center; padding-bottom: var(--s3); border-bottom: 3px double var(--ink); }
+.shop__stat { margin: 0; font-size: var(--fs-small); }
+.stags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin: 0; }
+.stags .stamp { font-size: .75rem; padding: 1px 8px; border-width: 3px; }
+.shop__sec { margin-top: var(--s4); }
+.shop__sech { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); padding-bottom: 4px; border-bottom: var(--line); margin-bottom: var(--s3); }
+.shop__sech h3 { font-size: 1.125rem; }
+.sgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4) var(--s3); }
+.sitem { display: grid; justify-items: center; gap: 6px; padding: 0 0 2px; border: 0; background: transparent; cursor: pointer; text-align: left; -webkit-tap-highlight-color: transparent; }
+.sitem .card--hand { width: 100%; max-width: 168px; height: 188px; }
+.sitem:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.sitem:hover .card:not([data-state="disabled"]) { transform: translateY(-3px); }
+.sitem .card { transition: transform var(--t-fast) steps(2); }
+.sitem.is-no .card__cost { text-decoration: line-through; }
+.sitem.is-new { animation: slide-in var(--t-slow) steps(4, end) both; }
+@keyframes slide-in { from { transform: translateX(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* 가격 줄 */
+.sp { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 8px; width: 100%; max-width: 168px; padding: 3px 4px; border-top: 1px dotted var(--ink-soft); font-size: var(--fs-small); }
+.sp__v { display: inline-flex; align-items: center; gap: 4px; }
+.sp__v .icon { width: 16px; height: 16px; }
+.sp__v b { font: 700 1.125rem/1 var(--font-mono); }
+.sp__was { font: 400 .875rem/1 var(--font-mono); color: var(--ink-soft); text-decoration: line-through; text-decoration-thickness: 2px; }
+.sp__cut { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--ink-soft); }
+.sp__note { padding: 0 5px; border: 1px solid var(--ink); font: 500 .6875rem/1.5 var(--font-mono); letter-spacing: .04em; }
+.sp__why { flex-basis: 100%; text-align: center; color: var(--stamp); font: 700 .75rem/1.3 var(--font-body); }
+.sp.is-no .sp__v { opacity: .8; }
+.sdet__price { display: flex; justify-content: center; }
+.sdet__price .sp { max-width: none; font-size: 1rem; border-top: 0; }
+.sdet__price .sp__v b { font-size: 1.5rem; }
+.sbought { display: grid; justify-items: center; gap: var(--s2); }
+.sbought .stamp { font-size: 1.25rem; padding: 4px 18px; }
+.sbought p { margin: 0; }
+
+.shop__log { list-style: none; margin: 0; padding: 0; font-size: var(--fs-small); }
+.shop__log li { padding: 5px 0; border-bottom: 1px dotted var(--ink-soft); }
+.dos { display: grid; gap: var(--s2); }
+.dos__g { margin-top: var(--s3); } .dos__g h3 { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 3px; border-bottom: var(--line); margin-bottom: var(--s2); font-size: 1.0625rem; }
+.dos__g h3 .num { font-size: .875rem; font-weight: 500; }
+.dos__g ul { list-style: none; margin: 0; padding: 0; } .dos__g li { padding: 3px 0; font-size: var(--fs-small); }
+
+@media (min-width: 900px) {
+  .act--shop { inset: 0 0 0 auto; width: min(480px, 40vw); border-left: var(--line); box-shadow: -4px 0 0 rgba(27, 34, 48, .28); }
+  .board.is-shop { padding-right: min(504px, calc(40vw + 24px)); }
+  .sitem .card--hand { height: 200px; }
+}
