@@ -27,6 +27,14 @@
 | Contemplation | Pro Sensory (OpenGameArt) | CC0 | [assets-audio v6.23](https://github.com/sigco3111/assets-audio/releases/tag/v6.23) · contemplation-0.zip | `assets/audio/music/oga-contemplation/` — MP3를 OGG(libvorbis q3)로 변환, 약 2분, 1개 + 라이선스 파일(LICENSE-SOURCE.txt) | 1.0 MB | 잔잔한 배경음 (게임판) |
 | 세계 지역 지도 (world-regions.svg) | sigco3111 (Natural Earth 데이터 가공) | Natural Earth 퍼블릭 도메인 / world-atlas ISC | [Natural Earth](https://www.naturalearthdata.com/) · npm `world-atlas` 2.x `countries-50m.json` → `tools/build-map.js` | `assets/map/world-regions.svg` — 실제 세계 지도 기반 8개 지역(국경·이름 없음), 라벨·마커 포함 (이전 추상 초안 `regions.svg`는 참고용으로 유지) | 82 KB | 게임판 지도, 영향력 토큰 위치(마커) |
 
+### 소리 연결 (S1)
+`src/ui/sounds.json`이 이벤트별 파일을 정한다 (효과음 20종, 합계 약 310 KB는 소리를 켰을 때 받는다). 음악 2곡(2.3 MB, 1.0 MB)은 설정에서 음악을 켠 뒤에만 불러온다. 크레딧은 설정 → 정보 → 크레딧에 있다.
+- 클릭 `kenney-ui-audio/click2` · 토글 `kenney-interface-sounds/toggle_001` · 확정 `confirmation_001` · 지역 선택 `tick_001` · 단계 `open_001` · 라운드 `bong_001` · 선택 필요 `question_001` · 오류(작게) `error_003`
+- 카드 집기 `kenney-casino-audio/card_slide1` · 놓기 `card_place2` · 되돌리기 `card_slide3` · 공개 `card_fan1` · 사건 `card_open_package1`
+- 도장 `kenney-rpg-audio/book_place1`(낮춤) · 구매 `handle_coins` · 정산 `book_flip2` · 영향력 토큰 놓기 `chip_lay1` · 제거 `chips_collide1`(낮춤)
+- 승리 `oga-win-sound-effect/win_sound` · 패배 `oga-game-over-bad-chest/game_over_bad_chest`
+- 음악: 메뉴·편성 `meadow_thoughts`, 보드·결과 `contemplation` (둘 다 직접 들어보지는 못함)
+
 ### 가공 내역
 - 파일명은 소문자·스네이크 케이스로 정리했습니다(Kenney UI Pack, Board Game Icons 등). 내용은 원본 그대로입니다.
 - WAV/MP3 3개(승리 효과음, 패배 효과음, Contemplation)는 용량과 웹 재생을 위해 OGG로 변환했습니다.
