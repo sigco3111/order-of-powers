@@ -4,7 +4,7 @@
   /* 종이와 잉크 */
   --paper: #E9E2D0; --paper-dark: #D8CFB8; --paper-light: #F1ECDD;
   --ink: #1B2230; --ink-soft: #4A5263; --ink-faint: rgba(27, 34, 48, .18);
-  --brass: #B08D3C; --brass-text: #6F5514; --stamp: #A8362A;
+  --brass: #B08D3C; --brass-text: #6F5514; --stamp: #9A3025;
   /* 세력 (면·모서리·문양 전용. 작은 글자색으로 쓰지 않는다) */
   --f-atlas: #2F4B7C; --f-redDragon: #A63A2B; --f-polarStar: #3E7C86; --f-emerald: #4C7A4A;
   /* 카드 분류 */
@@ -108,4 +108,3 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 @media (forced-colors: active) { .btn, .panel { border: 2px solid ButtonText; } }
-접근성: 도장 붉은색을 어둡게 해 어두운 종이 위에서도 글자 대비 4.5:1 이상 확보접근성: 도장 붉은색을 어둡게 해 어두운 종이 위에서도 글자 대비 4.5:1 이상 확보
