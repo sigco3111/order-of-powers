@@ -1,0 +1,5 @@
+{
+  "easy": { "name": "쉬움", "line": "쉬움: 보정 없음 (컴퓨터가 자주 실수합니다)", "income": [] },
+  "normal": { "name": "보통", "line": "보통: 보정 없음", "income": [] },
+  "hard": { "name": "어려움", "line": "어려움: 컴퓨터가 매 라운드 자본 +1", "income": [{ "res": "capital", "amount": 1 }] }
+}
