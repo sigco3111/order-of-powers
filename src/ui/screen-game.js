@@ -4,6 +4,7 @@ import { legalActions, seatName, ARCHETYPE_KO } from '../engine/index.js';
 import { regionLeaders } from '../engine/score.js';
 import { aiMeta } from '../ai/ai.js';
 import { createPlay } from './play.js';
+import { createShop } from './shop.js';
 import { createPresenter } from './presenter.js';
 import { effectsToKorean } from './effect-text.js';
 
@@ -19,6 +20,8 @@ const PROMPT = { influence: '영향력을 놓을 곳', removeInfluence: '영향�
 export const plain = (t = '') => t.replace(/\u{1F4B0}/gu, '자본').replace(/\u{1F6E2}\uFE0F?/gu, '에너지').replace(/\u{1F3ED}/gu, '산업').replace(/\u2B50\uFE0F?/gu, '위신').replace(/[\u{1F300}-\u{1FAFF}\uFE0F]/gu, '');
 const rx = new RegExp(`\\b(northAmerica|southAmerica|europe|russiaCentralAsia|middleEastNorthAfrica|subSaharanAfrica|eastAsia|southAsiaOceania)\\b`, 'g');
 const by = (a) => Object.fromEntries(a.map((x) => [x.id, x]));
+
+export const reportKey = (s) => `${s.seed}-${s.config.rounds}-${s.config.humanFaction}`;
 
 export function gameScreen({ store, show }) {
   const loop = store.loop, data = store.data, F = by(data.factions), R = by(data.regions), C = { ...by(data.cards), ...by(data.growth) }, A = by(data.assets), E = by(data.events);
@@ -45,6 +48,7 @@ export function gameScreen({ store, show }) {
   const nice = (t = '') => plain(t).replace(/^수정치 (\S+) ([+−-]\d+) \((게임|라운드)\)/, (m, k, v, sc) => modLine(m, k, v, sc)).replace(/(^|\s)(자본|에너지|산업|위신) \2(?=\s)/g, '$1$2').replace(rx, regionName).replace(/^선택: .*/, (m) => m.replace(/[\[\]"]/g, ''));
   const P = createPresenter({ loop, data, C, E, fName, regionName, isFast: () => view.fast, onChange: () => schedule() });
   const play = createPlay({ loop, data, view, repaint: () => paint(), submit, announce, C, A, E, R, F, fName, regionName });
+  const shop = createShop({ loop, data, view, repaint: () => paint(), submit, announce, fName });
   const shown = () => P.display || loop.state; // 연출 중에는 단계별로 따라가는 화면 상태
 
   // ── 머리띠: 라운드, 단계 도장, 이벤트 카드 ──
@@ -117,11 +121,8 @@ export function gameScreen({ store, show }) {
     if (P.active) {
       kind = 'strip'; bar.push(P.strip());
     } else if (s.phase === 'end') {
-      const res = s.result, w = res.winners.map(fName).join(', ');
-      body.push(panel('최종 순위', '결과 화면은 U4', h('div', { class: 'result' }, h('span', { class: 'stamp' }, res.tie ? '공동 승리' : '승리'), h('p', {}, h('strong', { style: 'font:800 1.25rem var(--font-display)' }, w)),
-        h('table', {}, h('thead', {}, h('tr', {}, ['순위', '세력', '지역', '위신', '목표', '합계'].map((t) => h('th', {}, t)))),
-          h('tbody', {}, res.ranking.map((f, i) => { const c = res.scores[f]; return h('tr', {}, [i + 1, fName(f), c.regions, c.prestige, c.goalPoints, c.total].map((v) => h('td', {}, String(v)))); }))))));
-      bar.push(status('게임 종료', `${s.config.rounds}라운드를 마쳤습니다.`), h('div', { class: 'act__row' }, btn('새 게임', () => show('setup'), 'btn--primary'), btn('표지로', () => show('title'))));
+      const w = s.result.winners.map(fName).join(', ');
+      bar.push(status('게임 종료', `${s.config.rounds}라운드를 마쳤습니다. ${s.result.tie ? '공동 승리' : '승자'}: ${w}.`), h('div', { class: 'act__row' }, btn('최종 보고서 보기', () => { store.reported = reportKey(s); show('result'); }, 'btn--primary'), btn('표지로', () => show('title'))));
     } else if (mine && s.phase === 'setup') {
       const opts = s.players[human].assetOptions;
       body.push(panel('전략 자산 선택', '게임당 1회 사용', h('div', { class: 'assets', role: 'group', 'aria-label': '전략 자산 두 장' }, opts.map((id) => { const a = A[id]; return h('button', { class: `acard acard--${a.category}`, type: 'button', 'aria-pressed': String(view.pick === id), onclick: () => { view.pick = id; paint(); } },
@@ -133,12 +134,12 @@ export function gameScreen({ store, show }) {
       kind = 'tray'; bar.push(...play.tray(s));
       if (debug) bar.push(h('div', { class: 'act__row' }, btn('자동 계획(디버그)', () => dispatch(loop.pick(human)))));
     } else if (mine && s.phase === 'shop') {
-      bar.push(status('상점 단계', `자본 ${s.players[human].resources.capital}. 구매 화면은 U3b에서 만듭니다. 지금은 상점을 마치고 넘어갑니다.`), h('div', { class: 'act__row' }, btn('상점 종료', () => submit({ type: 'END_SHOP', faction: human }), 'btn--primary'), debug ? btn('자동 상점(디버그)', () => dispatch(loop.pick(human))) : null));
+      kind = 'shop'; bar.push(shop.panel(s));
     } else {
       const a = loop.acting;
       bar.push(status(a ? '컴퓨터 차례' : '진행 중', a ? nice(a.text) + '…' : '다음 입력을 기다립니다.'));
     }
-    act.className = `act${kind ? ` act--${kind}` : ''}`; root.classList.toggle('is-tray', kind === 'tray');
+    act.className = `act${kind ? ` act--${kind}` : ''}`; root.classList.toggle('is-tray', kind === 'tray'); root.classList.toggle('is-shop', kind === 'shop');
     act.replaceChildren(...bar.filter(Boolean), ...(kind || !feed ? [] : [feed]));
     bodyEl.replaceChildren(...body);
     return cand;
@@ -149,10 +150,17 @@ export function gameScreen({ store, show }) {
   const actKind = () => (act.className.match(/act--(\w+)/) || [])[1] || '';
   function paint() {
     const s = shown();
-    paintHead(s); paintRail(s); cands = paintAct(loop.state);
+    paintHead(s); paintRail(s); cands = paintAct(loop.state); maybeReport();
     const k = actKind();
     map?.update({ state: s, selected: k === 'choice' && view.choice != null ? view.choice : view.sel, candidates: P.active ? [] : cands, fx: P.fx });
-    if (kind0 !== k) { kind0 = k; if (k === 'choice' || k === 'strip') map?.el.scrollIntoView({ block: 'start', behavior: 'auto' }); }
+    if (kind0 !== k) { kind0 = k; if (k === 'choice' || k === 'strip' || (k === 'tray' && matchMedia('(max-width: 899px)').matches)) map?.el.scrollIntoView({ block: 'start', behavior: 'auto' }); }
+  }
+  /** 게임이 끝나고 연출이 멈추면 한 번만 최종 보고서로 넘어간다 */
+  function maybeReport() {
+    const s = loop.state;
+    if (s.phase !== 'end' || P.active || store.reported === reportKey(s)) return;
+    store.reported = reportKey(s);
+    setTimeout(() => { if (root.isConnected && loop.state.phase === 'end') show('result'); }, 1200);
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (root.isConnected) paint(); }); };
   function select(id) { if (play.pickRegion(id)) return; view.sel = id; view.tab = 'r'; paint(); }
