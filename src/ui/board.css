@@ -151,3 +151,6 @@
   .brail { max-height: none; }
   .node__label { font-size: 13.5px; }
 }
+
+/* U3a: 빠른 진행 도구줄은 머리띠 맨 아래로 */
+.bhead .act__tools { grid-column: 1 / -1; margin: 0; }
