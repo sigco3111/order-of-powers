@@ -21,8 +21,8 @@ const LV = {
   hard: { goal: 1, hand: 0.1, a: 0.15, b: 0.25, c: 0.2, N: 24, S: 4 },
 };
 // 조정값: 실험 도구가 바꿀 수 있다. choiceCost 선택(CHOOSE)당 감점, lastShopMin 마지막 상점 구매 문턱(어려움), lateRounds 종반 판단 라운드 수,
-// extraBuy 같은 상점에서 이미 산 카드 1장당 구매 문턱 가산, denyBonus 선두 견제 가산(지역 영향력 제거 선택), assetSlack 종반 전략 자산 사용 허용 손실
-export const tune = { choiceCost: 0.8, lastShopMin: 0.4, lateRounds: 2, denyBonus: 0.3, assetSlack: 0.1, leadPen: 0.2, extraBuy: 1.5, hardGoal: 1, hardBuyMin: 1.3 };
+// hardN·hardS 어려움의 후보 계획 수·상대 표본 수, refine 어려움이 상위 계획을 최악 대응 표본으로 다시 평가(1)할지, extraBuy 같은 상점에서 이미 산 카드 1장당 구매 문턱 가산, denyBonus 선두 견제 가산(지역 영향력 제거 선택), assetSlack 종반 전략 자산 사용 허용 손실
+export const tune = { choiceCost: 0.8, lastShopMin: 0.4, lateRounds: 2, denyBonus: 0.3, assetSlack: 0.1, leadPen: 0.2, extraBuy: 1.5, hardGoal: 1, hardBuyMin: 1.3, refine: 1, hardN: 24, hardS: 4 };
 const VOLATILE = new Set(['capital', 'energy', 'industry', 'prestige', 'regionsLed', 'regionsLedAtFinalScoring', 'regionsWithBase', 'regionsWithInfluence']);
 const PRE_UPKEEP = new Set(['setup', 'event', 'plan', 'reveal', 'resolve']);
 const sum = (a) => a.reduce((x, y) => x + y, 0);
@@ -111,7 +111,7 @@ export function evaluate(state, faction, opt = {}) {
 
 // ---------- 시뮬레이션 도구 ----------
 const make = (state, faction, level, rngSeed, data) => {
-  const ctx = { state, me: faction, level, W: level === 'hard' ? { ...LV.hard, c: tune.leadPen, goal: tune.hardGoal } : LV[level], data, ix: indexData(data), seed: `${rngSeed}|${faction}|${hashState(state)}` };
+  const ctx = { state, me: faction, level, W: level === 'hard' ? { ...LV.hard, c: tune.leadPen, goal: tune.hardGoal, N: tune.hardN, S: tune.hardS } : LV[level], data, ix: indexData(data), seed: `${rngSeed}|${faction}|${hashState(state)}` };
   ctx.rng = seedToState(ctx.seed);
   ctx.rand = (n) => { const r = nextInt(ctx.rng, n); ctx.rng = r.rng; return r.value; };
   ctx.float = () => { const r = nextFloat(ctx.rng); ctx.rng = r.rng; return r.value; };
@@ -260,7 +260,7 @@ function choosePlan(ctx, legal) {
     return plans[ctx.rand(plans.length)];
   }
   const scns = sampleOppPlans(ctx, st, ctx.W.S), top = scorePlans(ctx, st, shortlist(ctx, plans, ctx.W.N), scns);
-  const b = best(ctx.level === 'hard' && ctx.W.refine !== 0 && top.length > 1 ? refineTop(ctx, st, top, scns) : top);
+  const b = best(ctx.level === 'hard' && tune.refine !== 0 && top.length > 1 ? refineTop(ctx, st, top, scns) : top);
   if (asset) {
     const after = simulate(ctx, st, asset, null, ctx.seed + '|asset');
     if (after && after.phase === 'plan' && !after.pending?.length) {
