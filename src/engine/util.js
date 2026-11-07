@@ -52,3 +52,11 @@ export function indexData(data) {
   }
   return cache.get(data);
 }
+
+/** 연출용 스냅샷: 지역(영향력·기지·방어), 세력 자원·점수, 로그 길이. 이벤트에 실려 UI가 단계별 변화를 그린다 */
+export function snapState(s) {
+  const regions = {}, players = {};
+  for (const [id, r] of Object.entries(s.regions)) regions[id] = { influence: { ...r.influence }, bases: { ...r.bases }, defense: { ...r.defense } };
+  for (const [f, p] of Object.entries(s.players)) players[f] = { resources: { ...p.resources }, prestige: p.prestige, regionScore: p.regionScore };
+  return { regions, players, log: s.log.length };
+}
