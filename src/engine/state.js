@@ -18,7 +18,7 @@ const newStats = () => ({
 const expand = (list) => list.flatMap((e) => Array(e.count).fill(e.cardId));
 
 /** 새 게임 상태. data = { cards, events, assets, goals, growth, factions, regions } (IO 없음) */
-export function createGame({ data, rounds = 8, factions, humanFaction = null, seed = 1, tutorial = false, aiLevel = 'normal', mode = 'single', countries = null }) {
+export function createGame({ data, rounds = 8, factions, humanFaction = null, seed = 1, tutorial = false, aiLevel = 'normal', mode = 'single', countries = null, seatLevels = null }) {
   const ix = indexData(data);
   const ids = factions || data.factions.map((f) => f.id);
   if (ids.length !== RULES.factions || new Set(ids).size !== ids.length) throw new Error('세력은 서로 다른 4개여야 한다');
@@ -61,6 +61,13 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
     };
   });
 
+  // 난이도 보정: 컴퓨터 자리에만, 공개된 표(src/data/difficulty.json)대로. 사람 자리·튜토리얼은 없음.
+  const difficulty = {};
+  if (!tutorial) for (const f of ids) {
+    const inc = f === humanFaction ? [] : data.difficulty?.[seatLevels?.[f] ?? aiLevel]?.income || [];
+    if (inc.length) difficulty[f] = deepClone(inc);
+  }
+
   const zero = () => Object.fromEntries(ids.map((f) => [f, 0]));
   const regions = Object.fromEntries(data.regions.map((r) => [r.id, {
     influence: zero(), bases: zero(), defense: zero(),
@@ -69,7 +76,7 @@ export function createGame({ data, rounds = 8, factions, humanFaction = null, se
 
   const state = {
     version: 1, seed, rng,
-    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction, ...(cmap && { countries: cmap }), ...(!tutorial && data.roundModes?.[rounds] && { roundMode: deepClone(data.roundModes[rounds]) }) },
+    config: { rounds, aiLevel, mode, tutorial: !!tutorial, humanFaction, ...(cmap && { countries: cmap }), ...(Object.keys(difficulty).length && { difficulty }), ...(!tutorial && data.roundModes?.[rounds] && { roundMode: deepClone(data.roundModes[rounds]) }) },
     round: 1, phase: 'setup', turnOrder: ids.slice(),
     eventDeck, eventDiscard: [], currentEvent: null,
     modifiers: { round: {}, game: {} },

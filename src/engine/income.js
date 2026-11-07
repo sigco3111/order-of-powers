@@ -18,6 +18,9 @@ export function computeIncome(state, faction) {
   for (const e of state.config.roundMode?.income?.[faction] || []) { // 라운드 수 보정(src/data/round-modes.json)
     if (state.round >= (e.from ?? 1) && state.round <= (e.to ?? Infinity)) out[e.res] += e.amount;
   }
+  for (const e of state.config.difficulty?.[faction] || []) { // 컴퓨터 난이도 보정(src/data/difficulty.json)
+    if (state.round >= (e.from ?? 1) && state.round <= (e.to ?? Infinity)) out[e.res] += e.amount;
+  }
   for (const k of [...RESOURCES, 'prestige']) {
     out[k] += getMod(state, faction, 'income.' + k);
     if (k !== 'prestige') out[k] = Math.max(0, out[k]);
