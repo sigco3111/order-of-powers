@@ -111,7 +111,7 @@ order-of-powers/
 - 효과음: [Kenney](https://kenney.nl) (Casino Audio, UI Audio, Interface Sounds, RPG Audio), OpenGameArt의 Snabisch (Win sound effect), Felis Chaus (Game Over - Bad chest SFX).
 - 배경음악: OpenGameArt의 mishonis (Meadow Thoughts), Pro Sensory (Contemplation).
 - 이 작품은 영감을 준 보드게임과 관련 없는 독립적인 창작물입니다. 규칙, 그림, 문구는 직접 만들었고 해당 게임의 회사나 제작자와 제휴하거나 승인받은 바 없습니다.
-
+- 라이선스: MIT (LICENSE 파일 참고). 이 라이선스는 코드와 직접 만든 문서에만 적용되며, 위에 적은 CC0·퍼블릭 도메인 자료(그림, 소리, 지도)에는 적용되지 않습니다.
 
 ## 개발 이력
 
